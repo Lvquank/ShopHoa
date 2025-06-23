@@ -15,7 +15,7 @@ function Intro() {
     <div className="container-fluid h-100">
       <div className="row h-100 g-3">
         <div className="col-md-8 d-flex flex-column">
-          <div className="mb-3 flex-grow-1 overflow-hidden rounded intro-swiper">
+          <div className="mb-3 flex-grow-1 overflow-hidden intro-swiper">
             <Swiper
               modules={[Pagination, Autoplay, Navigation]}
               pagination={{ clickable: true }}
@@ -49,7 +49,7 @@ function Intro() {
           <div className="d-none d-md-block">
             <div className="row g-2">
               <div className="col-6">
-                <div className="overflow-hidden rounded intro-img-container">
+                <div className="overflow-hidden intro-img-container">
                   <img
                     src={intro2 || "/placeholder.svg"}
                     className="w-100 h-100 intro-img"
@@ -59,7 +59,7 @@ function Intro() {
                 </div>
               </div>
               <div className="col-6">
-                <div className="overflow-hidden rounded intro-img-container">
+                <div className="overflow-hidden intro-img-container">
                   <img
                     src={intro3 || "/placeholder.svg"}
                     className="w-100 h-100 intro-img"
@@ -73,7 +73,7 @@ function Intro() {
         </div>
 
         <div className="col-md-4 h-100 d-none d-md-flex">
-          <div className="overflow-hidden rounded w-100 h-100 intro-img-container">
+          <div className="overflow-hidden w-100 h-100 intro-img-container">
             <img
               src={intro4 || "/placeholder.svg"}
               className="w-100 h-100 intro-img"

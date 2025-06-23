@@ -9,7 +9,7 @@ const CategoryGrid = ({ categoryCard = {}, products = [] }) => {
           {/* Category Card - Chiếm 1/4 chiều rộng */}
           <div className="col-12 col-sm-6 col-md-4 col-lg-3">
             <div className="category-card h-100">
-              <div className="position-relative h-100 overflow-hidden rounded">
+              <div className="position-relative h-100 overflow-hidden">
                 {categoryCard.imageUrl && (
                   <img
                     src={categoryCard.imageUrl || "/placeholder.svg"}

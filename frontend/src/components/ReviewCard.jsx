@@ -2,7 +2,7 @@ import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 const ReviewCard = () => {
     return (
-        <div className="bg-light p-4 rounded">
+        <div className="bg-light p-4">
             <h5 className="fw-bold">Để lại một bình luận</h5>
             <p className="text-muted">
                 Email của bạn sẽ không được hiển thị công khai. Các trường bắt buộc được đánh dấu *

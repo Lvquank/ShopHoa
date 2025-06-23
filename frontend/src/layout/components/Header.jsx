@@ -12,6 +12,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showCategoryMenu, setShowCategoryMenu] = useState(isShowCategoryMenu);
     const [isHovering, setIsHovering] = useState(false);
+    const [expandedCategory, setExpandedCategory] = useState(null);
 
     // Effect để cập nhật showCategoryMenu khi prop thay đổi
     useEffect(() => {
@@ -71,7 +72,9 @@ const Header = ({ isShowCategoryMenu = true }) => {
             setShowCategoryMenu(false);
         }
     };
-
+    const toggleCategory = (category) => {
+        setExpandedCategory(expandedCategory === category ? null : category);
+    };
     return (
         <>
             <header className={isScrolled ? 'scrolled' : ''}>
@@ -104,8 +107,14 @@ const Header = ({ isShowCategoryMenu = true }) => {
                 <div className="container">
                     {/* Mobile Header */}
                     <div className="d-flex d-md-none align-items-center justify-content-between w-100">
-                        <button className="navbar-toggler border-0 text-white p-0" type="button" onClick={toggleMobileNav}>
-                            <i className={`bi ${isMobileNavActive ? 'bi-x' : 'bi-list'} fs-1`}></i>
+                        <button
+                            className="btn text-white p-0"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#mobileNavOffcanvas"
+                            aria-controls="mobileNavOffcanvas"
+                        >
+                            <i className="bi bi-list fs-1"></i>
                         </button>
                         <Link to="/" className="mx-2">
                             <img
@@ -115,17 +124,17 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             />
                         </Link>
                         <div className="d-flex align-items-center">
-                            <button className="btn me-2" type="button">
-                                <i className="bi bi-search"></i>
+                            <button className="btn text-white me-2" type="button">
+                                <i className="bi bi-search fs-4"></i>
                             </button>
                             <button
-                                className="btn position-relative"
+                                className="btn text-white position-relative"
                                 type="button"
                                 data-bs-toggle="offcanvas"
                                 data-bs-target="#offcanvasCart"
                                 aria-controls="offcanvasCart"
                             >
-                                <i className="bi bi-cart"></i>
+                                <i className="bi bi-cart fs-4"></i>
                                 <span
                                     className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                     style={{ fontSize: '0.75rem' }}
@@ -308,7 +317,88 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </nav>
             </header>
+            {/* Mobile Navigation Offcanvas */}
+            <div className="offcanvas offcanvas-start" tabIndex="-1" id="mobileNavOffcanvas" aria-labelledby="mobileNavOffcanvasLabel">
+                <div className="offcanvas-header bg-light">
+                    <h5 className="offcanvas-title text-success fw-bold" id="mobileNavOffcanvasLabel">
+                        <i className="bi bi-list me-2"></i>
+                        DANH MUC
+                    </h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div className="offcanvas-body p-0">
+                    <div className="list-group list-group-flush">
+                        {/* Các sản phẩm bán chạy */}
+                        <a href="/san-pham" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                            <i className="bi bi-fire me-3 text-warning"></i>
+                            <span className="text-uppercase fw-bold">CÁC SẢN PHẨM BÁN CHẠY</span>
+                        </a>
 
+                        {/* Hoa Khai Trương */}
+                        <div className="list-group-item p-0">
+                            <button
+                                className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
+                                onClick={() => toggleCategory('khai-truong')}
+                            >
+                                <div className="d-flex align-items-center">
+                                    <i className="bi bi-cart me-3"></i>
+                                    <span className="text-uppercase fw-bold">HOA KHAI TRƯƠNG</span>
+                                </div>
+                                <i className={`bi bi-chevron-${expandedCategory === 'khai-truong' ? 'up' : 'down'}`}></i>
+                            </button>
+                            <div className={`collapse ${expandedCategory === 'khai-truong' ? 'show' : ''}`}>
+                                <div className="ps-4 pb-2">
+                                    <a href="/san-pham/hoa-khai-truong/truyen-thong" className="d-block py-2 text-decoration-none text-dark">
+                                        Mẫu Truyền Thống
+                                    </a>
+                                    <a href="/san-pham/hoa-khai-truong/hien-dai" className="d-block py-2 text-decoration-none text-dark">
+                                        Mẫu Hiện Đại
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Hoa Đám Tang */}
+                        <div className="list-group-item p-0">
+                            <button
+                                className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
+                                onClick={() => toggleCategory('dam-tang')}
+                            >
+                                <div className="d-flex align-items-center">
+                                    <i className="bi bi-cart me-3"></i>
+                                    <span className="text-uppercase fw-bold">HOA ĐÁM TANG</span>
+                                </div>
+                                <i className={`bi bi-chevron-${expandedCategory === 'dam-tang' ? 'up' : 'down'}`}></i>
+                            </button>
+                            <div className={`collapse ${expandedCategory === 'dam-tang' ? 'show' : ''}`}>
+                                <div className="ps-4 pb-2">
+                                    <a href="/san-pham/hoa-dam-tang/truyen-thong" className="d-block py-2 text-decoration-none text-dark">
+                                        Mẫu Truyền Thống
+                                    </a>
+                                    <a href="/san-pham/hoa-dam-tang/hien-dai" className="d-block py-2 text-decoration-none text-dark">
+                                        Mẫu Hiện Đại
+                                    </a>
+                                    <a href="/san-pham/hoa-dam-tang/cong-giao" className="d-block py-2 text-decoration-none text-dark">
+                                        Hoa Đám Tang Công Giáo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Hoa Giỏ */}
+                        <a href="/san-pham/hoa-gio" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                            <i className="bi bi-cart me-3"></i>
+                            <span className="text-uppercase fw-bold">HOA GIỎ</span>
+                        </a>
+
+                        {/* Hoa Bó */}
+                        <a href="/san-pham/hoa-bo" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                            <i className="bi bi-cart me-3"></i>
+                            <span className="text-uppercase fw-bold">HOA BÓ</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
             {/* Offcanvas Cart */}
             <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart">
                 <div className="offcanvas-header justify-content-center">

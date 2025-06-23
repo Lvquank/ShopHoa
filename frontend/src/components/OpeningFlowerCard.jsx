@@ -9,7 +9,7 @@ const OpeningFlowersCard = ({ imageUrl, title, productCount }) => {
     return (
       <div className="col-md-6 mb-4">
         <div className="opening-card border-0 shadow-sm h-100">
-          <div className="position-relative overflow-hidden rounded full-image-container">
+          <div className="position-relative overflow-hidden full-image-container">
             {imageUrl && (
               <img
                 src={imageUrl || "/placeholder.svg"}

@@ -69,7 +69,7 @@ function RelatedNews() {
                                     <img
                                         src={article.image || "/placeholder.svg"}
                                         alt={article.title}
-                                        className="img-fluid rounded"
+                                        className="img-fluid"
                                     />
                                 </div>
                                 <div className="article-content">
@@ -91,7 +91,7 @@ function RelatedNews() {
                                 <img
                                     src={product.image || "/placeholder.svg"}
                                     alt={product.title}
-                                    className="img-fluid rounded"
+                                    className="img-fluid"
                                 />
                             </div>
                             <div className="product-content">
