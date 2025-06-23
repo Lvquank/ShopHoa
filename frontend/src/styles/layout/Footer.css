@@ -1,0 +1,38 @@
+.footer-section {
+    background-color: #EFF0F3;
+    overflow: hidden;
+}
+
+.footer-top-section {
+    min-height: 100px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url('../../assets/images/backgroundFooter.jpg');
+    margin: 0;
+    padding: 0 15rem;
+}
+
+.footer-logo {
+    max-height: 180px;
+    width: auto;
+}
+
+.footer-content {
+    padding: 0 12rem;
+}
+
+@media screen and (max-width: 768px) {
+    .footer-top-section {
+        padding: 0 1rem;
+    }
+
+    .footer-logo {
+        max-height: 120px;
+    }
+
+    .footer-content {
+        padding: 0 1rem;
+    }
+
+}

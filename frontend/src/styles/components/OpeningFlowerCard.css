@@ -1,0 +1,201 @@
+.opening-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.opening-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Layout mới - ảnh và text song song */
+.opening-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 200px;
+}
+
+.opening-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.opening-card:hover .opening-img {
+  transform: scale(1.05);
+}
+
+.opening-content {
+  background: white;
+  border-left: 1px solid #f0f0f0;
+}
+
+.opening-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+}
+
+.opening-count {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.opening-card:hover .opening-title {
+  color: var(--primary-color, #ff5622);
+}
+
+.opening-card:hover .opening-count {
+  color: var(--primary-color, #ff5622);
+  font-weight: 600;
+}
+
+/* Style cho ảnh chiếm trọn khung (fallback) */
+.full-image-container {
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.full-image-container .opening-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .opening-card {
+    height: 180px;
+  }
+
+  .opening-img-wrapper {
+    height: 180px;
+  }
+
+  .opening-title {
+    font-size: 1rem;
+  }
+
+  .opening-count {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .opening-card {
+    height: 160px;
+    margin-bottom: 1.5rem;
+  }
+
+  .opening-img-wrapper {
+    height: 160px;
+  }
+
+  .opening-title {
+    font-size: 0.95rem;
+  }
+
+  .opening-count {
+    font-size: 0.8rem;
+  }
+
+  .opening-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .opening-card {
+    height: 140px;
+    margin-bottom: 1rem;
+  }
+
+  .opening-img-wrapper {
+    height: 140px;
+  }
+
+  .opening-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .opening-count {
+    font-size: 0.75rem;
+  }
+
+  .opening-content {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .opening-card {
+    height: 120px;
+  }
+
+  .opening-img-wrapper {
+    height: 120px;
+  }
+
+  .opening-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .opening-count {
+    font-size: 0.7rem;
+  }
+
+  .opening-content {
+    padding: 0.6rem;
+  }
+
+  /* Trên mobile có thể chuyển thành layout dọc */
+  .opening-card .row {
+    flex-direction: column;
+  }
+
+  .opening-card .col-7,
+  .opening-card .col-5 {
+    flex: 0 0 50%;
+    max-width: 100%;
+  }
+
+  .opening-img-wrapper {
+    height: 60px;
+  }
+
+  .opening-content {
+    height: 60px;
+    border-left: none;
+    border-top: 1px solid #f0f0f0;
+  }
+}
+
+@media (max-width: 480px) {
+  .opening-card {
+    height: 100px;
+  }
+
+  .opening-title {
+    font-size: 0.75rem;
+  }
+
+  .opening-count {
+    font-size: 0.65rem;
+  }
+
+  .opening-content {
+    padding: 0.4rem;
+  }
+}

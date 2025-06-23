@@ -1,0 +1,85 @@
+.about-page {
+  background-color: #ffffff;
+  min-height: calc(100vh - 200px);
+  padding: 0 12rem;
+}
+
+.about-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.about-intro p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  text-align: justify;
+}
+
+/* Logo Section - Updated for image logo */
+.logo-section {
+  margin: 3rem 0;
+}
+
+.about-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-logo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-image {
+  max-width: 300px;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+  transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
+
+/* Activities Section */
+.activities-section {
+  margin: 2rem 0;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.activities-list {
+  list-style: none;
+  padding: 0;
+}
+
+.activities-list li {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  text-align: justify;
+  position: relative;
+  padding-left: 0;
+}
+
+/* Conclusion Section */
+.conclusion-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  text-align: justify;
+}

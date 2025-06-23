@@ -1,0 +1,173 @@
+.main-content {
+  padding: 0 12rem;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 180px);
+  margin-top: 2rem;
+}
+
+.intro-section {
+  margin-bottom: 3rem;
+}
+
+.product-categories-section {
+  padding: 2rem 0;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff5622;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.title-underline {
+  width: 80px;
+  height: 3px;
+  background-color: #ff5622;
+  margin: 0 auto 2rem auto;
+}
+
+/* Container adjustments */
+.product-categories-section .container {
+  max-width: 1200px;
+}
+
+.related-products {
+  background-color: #eff0f3;
+  padding: 0 12rem;
+}
+
+.product-categories-section .row {
+  margin: 0 -15px;
+}
+
+.product-categories-section .col-md-6 {
+  padding: 0 15px;
+  margin-bottom: 2rem;
+}
+
+/* Đảm bảo cards không bị deform */
+.product-categories-section .col-md-6 > div {
+  height: 100%;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1400px) {
+  .main-content {
+    padding: 0 8rem;
+  }
+
+  .related-products {
+    padding: 0 8rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    padding: 0 4rem;
+  }
+
+  .related-products {
+    padding: 0 4rem;
+  }
+
+  .section-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .main-content {
+    padding: 0 2rem;
+    margin-top: 1rem;
+  }
+
+  .related-products {
+    padding: 0 2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .product-categories-section .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .intro-section {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0 1rem;
+  }
+
+  .related-products {
+    padding: 0 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .intro-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .product-categories-section {
+    padding: 1.5rem 0;
+  }
+
+  .title-underline {
+    width: 60px;
+    height: 2px;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-content {
+    padding: 0 0.5rem;
+  }
+
+  .related-products {
+    padding: 0 0.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .title-underline {
+    width: 50px;
+    height: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .intro-section {
+    margin-bottom: 1rem;
+  }
+
+  .product-categories-section {
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0 0.25rem;
+  }
+
+  .related-products {
+    padding: 0 0.25rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+  }
+}
