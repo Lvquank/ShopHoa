@@ -21,7 +21,7 @@ function Footer() {
             <div className="row text-dark footer-content">
                 <div className="col-lg-6 col-md-12">
                     <div className="row">
-                        <div className="col-6">
+                        <div className="col-5">
                             <h5 className="mb-4">Giới thiệu</h5>
                             <ul className="list-unstyled">
                                 <li className="mb-2"><a href="#" className="text-decoration-none text-secondary">Về Chúng Tôi</a></li>
@@ -32,7 +32,7 @@ function Footer() {
                                 <li className="mb-2"><a href="#" className="text-decoration-none text-secondary">Blog & Tin tức</a></li>
                             </ul>
                         </div>
-                        <div className="col-6">
+                        <div className="col-7">
                             <h5 className="mb-4">Chính sách mua hàng</h5>
                             <ul className="list-unstyled">
                                 <li className="mb-2">Hình thức đặt hàng: HotLine và Zalo</li>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import SearchBar from '../../components/SearchBar'
@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import logoImg from '../../assets/images/logo.webp'
 import { Tooltip } from 'bootstrap';
+
 const Header = ({ isShowCategoryMenu = true }) => {
     const [isMobileNavActive, setIsMobileNavActive] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -14,70 +15,161 @@ const Header = ({ isShowCategoryMenu = true }) => {
     const [isHovering, setIsHovering] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState(null);
 
-    // Effect để cập nhật showCategoryMenu khi prop thay đổi
+    // Throttle scroll handler để giảm số lần gọi
+    const throttle = useCallback((func, delay) => {
+        let timeoutId;
+        let lastExecTime = 0;
+        return function (...args) {
+            const currentTime = Date.now();
+            if (currentTime - lastExecTime > delay) {
+                func.apply(this, args);
+                lastExecTime = currentTime;
+            } else {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                    lastExecTime = Date.now();
+                }, delay - (currentTime - lastExecTime));
+            }
+        };
+    }, []);
+
+    // Debounce để tránh re-render liên tục
+    const debounce = useCallback((func, delay) => {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    }, []);
+
+    // Effect to update showCategoryMenu when prop changes
     useEffect(() => {
         setShowCategoryMenu(isShowCategoryMenu);
     }, [isShowCategoryMenu]);
 
+    // Initialize tooltips
     useEffect(() => {
-        // Kích hoạt tooltip cho tất cả phần tử có data-bs-toggle="tooltip"
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltips = [];
+
         tooltipTriggerList.forEach((el) => {
-            new Tooltip(el);
+            tooltips.push(new Tooltip(el));
+        });
+
+        // Cleanup tooltips on unmount
+        return () => {
+            tooltips.forEach(tooltip => tooltip.dispose());
+        };
+    }, []);
+
+    // Ref để lưu trạng thái trước đó, tránh setState liên tục
+    const prevScrolledRef = React.useRef(isScrolled);
+    const prevShowCategoryMenuRef = React.useRef(showCategoryMenu);
+
+    // Scroll handler tối ưu: chỉ setState khi thực sự thay đổi, thêm dead zone ±2px
+    const handleScroll = useCallback(
+        throttle(() => {
+            requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
+                const scrollThreshold = 256;
+                const deadZone = 50; // Tăng dead zone
+
+                // Bỏ qua nếu scrollY nằm trong vùng nhạy cảm
+                if (Math.abs(currentScrollY - scrollThreshold) <= deadZone) {
+                    return;
+                }
+
+                let newIsScrolled = prevScrolledRef.current;
+                if (!prevScrolledRef.current && currentScrollY > scrollThreshold + deadZone) {
+                    newIsScrolled = true;
+                } else if (prevScrolledRef.current && currentScrollY < scrollThreshold - deadZone) {
+                    newIsScrolled = false;
+                }
+
+                if (prevScrolledRef.current !== newIsScrolled) {
+                    setIsScrolled(newIsScrolled);
+                    prevScrolledRef.current = newIsScrolled;
+                }
+
+                if (isShowCategoryMenu) {
+                    let newShowCategoryMenu = prevShowCategoryMenuRef.current;
+                    if (newIsScrolled) {
+                        newShowCategoryMenu = isHovering;
+                    } else {
+                        newShowCategoryMenu = true;
+                    }
+
+                    if (prevShowCategoryMenuRef.current !== newShowCategoryMenu) {
+                        setShowCategoryMenu(newShowCategoryMenu);
+                        prevShowCategoryMenuRef.current = newShowCategoryMenu;
+                    }
+                }
+            });
+        }, 50), // Tăng thời gian throttle
+        [isHovering, isShowCategoryMenu]
+    );
+
+    useEffect(() => {
+        // Passive listener cho better performance
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
+
+    // Mobile navigation handlers
+    const toggleMobileNav = useCallback(() => {
+        setIsMobileNavActive(prev => {
+            const newState = !prev;
+            document.body.classList.toggle('mobile-nav-active', newState);
+            return newState;
         });
     }, []);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            const newIsScrolled = currentScrollY > 256;
-            setIsScrolled(newIsScrolled);
-
-            if (isShowCategoryMenu) {
-                if (newIsScrolled) {
-                    setShowCategoryMenu(isHovering);
-                } else {
-                    setShowCategoryMenu(true);
-                }
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [isHovering, isShowCategoryMenu]);
-
-    // Mobile navigation handlers
-    const toggleMobileNav = () => {
-        setIsMobileNavActive(!isMobileNavActive);
-        document.body.classList.toggle('mobile-nav-active');
-    };
-
-    const handleNavLinkClick = () => {
+    const handleNavLinkClick = useCallback(() => {
         if (isMobileNavActive) {
             toggleMobileNav();
         }
-    };
+    }, [isMobileNavActive, toggleMobileNav]);
 
-    // Category hover handlers
-    const handleCategoryMouseEnter = () => {
-        setIsHovering(true);
-        if (isScrolled && isShowCategoryMenu) {
-            setShowCategoryMenu(true);
-        }
-    };
+    // Category toggle for mobile
+    const toggleCategory = useCallback((category) => {
+        setExpandedCategory(prev => prev === category ? null : category);
+    }, []);
 
-    const handleCategoryMouseLeave = () => {
-        setIsHovering(false);
-        if (isScrolled && isShowCategoryMenu) {
-            setShowCategoryMenu(false);
-        }
-    };
-    const toggleCategory = (category) => {
-        setExpandedCategory(expandedCategory === category ? null : category);
-    };
+    // Optimized category hover handlers với debounce
+    const handleCategoryMouseEnter = useCallback(
+        debounce(() => {
+            setIsHovering(true);
+            if (isScrolled && isShowCategoryMenu) {
+                setShowCategoryMenu(true);
+            }
+        }, 50),
+        [isScrolled, isShowCategoryMenu]
+    );
+
+    const handleCategoryMouseLeave = useCallback(
+        debounce(() => {
+            setIsHovering(false);
+            if (isScrolled && isShowCategoryMenu) {
+                setShowCategoryMenu(false);
+            }
+        }, 100),
+        [isScrolled, isShowCategoryMenu]
+    );
+
+    // Memoize header class để tránh re-calculation
+    const headerClass = useMemo(() => {
+        return isScrolled ? 'scrolled' : '';
+    }, [isScrolled]);
+
+    // Memoize category dropdown class
+    const categoryDropdownClass = useMemo(() => {
+        return `dropdown-menu category-dropdown ${showCategoryMenu ? 'show' : ''}`;
+    }, [showCategoryMenu]);
+
     return (
         <>
-            <header className={isScrolled ? 'scrolled' : ''}>
+            <header className={headerClass}>
                 <div className="text-white py-2 d-none d-md-block">
                     <div className="container">
                         <div className="row">
@@ -188,7 +280,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                     Danh mục sản phẩm
                                 </button>
 
-                                <ul className={`dropdown-menu category-dropdown ${showCategoryMenu ? 'show' : ''}`}>
+                                <ul className={categoryDropdownClass}>
                                     <li>
                                         <Link className="dropdown-item" to="/san-pham">
                                             <i className="bi bi-fire me-2"></i>
@@ -396,6 +488,39 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             <i className="bi bi-cart me-3"></i>
                             <span className="text-uppercase fw-bold">HOA BÓ</span>
                         </a>
+                    </div>
+
+                    {/* Navigation Links */}
+                    <div className="border-top mt-3">
+                        <div className="p-3">
+                            <h6 className="text-muted text-uppercase fw-bold mb-3">Menu</h6>
+                            <div className="d-grid gap-2">
+                                <a href="/" className="btn btn-outline-success text-start">
+                                    <i className="bi bi-house me-2"></i>
+                                    Trang chủ
+                                </a>
+                                <a href="/gioi-thieu" className="btn btn-outline-success text-start">
+                                    <i className="bi bi-info-circle me-2"></i>
+                                    Giới thiệu
+                                </a>
+                                <a href="/cua-hang" className="btn btn-outline-success text-start">
+                                    <i className="bi bi-shop me-2"></i>
+                                    Sản phẩm
+                                </a>
+                                <a href="/he-thong-cua-hang" className="btn btn-outline-success text-start">
+                                    <i className="bi bi-geo-alt me-2"></i>
+                                    Hệ thống cửa hàng
+                                </a>
+                                <a href="/tin-tuc" className="btn btn-outline-success text-start">
+                                    <i className="bi bi-newspaper me-2"></i>
+                                    Tin tức
+                                </a>
+                                <a href="/lien-he" className="btn btn-outline-success text-start">
+                                    <i className="bi bi-telephone me-2"></i>
+                                    Liên hệ
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

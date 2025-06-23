@@ -1,6 +1,9 @@
 /* styles/header.css */
 :root {
   --primary-color: #ff5622;
+  --header-scrolled: 0;
+  --show-category-menu: 1;
+  --scroll-transition: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 header {
@@ -9,8 +12,9 @@ header {
   z-index: 1030;
   background-color: var(--primary-color);
   padding: 0 12rem;
-  transition: all 0.3s ease;
-  transform: translateY(0);
+  transition: all 0.3s var(--scroll-transition);
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
 /* Khi scroll, header vẫn hiện nhưng compact hơn */
@@ -305,6 +309,25 @@ header.scrolled .img-fluid {
   margin-top: 0;
   border-radius: 0;
   border-top: 0;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.category-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.category-dropdown:not(.show) {
+  opacity: 0;
+  visibility: hidden;
+  transform: scaleY(0.95);
+}
+
+.category-dropdown,
+header {
+  will-change: transform, opacity;
 }
 
 @media (max-width: 1200px) {
