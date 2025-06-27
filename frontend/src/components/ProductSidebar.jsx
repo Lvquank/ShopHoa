@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/components/ProductSidebar.css';
 const SidebarFilter = () => {
     const [expandedItems, setExpandedItems] = useState({
-        hoaKhaiTruong: true,
+        hoaKhaiTruong: false,
         hoaDamTang: false
     });
 

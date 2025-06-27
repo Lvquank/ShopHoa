@@ -1,61 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProductSearchBar from '../components/ProductSearchBar';
 import ProductSidebar from '../components/ProductSidebar';
 import FlowerCard from '../components/FlowerCard';
 import hoaKhaiTruong from "../assets/images/hoa-khai-truong.webp"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/pages/Products.css';
+
 const Products = () => {
-  const products = [
-    {
-      id: "kt01",
-      imageUrl: hoaKhaiTruong,
-      title: "Hoa Khai Trương Hiện Đại",
-      buttonText: "Đọc tiếp",
-      buttonType: "read",
-      category: "hoa-khai-truong",
-    },
-    {
-      id: "kt02",
-      imageUrl: hoaKhaiTruong,
-      title: "Hoa Khai Trương Truyền Thống",
-      buttonText: "Đọc tiếp",
-      buttonType: "read",
-      category: "hoa-khai-truong",
-    },
-    {
-      id: "kt03",
-      imageUrl: hoaKhaiTruong,
-      title: "Hoa Khai Trương - Shop hoa gần nhất",
-      buttonText: "Đọc tiếp",
-      buttonType: "read",
-      category: "hoa-khai-truong",
-    },
-    {
-      id: "kt04",
-      imageUrl: hoaKhaiTruong,
-      title: "Hoa Khai Trương - Shop hoa gần nhất",
-      buttonText: "Đọc tiếp",
-      buttonType: "read",
-      category: "hoa-khai-truong",
-    },
-    {
-      id: "kt05",
-      imageUrl: hoaKhaiTruong,
-      title: "Hoa Khai Trương - Shop hoa gần nhất",
-      buttonText: "Đọc tiếp",
-      buttonType: "read",
-      category: "hoa-khai-truong",
-    },
-    {
-      id: "kt06",
-      imageUrl: hoaKhaiTruong,
-      title: "Hoa Khai Trương - Shop hoa gần nhất",
-      buttonText: "Đọc tiếp",
-      buttonType: "read",
-      category: "hoa-khai-truong",
-    },
-  ]
+  const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data.data || []))
+      .catch(err => console.error('Error fetching products:', err));
+  }, []);
+
+  const handleProductClick = (id) => {
+    navigate(`/cua-hang/${id}`);
+  };
+
   return (
     <div>
       <ProductSearchBar />
@@ -67,13 +33,18 @@ const Products = () => {
           <div className="container">
             <div className="row g-4">
               {products.map((product, index) => (
-                <div key={index} className="col-lg-3 col-md-4 col-sm-6">
+                <div
+                  key={product.id || index}
+                  className="col-lg-3 col-md-4 col-sm-6"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleProductClick(product.id)}
+                >
                   <FlowerCard
-                    key={index}
-                    imageUrl={product.imageUrl}
+                    key={product.id || index}
+                    imageUrl={product.image || hoaKhaiTruong}
                     title={product.title}
-                    buttonText={product.buttonText}
-                    buttonType={product.buttonType}
+                    buttonText="Đặt mua"
+                    buttonType="order"
                     productId={product.id}
                     category={product.category}
                   />

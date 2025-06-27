@@ -9,6 +9,7 @@ import Pay from './pages/Pay';
 import News from './pages/News';
 import Contact from './pages/Contact';
 import NewsDetail from './pages/NewsDetail';
+import ProductDetail from './pages/ProductDetail';
 function AppRoutes() {
   return (
     <Routes>
@@ -73,6 +74,14 @@ function AppRoutes() {
         element={
           <Layout isShowCategoryMenu={false}>
             <NewsDetail />
+          </Layout>
+        }
+      />
+      <Route
+        path="/cua-hang/:productId"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <ProductDetail />
           </Layout>
         }
       />
