@@ -10,6 +10,7 @@ import News from './pages/News';
 import Contact from './pages/Contact';
 import NewsDetail from './pages/NewsDetail';
 import ProductDetail from './pages/ProductDetail';
+import Category from './pages/Category';
 function AppRoutes() {
   return (
     <Routes>
@@ -82,6 +83,22 @@ function AppRoutes() {
         element={
           <Layout isShowCategoryMenu={false}>
             <ProductDetail />
+          </Layout>
+        }
+      />
+      <Route
+        path="/danh-muc/:category"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <Category />
+          </Layout>
+        }
+      />
+      <Route
+        path="/danh-muc/:category/:style?"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <Category />
           </Layout>
         }
       />

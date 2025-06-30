@@ -33,7 +33,7 @@ const CategoryGrid = ({ categoryCard = {}, products = [] }) => {
             <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3">
               <FlowerCard
                 key={index}
-                imageUrl={product.imageUrl}
+                imageUrl={product.image}
                 title={product.title}
                 buttonText={product.buttonText}
                 buttonType={product.buttonType}

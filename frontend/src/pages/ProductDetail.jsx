@@ -106,7 +106,7 @@ const ProductDetail = () => {
                                 </button>
                                 {/* Tags & Social */}
                                 <div className="d-flex flex-wrap align-items-center gap-3 pt-2">
-                                    <span className="badge bg-light text-secondary fs-6">Thẻ: <span className="text-orange-500">{product?.category || 'hoa đám tang'}</span></span>
+                                    <span className="badge bg-light text-secondary fs-6">Thẻ: <span className="text-orange-500">{product?.tag || 'hoa đám tang'}</span></span>
                                     <div className="d-flex gap-2 ms-2">
                                         <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon" style={{ width: 36, height: 36 }}>
                                             <i className="bi bi-facebook fs-5" style={{ color: '#b0b0b0' }}></i>
@@ -168,6 +168,22 @@ const ProductDetail = () => {
                                         )}
                                     </div>
                                 ))}
+                                <div className="container my-4">
+                                    <h4 className="fw-bold mb-3">Những cam kết hoa đám tang Bà Rịa:</h4>
+                                    <ul className="list-unstyled">
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Cam kết hoa tươi, cắm trong ngày, chất lượng.</li>
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Luôn gửi hình ảnh mẫu hoa trước và sau khi giao</li>
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Giao hoa nhanh chóng, chỉ trong vòng 1 đến 2 giờ kể từ khi chốt đơn hàng,</li>
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Dịch vụ giao hoa bằng ô tô theo yêu cầu quý khách</li>
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Miễn phí thiết kế bảng chữ theo ý quý khách</li>
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Hình thức thanh toán dễ dàng thuận tiện.</li>
+                                        <li className="mb-2"><span className="text-success fw-bold me-2">+</span>Giao hàng miễn phí tại các quận nội thành trong thành phố</li>
+                                    </ul>
+                                    <p className="mt-3">
+                                        Bạn có bất kỳ thắc mắc nào, hãy liên hệ ngay cho chúng tôi qua Hotline
+                                        <strong className="text-danger">0966183183</strong> để được tư vấn và hỗ trợ nhanh nhất!
+                                    </p>
+                                </div>
                             </div>
                         )}
                         {activeTab === 'review' && (

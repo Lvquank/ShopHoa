@@ -6,12 +6,72 @@ import hoaDamTang from "../assets/images/hoa-dam-tang.webp"
 import TitleSection from "../components/TitleSection"
 import FlowerCard from "../components/FlowerCard"
 import CategoryGrid from "../components/CategoryGrid"
-import categoryHoaKhaiTruong from "../assets/images/hoakhaitruong_0.webp"
 import RelatedProducts from "../components/RelatedProducts"
 import NewsCard from "../components/NewsCard"
 import { Link } from "react-router-dom"
 import ServicesSection from "../components/ServicesSection"
+import { useEffect, useState } from "react"
+import categoryHoaKhaiTruong from "../assets/images/hoakhaitruong-218x341-1.webp"
+import categoryHoaDamTang from "../assets/images/hoadamtang-218x341-1.webp"
+import categoryHoaGio from "../assets/images/hoa-gio.jpg"
+import categoryHoaBo from "../assets/images/hoa-bo.webp"
 function Home() {
+    const [topSellingProducts, setTopSellingProducts] = useState([])
+    const [categoryProducts, setCategoryProducts] = useState([])
+    const [productsKhaiTruong, setProductsKhaiTruong] = useState([])
+    const [productsDamTang, setProductsDamTang] = useState([])
+    const [productsGio, setProductsGio] = useState([])
+    const [productsBo, setProductsBo] = useState([])
+
+    useEffect(() => {
+        // Lấy top sản phẩm bán chạy (is_on_top = true)
+        fetch("http://localhost:8000/api/products/top")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) setTopSellingProducts(data.data)
+            })
+    }, [])
+
+    // Hàm lấy sản phẩm theo category truyền vào
+    const fetchCategoryProducts = (category, setProducts) => {
+        fetch(`http://localhost:8000/api/products/category/${category}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setProducts(data.data)
+                }
+            })
+    }
+
+    // Ví dụ sử dụng cho hoa khai trương
+    useEffect(() => {
+        fetchCategoryProducts("hoa-khai-truong", setProductsKhaiTruong)
+        fetchCategoryProducts("hoa-dam-tang", setProductsDamTang)
+        fetchCategoryProducts("hoa-gio", setProductsGio)
+        fetchCategoryProducts("hoa-bo", setProductsBo)
+    }, [])
+
+    const categoryDataHoaKhaiTruong =
+    {
+        imageUrl: categoryHoaKhaiTruong,
+        title: "HOA KHAI TRƯƠNG"
+    }
+    const categoryDataHoaDamTang =
+    {
+        imageUrl: categoryHoaDamTang,
+        title: "HOA TANG LỄ"
+    }
+    const categoryDataHoaGio =
+    {
+        imageUrl: categoryHoaGio,
+        title: "HOA GIỎ"
+    }
+    const categoryDataHoaBo =
+    {
+        imageUrl: categoryHoaBo,
+        title: "HOA BÓ"
+    }
+
     const OpeningFlower = [
         {
             imageUrl: hoaKhaiTruong,
@@ -24,71 +84,7 @@ function Home() {
             productCount: 14,
         },
     ]
-    const topSellingProducts = [
-        {
-            id: "sh01",
-            imageUrl: hoaDamTang,
-            title: "Hoa đám tang tiền đưa - SH01",
-            buttonText: "Đọc tiếp",
-            buttonType: "read",
-            category: "hoa-dam-tang",
-        },
-        {
-            id: "hd02",
-            imageUrl: hoaDamTang,
-            title: "Hoa Đám Tang Hiện Đại",
-            buttonText: "Đặt mua",
-            buttonType: "order",
-            category: "hoa-dam-tang",
-        },
-        {
-            id: "kt03",
-            imageUrl: hoaKhaiTruong,
-            title: "Hoa Khai Trương Hiện Đại",
-            buttonText: "Đặt mua",
-            buttonType: "order",
-            category: "hoa-khai-truong",
-        },
-        {
-            id: "kt04",
-            imageUrl: hoaKhaiTruong,
-            title: "Hoa Khai Trương Truyền Thống",
-            buttonText: "Đọc tiếp",
-            buttonType: "read",
-            category: "hoa-khai-truong",
-        },
-    ]
-    const categoryData = {
-        imageUrl: categoryHoaKhaiTruong,
-        title: "HOA KHAI TRƯƠNG",
-    }
 
-    const categoryProducts = [
-        {
-            id: "kt01",
-            imageUrl: hoaKhaiTruong,
-            title: "Hoa Khai Trương Hiện Đại",
-            buttonText: "Xem chi tiết",
-            buttonType: "read",
-            category: "hoa-khai-truong",
-        },
-        {
-            id: "kt02",
-            imageUrl: hoaKhaiTruong,
-            title: "Hoa Khai Trương Truyền Thống",
-            buttonText: "Xem chi tiết",
-            buttonType: "read",
-            category: "hoa-khai-truong",
-        },
-        {
-            id: "kt03",
-            imageUrl: hoaKhaiTruong,
-            title: "Hoa Khai Trương - Shop hoa gần nhất",
-            buttonText: "Xem chi tiết",
-            buttonType: "read",
-            category: "hoa-khai-truong",
-        },
-    ]
     const relatedProducts = [
         {
             id: "hg01",
@@ -194,10 +190,10 @@ function Home() {
                         <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3">
                             <FlowerCard
                                 key={index}
-                                imageUrl={product.imageUrl}
+                                imageUrl={product.image}
                                 title={product.title}
-                                buttonText={product.buttonText}
-                                buttonType={product.buttonType}
+                                buttonText="Đặt mua"
+                                buttonType="order"
                                 productId={product.id}
                                 category={product.category}
                             />
@@ -213,13 +209,13 @@ function Home() {
                     ))}
                 </div>
                 <TitleSection title="HOA KHAI TRƯƠNG" linkTo={"danh-muc/hoa-khai-truong/"} />
-                <CategoryGrid categoryCard={categoryData} products={categoryProducts} />
+                <CategoryGrid categoryCard={categoryDataHoaKhaiTruong} products={productsKhaiTruong} />
                 <TitleSection title="HOA TANG LỄ" linkTo={"danh-muc/hoa-dam-tang/"} />
-                <CategoryGrid categoryCard={categoryData} products={categoryProducts} />
+                <CategoryGrid categoryCard={categoryDataHoaDamTang} products={productsDamTang} />
                 <TitleSection title="HOA GIỎ" linkTo={"danh-muc/hoa-gio/"} />
-                <CategoryGrid categoryCard={categoryData} products={categoryProducts} />
+                <CategoryGrid categoryCard={categoryDataHoaGio} products={productsGio} />
                 <TitleSection title="HOA BÓ" linkTo={"danh-muc/hoa-bo/"} />
-                <CategoryGrid categoryCard={categoryData} products={categoryProducts} />
+                <CategoryGrid categoryCard={categoryDataHoaBo} products={productsBo} />
             </div>
             <div className="related-products">
                 <RelatedProducts products={relatedProducts} title="CÓ THỂ BẠN QUAN TÂM :" />

@@ -118,4 +118,56 @@ class ProductController extends Controller
             'data' => null
         ], 200);
     }
+
+    /**
+     * Lấy danh sách sản phẩm theo category
+     */
+    public function getByCategory($category)
+    {
+        $products = Product::with('details')->where('category', $category)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Product list by category',
+            'data' => $products
+        ], 200);
+    }
+
+    /**
+     * Lấy danh sách sản phẩm chỉ có is_on_top = true
+     */
+    public function getByIsOnTop()
+    {
+        $products = Product::with('details')->where('is_on_top', 1)->get();
+        if ($products->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found',
+                'data' => []
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product list where is_on_top is true',
+            'data' => $products
+        ], 200);
+    }
+
+    /**
+     * Lấy danh sách sản phẩm theo category và style nếu có
+     * /products/category/{category}/{style?}
+     */
+    public function getByCategoryAndStyle($category, $style = null)
+    {
+        $query = Product::with('details')->where('category', $category);
+        if ($style) {
+            $query->where('style', $style);
+        }
+        $products = $query->get();
+        return response()->json([
+            'success' => true,
+            'message' => $style ? 'Product list by category and style' : 'Product list by category',
+            'data' => $products
+        ], 200);
+    }
 }

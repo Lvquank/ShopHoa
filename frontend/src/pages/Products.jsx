@@ -23,7 +23,7 @@ const Products = () => {
   };
 
   return (
-    <div>
+    <div style={{ overflowX: 'hidden' }}>
       <ProductSearchBar />
       <div className="wrapper row">
         <div className="col-lg-3">

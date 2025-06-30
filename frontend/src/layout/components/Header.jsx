@@ -31,7 +31,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     lastExecTime = Date.now();
                 }, delay - (currentTime - lastExecTime));
             }
-        };
+        }
     }, []);
 
     // Debounce để tránh re-render liên tục
@@ -156,6 +156,11 @@ const Header = ({ isShowCategoryMenu = true }) => {
         }, 100),
         [isScrolled, isShowCategoryMenu]
     );
+
+    // Thêm hàm chuyển hướng khi click vào danh mục
+    const handleCategoryClick = (category) => {
+        window.location.href = `/danh-muc/${category}`;
+    };
 
     // Memoize header class để tránh re-calculation
     const headerClass = useMemo(() => {
@@ -282,13 +287,13 @@ const Header = ({ isShowCategoryMenu = true }) => {
 
                                 <ul className={categoryDropdownClass}>
                                     <li>
-                                        <Link className="dropdown-item" to="/san-pham">
+                                        <Link className="dropdown-item" to="/danh-muc/ban-chay-nhat">
                                             <i className="bi bi-fire me-2"></i>
                                             Các Sản Phẩm Bán Chạy
                                         </Link>
                                     </li>
                                     <li className="dropdown-submenu">
-                                        <Link className="dropdown-item d-flex justify-content-between align-items-center" to="/san-pham/hoa-khai-truong">
+                                        <Link className="dropdown-item d-flex justify-content-between align-items-center" to="/danh-muc/hoa-khai-truong">
                                             <div>
                                                 <i className="bi bi-cart me-2"></i>
                                                 Hoa Khai Trương
@@ -297,19 +302,19 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                         </Link>
                                         <ul className="dropdown-menu submenu">
                                             <li>
-                                                <Link className="dropdown-item" to="/san-pham/hoa-khai-truong/truyen-thong">
+                                                <Link className="dropdown-item" to="/danh-muc/hoa-khai-truong/mau-truyen-thong">
                                                     Mẫu Truyền Thống
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link className="dropdown-item" to="/san-pham/hoa-khai-truong/hien-dai">
+                                                <Link className="dropdown-item" to="/danh-muc/hoa-khai-truong/mau-hien-dai">
                                                     Mẫu Hiện Đại
                                                 </Link>
                                             </li>
                                         </ul>
                                     </li>
                                     <li className="dropdown-submenu">
-                                        <Link className="dropdown-item d-flex justify-content-between align-items-center" to="/san-pham/hoa-dam-tang">
+                                        <Link className="dropdown-item d-flex justify-content-between align-items-center" to="/danh-muc/hoa-dam-tang">
                                             <div>
                                                 <i className="bi bi-cart me-2"></i>
                                                 Hoa Đám Tang
@@ -318,30 +323,30 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                         </Link>
                                         <ul className="dropdown-menu submenu">
                                             <li>
-                                                <Link className="dropdown-item" to="/san-pham/hoa-dam-tang/truyen-thong">
+                                                <Link className="dropdown-item" to="/danh-muc/hoa-dam-tang/truyen-thong">
                                                     Mẫu Truyền Thống
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link className="dropdown-item" to="/san-pham/hoa-dam-tang/hien-dai">
+                                                <Link className="dropdown-item" to="/danh-muc/hoa-dam-tang/mau-hien-dai">
                                                     Mẫu Hiện Đại
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link className="dropdown-item" to="/san-pham/hoa-dam-tang/cong-giao">
+                                                <Link className="dropdown-item" to="/danh-muc/hoa-dam-tang/hoa-dam-tang-cong-giao">
                                                     Hoa Đám Tang Công Giáo
                                                 </Link>
                                             </li>
                                         </ul>
                                     </li>
                                     <li>
-                                        <Link className="dropdown-item" to="/san-pham/hoa-gio">
+                                        <Link className="dropdown-item" to="/danh-muc/hoa-gio">
                                             <i className="bi bi-cart me-2"></i>
                                             Hoa Giỏ
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link className="dropdown-item" to="/san-pham/hoa-bo">
+                                        <Link className="dropdown-item" to="/danh-muc/hoa-bo">
                                             <i className="bi bi-cart me-2"></i>
                                             Hoa Bó
                                         </Link>
