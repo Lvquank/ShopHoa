@@ -1,0 +1,24 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading-font,
+.banner h1,
+.banner h2 {
+    font-weight: 500;
+    font-style: normal;
+    font-family: Roboto, sans-serif;
+    color: #0a0a0a;
+}
+
+.more-link {
+    color: #0a0a0a;
+    /* màu cam ban đầu */
+    text-decoration: none;
+}
+
+.more-link:hover {
+    color: #ff5622;
+}

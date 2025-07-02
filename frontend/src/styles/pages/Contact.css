@@ -1,0 +1,17 @@
+.wrapper {
+    padding: 0 12rem;
+    background-color: #ffffff;
+
+}
+
+@media (max-width: 1200px) {
+    .wrapper {
+        padding: 0 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        padding: 0 0.5rem;
+    }
+}

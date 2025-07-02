@@ -17,8 +17,8 @@ const Contact = () => {
     const searchMapUrl = "https://www.google.com/maps/embed/v1/search?key=&q=170A+Đặng+Văn+Ngữ,+Phú+Nhuận,+TPHCM";
 
     return (
-        <div className="py-5" style={{ padding: '0 12rem', backgroundColor: '#ffffff' }}>
-            <div className="mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div className="wrapper">
+            <div className="mb-4 mt-4" data-aos="fade-up" data-aos-delay="200">
                 <iframe
                     style={{
                         border: 0,

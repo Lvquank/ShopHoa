@@ -92,18 +92,20 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     prevScrolledRef.current = newIsScrolled;
                 }
 
-                if (isShowCategoryMenu) {
-                    let newShowCategoryMenu = prevShowCategoryMenuRef.current;
+                // Luôn cho phép hover hiện CategoryMenu nếu isShowCategoryMenu=false
+                let newShowCategoryMenu = prevShowCategoryMenuRef.current;
+                if (!isShowCategoryMenu) {
+                    newShowCategoryMenu = isHovering;
+                } else {
                     if (newIsScrolled) {
                         newShowCategoryMenu = isHovering;
                     } else {
                         newShowCategoryMenu = true;
                     }
-
-                    if (prevShowCategoryMenuRef.current !== newShowCategoryMenu) {
-                        setShowCategoryMenu(newShowCategoryMenu);
-                        prevShowCategoryMenuRef.current = newShowCategoryMenu;
-                    }
+                }
+                if (prevShowCategoryMenuRef.current !== newShowCategoryMenu) {
+                    setShowCategoryMenu(newShowCategoryMenu);
+                    prevShowCategoryMenuRef.current = newShowCategoryMenu;
                 }
             });
         }, 50), // Tăng thời gian throttle
@@ -136,31 +138,22 @@ const Header = ({ isShowCategoryMenu = true }) => {
         setExpandedCategory(prev => prev === category ? null : category);
     }, []);
 
-    // Optimized category hover handlers với debounce
+    // Luôn cho phép hover hiện danh mục, không phụ thuộc scroll
     const handleCategoryMouseEnter = useCallback(
         debounce(() => {
             setIsHovering(true);
-            if (isScrolled && isShowCategoryMenu) {
-                setShowCategoryMenu(true);
-            }
+            setShowCategoryMenu(true);
         }, 50),
-        [isScrolled, isShowCategoryMenu]
+        []
     );
 
     const handleCategoryMouseLeave = useCallback(
         debounce(() => {
             setIsHovering(false);
-            if (isScrolled && isShowCategoryMenu) {
-                setShowCategoryMenu(false);
-            }
+            setShowCategoryMenu(false);
         }, 100),
-        [isScrolled, isShowCategoryMenu]
+        []
     );
-
-    // Thêm hàm chuyển hướng khi click vào danh mục
-    const handleCategoryClick = (category) => {
-        window.location.href = `/danh-muc/${category}`;
-    };
 
     // Memoize header class để tránh re-calculation
     const headerClass = useMemo(() => {
@@ -266,7 +259,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </div>
 
-                <nav className="navbar navbar-expand-lg d-none d-md-block">
+                <nav className="navbar navbar-expand-lg d-none d-lg-block">
                     <div className="container d-flex align-items-center">
                         <div className="d-flex align-items-center">
                             <button className="navbar-toggler border-0 text-white p-0" type="button" onClick={toggleMobileNav}>
@@ -445,10 +438,10 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </button>
                             <div className={`collapse ${expandedCategory === 'khai-truong' ? 'show' : ''}`}>
                                 <div className="ps-4 pb-2">
-                                    <a href="/san-pham/hoa-khai-truong/truyen-thong" className="d-block py-2 text-decoration-none text-dark">
+                                    <a href="/danh-muc/hoa-khai-truong/mau-truyen-thong" className="d-block py-2 text-decoration-none text-dark">
                                         Mẫu Truyền Thống
                                     </a>
-                                    <a href="/san-pham/hoa-khai-truong/hien-dai" className="d-block py-2 text-decoration-none text-dark">
+                                    <a href="/danh-muc/hoa-khai-truong/mau-hien-dai" className="d-block py-2 text-decoration-none text-dark">
                                         Mẫu Hiện Đại
                                     </a>
                                 </div>
@@ -469,13 +462,13 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </button>
                             <div className={`collapse ${expandedCategory === 'dam-tang' ? 'show' : ''}`}>
                                 <div className="ps-4 pb-2">
-                                    <a href="/san-pham/hoa-dam-tang/truyen-thong" className="d-block py-2 text-decoration-none text-dark">
+                                    <a href="/danh-muc/hoa-dam-tang/mau-truyen-thong" className="d-block py-2 text-decoration-none text-dark">
                                         Mẫu Truyền Thống
                                     </a>
-                                    <a href="/san-pham/hoa-dam-tang/hien-dai" className="d-block py-2 text-decoration-none text-dark">
+                                    <a href="/danh-muc/hoa-dam-tang/mau-hien-dai" className="d-block py-2 text-decoration-none text-dark">
                                         Mẫu Hiện Đại
                                     </a>
-                                    <a href="/san-pham/hoa-dam-tang/cong-giao" className="d-block py-2 text-decoration-none text-dark">
+                                    <a href="/danh-muc/hoa-dam-tang/hoa-dam-tang-cong-giao" className="d-block py-2 text-decoration-none text-dark">
                                         Hoa Đám Tang Công Giáo
                                     </a>
                                 </div>
@@ -483,20 +476,20 @@ const Header = ({ isShowCategoryMenu = true }) => {
                         </div>
 
                         {/* Hoa Giỏ */}
-                        <a href="/san-pham/hoa-gio" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <a href="/danh-muc/hoa-gio" className="list-group-item list-group-item-action d-flex align-items-center py-3">
                             <i className="bi bi-cart me-3"></i>
                             <span className="text-uppercase fw-bold">HOA GIỎ</span>
                         </a>
 
                         {/* Hoa Bó */}
-                        <a href="/san-pham/hoa-bo" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                        <a href="/danh-muc/hoa-bo" className="list-group-item list-group-item-action d-flex align-items-center py-3">
                             <i className="bi bi-cart me-3"></i>
                             <span className="text-uppercase fw-bold">HOA BÓ</span>
                         </a>
                     </div>
 
                     {/* Navigation Links */}
-                    <div className="border-top mt-3">
+                    {/* <div className="border-top mt-3">
                         <div className="p-3">
                             <h6 className="text-muted text-uppercase fw-bold mb-3">Menu</h6>
                             <div className="d-grid gap-2">
@@ -526,20 +519,20 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {/* Offcanvas Cart */}
-            <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart">
+            <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
                 <div className="offcanvas-header justify-content-center">
-                    <h5 className="offcanvas-title text-primary">GIỎ HÀNG</h5>
+                    <h5 className="offcanvas-title text-dark">GIỎ HÀNG</h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div className="offcanvas-body">
                     <div className="order-md-last">
                         <h4 className="d-flex justify-content-between align-items-center mb-3">
-                            <span className="text-primary">Giỏ hàng của bạn</span>
-                            <span className="badge bg-primary rounded-pill">3</span>
+                            <span className="text-gray">Giỏ hàng của bạn</span>
+                            <span className="badge rounded-pill" style={{ backgroundColor: '#ff5622' }}>3</span>
                         </h4>
                         <ul className="list-group mb-3">
                             <li className="list-group-item d-flex justify-content-between lh-sm">
@@ -569,7 +562,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </li>
                         </ul>
 
-                        <button className="w-100 btn btn-primary btn-lg" type="submit">Tiến hành thanh toán</button>
+                        <button className="w-100 btn-lg" type="submit" style={{ backgroundColor: '#ff5622' }}>Tiến hành thanh toán</button>
                     </div>
                 </div>
             </div>

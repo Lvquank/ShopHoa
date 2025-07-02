@@ -25,17 +25,18 @@ const Products = () => {
   return (
     <div style={{ overflowX: 'hidden' }}>
       <ProductSearchBar />
-      <div className="wrapper row">
-        <div className="col-lg-3">
-          <ProductSidebar />
-        </div>
-        <div className="col-lg-9">
-          <div className="container">
+      <div className="container-fluid wrapper-product">
+        <div className="row">
+          <div className="col-lg-3 col-md-12">
+            <ProductSidebar />
+          </div>
+          <div className="col-lg-9 col-md-12">
             <div className="row g-4">
+
               {products.map((product, index) => (
                 <div
                   key={product.id || index}
-                  className="col-lg-3 col-md-4 col-sm-6"
+                  className="col-lg-3 col-md-6 col-6"
                   style={{ cursor: 'pointer' }}
                   onClick={() => handleProductClick(product.id)}
                 >

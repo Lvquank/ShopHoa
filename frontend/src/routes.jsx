@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import NewsDetail from './pages/NewsDetail';
 import ProductDetail from './pages/ProductDetail';
 import Category from './pages/Category';
+import NewsDetail2 from './pages/NewsDetail2';
 function AppRoutes() {
   return (
     <Routes>
@@ -75,6 +76,14 @@ function AppRoutes() {
         element={
           <Layout isShowCategoryMenu={false}>
             <NewsDetail />
+          </Layout>
+        }
+      />
+      <Route
+        path="/tin-tuc/chi-tiet2/"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <NewsDetail2 />
           </Layout>
         }
       />

@@ -16,14 +16,14 @@ const SidebarFilter = () => {
     };
 
     return (
-        <div className="sidebar bg-light p-3">
+        <div className="sidebar p-3">
 
             <div className="list-group list-group-flush">
                 {/* Các Sản Phẩm Bán Chạy */}
                 <div className="list-group-item border-0 bg-transparent px-0 py-2">
                     <Link className="text-decoration-none text-dark d-flex align-items-center sidebar-item px-2 py-1" to="/danh-muc/ban-chay-nhat">
-                        <span className="me-2" style={{ fontSize: '14px', color: '#6c757d' }}>♦</span>
-                        <span className="fw-bold">Các Sản Phẩm Bán Chạy</span>
+                        <i className="bi bi-fire me-2" style={{ fontSize: '14px', color: '#6c757d' }}></i>
+                        <span className="text-dark">Các Sản Phẩm Bán Chạy</span>
                     </Link>
                 </div>
 

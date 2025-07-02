@@ -54,7 +54,7 @@ function About() {
               <div className="products-intro-section mb-5">
                 <h3 className="section-title mb-4">Giới Thiệu đến Quý khách các sản phẩm của shop</h3>
                 <p className="mb-3">Chúng tôi chuyên cung cấp các sản phẩm hoa tươi :</p>
-                <ul className="products-list">
+                <ul className="activities-list">
                   <li className="mb-2">* Hoa Khai Trương</li>
                   <li className="mb-2">* Hoa Chúc mừng.</li>
                   <li className="mb-2">* Hoa Sinh nhật.</li>

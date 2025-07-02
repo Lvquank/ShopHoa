@@ -15,6 +15,10 @@ import categoryHoaKhaiTruong from "../assets/images/hoakhaitruong-218x341-1.webp
 import categoryHoaDamTang from "../assets/images/hoadamtang-218x341-1.webp"
 import categoryHoaGio from "../assets/images/hoa-gio.jpg"
 import categoryHoaBo from "../assets/images/hoa-bo.webp"
+import newsImage from "../assets/images/hoa-gio.webp"
+import newsImage2 from "../assets/images/Hoa-Dam-Tang-Long-Huong.webp"
+import openingFlowerImage from "../assets/images/banner-d2.webp"
+import openingFlowerImage2 from "../assets/images/banner-d4.webp"
 function Home() {
     const [topSellingProducts, setTopSellingProducts] = useState([])
     const [categoryProducts, setCategoryProducts] = useState([])
@@ -28,7 +32,7 @@ function Home() {
         fetch("http://localhost:8000/api/products/top")
             .then(res => res.json())
             .then(data => {
-                if (data.success) setTopSellingProducts(data.data)
+                if (data.success) setTopSellingProducts(data.data.slice(0, 4))
             })
     }, [])
 
@@ -74,12 +78,12 @@ function Home() {
 
     const OpeningFlower = [
         {
-            imageUrl: hoaKhaiTruong,
+            imageUrl: openingFlowerImage,
             title: "Hoa khai trương",
             productCount: 3,
         },
         {
-            imageUrl: hoaDamTang,
+            imageUrl: openingFlowerImage2,
             title: "Hoa đám tang",
             productCount: 14,
         },
@@ -120,31 +124,17 @@ function Home() {
     const newsData = [
         {
             id: "news01",
-            imageUrl: hoaKhaiTruong,
+            imageUrl: newsImage,
             title: "Đặt hoa 20/10 món quà ý nghĩa ngày phụ nữ Việt Nam.",
             date: "03/10/2022",
             excerpt: "Hoa 20/10 món quà thay cho lời cảm ơn và sự quan ...",
         },
         {
             id: "news02",
-            imageUrl: hoaDamTang,
+            imageUrl: newsImage2,
             title: "Đặt Hoa Đám Tang – Hoa Tang lễ Giao Tận Nơi",
             date: "28/09/2022",
             excerpt: "Đặt hoa đám tang - Hoa tang lễ giao tận nơi ...",
-        },
-        {
-            id: "news03",
-            imageUrl: hoaKhaiTruong,
-            title: "Hướng dẫn chọn hoa khai trương phù hợp",
-            date: "25/09/2022",
-            excerpt: "Cách chọn hoa khai trương đẹp và ý nghĩa ...",
-        },
-        {
-            id: "news04",
-            imageUrl: hoaDamTang,
-            title: "Ý nghĩa của các loại hoa trong đám cưới",
-            date: "20/09/2022",
-            excerpt: "Tìm hiểu ý nghĩa của từng loại hoa ...",
         },
     ]
     return (

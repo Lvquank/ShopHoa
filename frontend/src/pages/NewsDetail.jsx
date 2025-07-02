@@ -1,17 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RelatedNews from "../components/RelatedNews"
-import ReviewCard from '../components/ReviewCard';
+import CommentForm from '../components/CommentForm';
 import flowerImg from "../assets/images/hoa-bo-2.webp"
+import HoaBoHongDo from "../assets/images/hoa-bo-hong-do.webp"
+import Hoa_20_10 from "../assets/images/hoa-20-10.webp"
+import Hoa_Bo_1_1 from "../assets/images/hoa-bo-1-1.webp"
 import 'bootstrap-icons/font/bootstrap-icons.css';
 const NewsDetail = () => {
-    const icons = [
-        { icon: "bi-facebook", color: "#3b5998", label: "Facebook" },
-        { icon: "bi-twitter", color: "#55acee", label: "Twitter" },
-        { icon: "bi-envelope", color: "#dd4b39", label: "Email" },
-        { icon: "bi-pinterest", color: "#bd081c", label: "Pinterest" },
-        { icon: "bi-linkedin", color: "#0077b5", label: "LinkedIn" }
-    ];
     return (
         <div style={{ padding: '0 12rem', backgroundColor: '#ffffff' }}>
             <div className="py-5">
@@ -52,7 +48,7 @@ const NewsDetail = () => {
                                 chúc mừng ngày 20/10 thật đẹp, ý nghĩa. Tỏ dành tặng cho người phụ nữ mà bạn yêu mến. Đây là món quà tinh thần tuy
                                 mang giá trị rất nhỏ nhưng vẫn thể hiện được tình yêu, sự biết ơn và sự quan trọng.
                             </p>
-                            <div className="text-center mt-4">
+                            <div className="text-center mt-4 mb-4">
                                 <img
                                     src={flowerImg}
                                     alt="Bó hoa ngày 20/10"
@@ -93,9 +89,9 @@ const NewsDetail = () => {
                                 Một giỏ hoa ngày 20/10 Hoa hồng phấn như tình yêu mẹ dành cho con, luôn dịu dàng, ngọt ngào và ấm áp. Hương thơm nhẹ nhàng như sự bao dung,
                                 che chở cho người mẹ hạnh phúc.
                             </p>
-                            <div className="text-center mt-4">
+                            <div className="text-center mt-4 mb-4">
                                 <img
-                                    src={flowerImg}
+                                    src={HoaBoHongDo}
                                     alt="Bó hoa ngày 20/10"
                                     className="img-fluid rounded"
                                     style={{ maxWidth: "600px" }}
@@ -111,9 +107,9 @@ const NewsDetail = () => {
                                 Một vẻ đẹp cao sang, quý phái, thanh nhã. Màu trắng tinh khiết của loài hoa này thể hiện lòng biết ơn,
                                 tình cảm chân thành của người tặng với người phụ nữ yêu thương.
                             </p>
-                            <div className="text-center mt-4">
+                            <div className="text-center mt-4 mb-4">
                                 <img
-                                    src={flowerImg}
+                                    src={Hoa_20_10}
                                     alt="Bó hoa ngày 20/10"
                                     className="img-fluid rounded"
                                     style={{ maxWidth: "600px" }}
@@ -136,9 +132,9 @@ const NewsDetail = () => {
                             <p>
                                 Một bó hoa tặng ngày 20/10 từ hoa Mẫu đơn là sự lựa chọn hoàn chỉnh cho món quà sang trọng, đẳng cấp.
                             </p>
-                            <div className="text-center mt-4">
+                            <div className="text-center mt-4 mb-4">
                                 <img
-                                    src={flowerImg}
+                                    src={Hoa_Bo_1_1}
                                     alt="Bó hoa ngày 20/10"
                                     className="img-fluid rounded"
                                     style={{ maxWidth: "600px" }}
@@ -171,44 +167,32 @@ const NewsDetail = () => {
                                 Thanh Hóa, Thừa Thiên Huế, Tiền Giang, Trà Vinh, Tuyên Quang, Vĩnh Long, Vĩnh Phúc. Yên Bái, Phú Yên, Cần Thơ, Đà Nẵng, Hải Phòng,
                                 Hà Nội, TP HCM.
                             </p>
-                            <div className="container py-4 text-center">
-                                {icons.map((item, index) => (
-                                    <a
-                                        key={index}
-                                        href="#"
-                                        className="d-inline-block text-decoration-none mx-2"
-                                        title={`Chia sẻ qua ${item.label}`}
-                                        style={{
-                                            width: "40px",
-                                            height: "40px",
-                                            lineHeight: "40px",
-                                            borderRadius: "50%",
-                                            border: "2px solid #ccc",
-                                            color: item.color,
-                                            transition: "all 0.3s ease"
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.backgroundColor = item.color;
-                                            e.target.style.color = "white";
-                                            e.target.style.borderColor = item.color;
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.backgroundColor = "white";
-                                            e.target.style.color = item.color;
-                                            e.target.style.borderColor = "#ccc";
-                                        }}
-                                    >
-                                        <i className={`bi ${item.icon}`}></i>
+                            <div className="d-flex flex-wrap align-items-center gap-3 pt-2">
+                                <div className="d-flex gap-2 ms-2">
+                                    <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon" style={{ width: 36, height: 36 }}>
+                                        <i className="bi bi-facebook fs-5" style={{ color: '#b0b0b0' }}></i>
                                     </a>
-                                ))}
+                                    <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon" style={{ width: 36, height: 36 }}>
+                                        <i className="bi bi-twitter fs-5" style={{ color: '#b0b0b0' }}></i>
+                                    </a>
+                                    <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon" style={{ width: 36, height: 36 }}>
+                                        <i className="bi bi-envelope fs-5" style={{ color: '#b0b0b0' }}></i>
+                                    </a>
+                                    <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon" style={{ width: 36, height: 36 }}>
+                                        <i className="bi bi-pinterest fs-5" style={{ color: '#b0b0b0' }}></i>
+                                    </a>
+                                    <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon" style={{ width: 36, height: 36 }}>
+                                        <i className="bi bi-linkedin fs-5" style={{ color: '#b0b0b0' }}></i>
+                                    </a>
+                                </div>
                             </div>
                             <hr />
                             <p className="text-muted">
-                                This entry was posted in <strong>Tin tức</strong> and tagged <strong>hoa 20/10</strong>.
+                                This entry was posted in Tin tức and tagged hoa 20/10.
                             </p>
                             <hr />
                         </div>
-                        <ReviewCard />
+                        <CommentForm />
                     </div>
                     <div className="col-lg-4 col-md-12">
                         <RelatedNews />

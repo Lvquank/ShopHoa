@@ -12,7 +12,7 @@ function About() {
         <div className="about-page">
             <div className="container py-5">
                 <div className="row">
-                    <div className="col-lg-8 col-md-12 border-end border-gray">
+                    <div className="col-lg-9 col-md-12 border-end border-gray">
                         <div className="row g-4">
                             {/* Article 1 */}
                             <div className="col-12">
@@ -48,7 +48,7 @@ function About() {
 
                             {/* Article 2 */}
                             <div className="col-12">
-                                <Link to="/tin-tuc/chi-tiet/" className="text-decoration-none text-dark">
+                                <Link to="/tin-tuc/chi-tiet2/" className="text-decoration-none text-dark">
                                     <div className="card border-0 shadow-sm h-100">
                                         <div className="row g-0">
                                             <div className="col-md-4">
@@ -79,7 +79,7 @@ function About() {
                             </div>
                         </div>
                     </div>
-                    <div className="col-lg-4 col-md-12">
+                    <div className="col-lg-3 col-md-12">
                         <RelatedNews />
                     </div>
 

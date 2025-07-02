@@ -58,11 +58,11 @@ const ProductDetail = () => {
     }
     const primaryDetail = product?.details?.[0];
     return (
-        <div style={{ padding: "0 12rem", backgroundColor: "#ffffff" }}>
+        <div className="wrapper">
             <div className="container py-5">
                 <div className="row">
 
-                    <div className="col-lg-8 col-md-12 border-end border-gray">
+                    <div className="col-lg-9 col-md-12 border-end border-gray">
                         <div className="row g-4 align-items-start">
                             {/* Product Image */}
                             <div className="col-lg-5 d-flex justify-content-center mb-4 mb-lg-0 align-items-stretch">
@@ -150,21 +150,25 @@ const ProductDetail = () => {
                         </ul>
                         {/* Tab Content */}
                         {activeTab === 'description' && (
-                            <div className="max-w-6xl mx-auto px-4 py-6">
+                            <div className="mx-auto px-4 py-6">
                                 {/* Hiển thị details nếu có */}
                                 {product?.details && product.details.length > 0 && product.details.map((detail, idx) => (
                                     <div key={detail.id || idx} className="mb-4">
                                         {detail.title && (
                                             <h2 className="fw-bold mb-2" style={{ fontSize: '1.5rem' }}>{detail.title}</h2>
                                         )}
-                                        {detail.description && (
+                                        {detail.intro && (
                                             <div className="mb-2 text-secondary" style={{ fontSize: '1rem' }}
-                                                dangerouslySetInnerHTML={{ __html: detail.description }} />
+                                                dangerouslySetInnerHTML={{ __html: detail.intro }} />
                                         )}
                                         {detail.image && (
                                             <div className="d-flex justify-content-center">
-                                                <img src={detail.image} alt={detail.title || ''} className="img-fluid mb-2 border" style={{ maxWidth: 480, borderRadius: 8 }} />
+                                                <img src={detail.image} alt={detail.title || ''} className="img-fluid mb-2 border" style={{ borderRadius: 8 }} />
                                             </div>
+                                        )}
+                                        {detail.description && (
+                                            <div className="mb-2 text-secondary" style={{ fontSize: '1rem' }}
+                                                dangerouslySetInnerHTML={{ __html: detail.description }} />
                                         )}
                                     </div>
                                 ))}
@@ -192,7 +196,7 @@ const ProductDetail = () => {
                             </div>
                         )}
                     </div>
-                    <div className="col-lg-4 col-md-12">
+                    <div className="col-lg-3 col-md-12">
                         <RelatedNews />
                     </div>
                 </div>
