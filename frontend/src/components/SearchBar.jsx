@@ -30,6 +30,7 @@ function SearchBar() {
             <div className="dropdown" ref={dropdownRef}>
                 <button
                     className="btn dropdown-toggle"
+                    style={{ fontWeight: '400' }}
                     type="button"
                     aria-expanded={isOpen}
                     onClick={toggleDropdown}

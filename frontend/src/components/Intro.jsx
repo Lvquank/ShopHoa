@@ -47,7 +47,7 @@ function Intro() {
           </div>
 
           <div className="d-none d-md-block">
-            <div className="row g-2">
+            <div className="row g-2 " style={{ '--bs-gutter-x': '1rem' }}>
               <div className="col-6">
                 <div className="overflow-hidden intro-img-container">
                   <img
