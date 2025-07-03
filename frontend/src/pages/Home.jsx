@@ -78,12 +78,12 @@ function Home() {
 
     const OpeningFlower = [
         {
-            imageUrl: openingFlowerImage,
+            imageUrl: hoaKhaiTruong,
             title: "Hoa khai trương",
             productCount: 3,
         },
         {
-            imageUrl: openingFlowerImage2,
+            imageUrl: hoaDamTang,
             title: "Hoa đám tang",
             productCount: 14,
         },

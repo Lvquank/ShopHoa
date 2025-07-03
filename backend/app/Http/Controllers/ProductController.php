@@ -124,7 +124,8 @@ class ProductController extends Controller
      */
     public function getByCategory($category)
     {
-        $products = Product::with('details')->where('category', $category)->get();
+        // $products = Product::with('details')->where('category', $category)->get();
+        $products = Product::where('category', $category)->get();
         return response()->json([
             'success' => true,
             'message' => 'Product list by category',
@@ -159,7 +160,7 @@ class ProductController extends Controller
      */
     public function getByCategoryAndStyle($category, $style = null)
     {
-        $query = Product::with('details')->where('category', $category);
+        $query = Product::where('category', $category);
         if ($style) {
             $query->where('style', $style);
         }
