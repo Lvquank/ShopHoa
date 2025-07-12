@@ -18,7 +18,7 @@ const ProductDetail = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/products/${productId}`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${productId}`);
                 const data = await response.json();
 
                 if (data.success) {
@@ -67,7 +67,11 @@ const ProductDetail = () => {
                             {/* Product Image */}
                             <div className="col-lg-5 d-flex justify-content-center mb-4 mb-lg-0 align-items-stretch">
                                 <img
-                                    src={product?.image || '/api/placeholder/400/600'}
+                                    src={
+                                        product?.image
+                                            ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                                            : "/api/placeholder/400/600"
+                                    }
                                     alt={product?.title}
                                     className="img-fluid shadow-lg border h-100"
                                     style={{ objectFit: 'cover', background: '#f8f8f8', borderRadius: 0, minHeight: 480 }}
@@ -163,7 +167,17 @@ const ProductDetail = () => {
                                         )}
                                         {detail.image && (
                                             <div className="d-flex justify-content-center">
-                                                <img src={detail.image} alt={detail.title || ''} className="img-fluid mb-2 border" style={{ borderRadius: 8 }} />
+                                                <img
+                                                    src={
+                                                        detail.image
+                                                            ? detail.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                                                            : "/api/placeholder/400/600"
+                                                    }
+                                                    alt={detail.title || ""}
+                                                    className="img-fluid mb-2 border"
+                                                    style={{ borderRadius: 8 }}
+                                                />
+
                                             </div>
                                         )}
                                         {detail.description && (

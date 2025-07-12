@@ -17,9 +17,9 @@ const Category = () => {
         if (!category) return;
         let apiUrl = '';
         if (category === 'ban-chay-nhat') {
-            apiUrl = 'http://127.0.0.1:8000/api/products/top';
+            apiUrl = `${import.meta.env.VITE_API_URL}/api/products/top`;
         } else {
-            apiUrl = `http://localhost:8000/api/products/category/${category}`;
+            apiUrl = `${import.meta.env.VITE_API_URL}/api/products/category/${category}`;
             if (style) {
                 apiUrl += `/${style}`;
             }
@@ -78,7 +78,14 @@ const Category = () => {
                                 >
                                     <FlowerCard
                                         key={product.id || index}
-                                        imageUrl={product.image || hoaKhaiTruong}
+                                        imageUrl={
+                                            product.image
+                                                ? product.image.replace(
+                                                    "http://localhost:8000",
+                                                    import.meta.env.VITE_API_URL
+                                                )
+                                                : hoaKhaiTruong
+                                        }
                                         title={product.title}
                                         buttonText="Đặt mua"
                                         buttonType="order"

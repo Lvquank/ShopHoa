@@ -28,8 +28,9 @@ function Home() {
     const [productsBo, setProductsBo] = useState([])
 
     useEffect(() => {
+        console.log("✅ API URL =", import.meta.env.VITE_API_URL);
         // Lấy top sản phẩm bán chạy (is_on_top = true)
-        fetch("http://localhost:8000/api/products/top")
+        fetch(`${import.meta.env.VITE_API_URL}/api/products/top`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) setTopSellingProducts(data.data.slice(0, 4))
@@ -38,7 +39,7 @@ function Home() {
 
     // Hàm lấy sản phẩm theo category truyền vào
     const fetchCategoryProducts = (category, setProducts) => {
-        fetch(`http://localhost:8000/api/products/category/${category}`)
+        fetch(`${import.meta.env.VITE_API_URL}/api/products/category/${category}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -180,7 +181,12 @@ function Home() {
                         <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3">
                             <FlowerCard
                                 key={index}
-                                imageUrl={product.image}
+                                imageUrl={
+                                    product.image
+                                        ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                                        : hoaKhaiTruong
+                                }
+
                                 title={product.title}
                                 buttonText="Đặt mua"
                                 buttonType="order"

@@ -12,7 +12,7 @@ const Products = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/products')
+    fetch(`${import.meta.env.VITE_API_URL}/api/products`)
       .then(res => res.json())
       .then(data => setProducts(data.data || []))
       .catch(err => console.error('Error fetching products:', err));
@@ -42,7 +42,12 @@ const Products = () => {
                 >
                   <FlowerCard
                     key={product.id || index}
-                    imageUrl={product.image || hoaKhaiTruong}
+                    imageUrl={
+                      product.image
+                        ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                        : hoaKhaiTruong
+                    }
+
                     title={product.title}
                     buttonText="Đặt mua"
                     buttonType="order"

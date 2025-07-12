@@ -34,7 +34,11 @@ const RelatedProducts = ({ products = [], title = "CÓ THỂ BẠN QUAN TÂM :" 
             {currentProducts.map((product, index) => (
               <div key={currentIndex + index} className="col-12 col-sm-6 col-md-4 col-lg-3">
                 <FlowerCard
-                  imageUrl={product.imageUrl}
+                  imageUrl={
+                    product.imageUrl
+                      ? product.imageUrl.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                      : hoaKhaiTruong
+                  }
                   title={product.title}
                   buttonText={product.buttonText || "Xem chi tiết"}
                   buttonType={product.buttonType || "read"}
