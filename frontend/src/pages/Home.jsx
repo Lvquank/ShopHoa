@@ -28,7 +28,6 @@ function Home() {
     const [productsBo, setProductsBo] = useState([])
 
     useEffect(() => {
-        console.log("✅ API URL =", import.meta.env.VITE_API_URL);
         // Lấy top sản phẩm bán chạy (is_on_top = true)
         fetch(`${import.meta.env.VITE_API_URL}/api/products/top`)
             .then(res => res.json())
@@ -82,56 +81,53 @@ function Home() {
             imageUrl: hoaKhaiTruong,
             title: "Hoa khai trương",
             productCount: 3,
+            link: "/danh-muc/hoa-khai-truong"
         },
         {
             imageUrl: hoaDamTang,
             title: "Hoa đám tang",
             productCount: 14,
+            link: "/danh-muc/hoa-dam-tang"
         },
     ]
+    const topProducts = [
+        {
+            imageUrl: openingFlowerImage,
+            title: "Hoa khai trương",
+        },
+        {
+            imageUrl: openingFlowerImage2,
+            title: "Hoa đám tang",
+        },
+    ]
+    const [relatedProducts, setRelatedProducts] = useState([])
 
-    const relatedProducts = [
-        {
-            id: "hg01",
-            imageUrl: hoaDamTang,
-            title: "Đặt Hoa Giỏ Dĩ An 0966183183",
-        },
-        {
-            id: "hg02",
-            imageUrl: hoaKhaiTruong,
-            title: "Đặt Hoa Giỏ Phú Nhuận 0966183183",
-        },
-        {
-            id: "hg03",
-            imageUrl: hoaDamTang,
-            title: "Đặt Hoa Giỏ Tân Phú 0966183183",
-        },
-        {
-            id: "hg04",
-            imageUrl: hoaKhaiTruong,
-            title: "Đặt hoa bó babi - 0966183183",
-        },
-        {
-            id: "hg05",
-            imageUrl: hoaDamTang,
-            title: "Đặt Hoa Giỏ Bình Dương 0966183183",
-        },
-        {
-            id: "hg06",
-            imageUrl: hoaKhaiTruong,
-            title: "Đặt Hoa Giỏ Thủ Đức 0966183183",
-        },
-    ]
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_URL}/api/products/top`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const formattedProducts = data.data.map(product => ({
+                        id: product.id,
+                        imageUrl: product.image
+                            ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                            : hoaKhaiTruong,
+                        title: product.title
+                    }))
+                    setRelatedProducts(formattedProducts)
+                }
+            })
+    }, [])
     const newsData = [
         {
-            id: "news01",
+            id: "1",
             imageUrl: newsImage,
             title: "Đặt hoa 20/10 món quà ý nghĩa ngày phụ nữ Việt Nam.",
             date: "03/10/2022",
             excerpt: "Hoa 20/10 món quà thay cho lời cảm ơn và sự quan ...",
         },
         {
-            id: "news02",
+            id: "2",
             imageUrl: newsImage2,
             title: "Đặt Hoa Đám Tang – Hoa Tang lễ Giao Tận Nơi",
             date: "28/09/2022",
@@ -170,6 +166,7 @@ function Home() {
                                     imageUrl={item.imageUrl}
                                     title={item.title}
                                     productCount={item.productCount}
+                                    link={item.link}
                                 />
                             ))}
                         </div>
@@ -186,18 +183,18 @@ function Home() {
                                         ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
                                         : hoaKhaiTruong
                                 }
-
                                 title={product.title}
                                 buttonText="Đặt mua"
                                 buttonType="order"
                                 productId={product.id}
                                 category={product.category}
+                                link={`/cua-hang/${product.id}`}
                             />
                         </div>
                     ))}
                 </div>
                 <div className="row justify-content-center">
-                    {OpeningFlower.map((item, index) => (
+                    {topProducts.map((item, index) => (
                         <OpeningFlowersCard
                             key={index}
                             imageUrl={item.imageUrl}

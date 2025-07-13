@@ -8,23 +8,30 @@ const FlowerCard = ({
   buttonType = "read", // "read" hoặc "order"
   productId,
   category = "san-pham",
+  link,
 }) => {
   const buttonClass = buttonType === "order" ? "btn-order" : "btn-read"
-  const linkTo = productId ? `/${category}/${productId}` : `/${category}`
+  const linkTo = link || (productId ? `/${category}/${productId}` : `/${category}`)
 
-  return (
+  const cardContent = (
     <div className="flower-card border-0 shadow-sm h-100">
       <div className="card-img-wrapper overflow-hidden">
         <img src={imageUrl || "/placeholder.svg"} alt={title} className="card-img-top flower-img" />
       </div>
       <div className="card-body d-flex flex-column p-3">
         <h6 className="card-title flower-title text-dark flex-grow-1">{title}</h6>
-        <Link to={linkTo} className={`${buttonClass} text-white text-decoration-none`}>
+        <span className={`${buttonClass} text-white text-decoration-none text-center`} style={{ cursor: 'pointer' }}>
           {buttonText}
-        </Link>
+        </span>
       </div>
     </div>
   )
+
+  return linkTo ? (
+    <Link to={linkTo} style={{ textDecoration: 'none' }}>
+      {cardContent}
+    </Link>
+  ) : cardContent
 }
 
 export default FlowerCard

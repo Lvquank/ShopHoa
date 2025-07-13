@@ -72,7 +72,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/tin-tuc/chi-tiet/"
+        path="/tin-tuc/1"
         element={
           <Layout isShowCategoryMenu={false}>
             <NewsDetail />
@@ -80,7 +80,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/tin-tuc/chi-tiet2/"
+        path="/tin-tuc/2"
         element={
           <Layout isShowCategoryMenu={false}>
             <NewsDetail2 />

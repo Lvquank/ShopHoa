@@ -45,6 +45,7 @@ const CategoryGrid = ({ categoryCard = {}, products = [] }) => {
                 buttonType={product.buttonType}
                 productId={product.id}
                 category={product.category}
+                link={`/cua-hang/${product.id}`}
               />
             </div>
           ))}

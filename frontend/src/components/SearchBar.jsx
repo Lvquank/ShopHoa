@@ -5,6 +5,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function SearchBar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState('Danh mục sản phẩm');
     const dropdownRef = useRef(null);
 
     // Đóng dropdown khi click bên ngoài
@@ -35,14 +36,16 @@ function SearchBar() {
                     aria-expanded={isOpen}
                     onClick={toggleDropdown}
                 >
-                    Danh mục sản phẩm
+                    {selectedCategory}
                 </button>
                 <ul className={`dropdown-menu ${isOpen ? 'show' : ''}`}>
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/ban-chay"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Danh mục sản phẩm');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Danh mục sản phẩm
@@ -52,8 +55,10 @@ function SearchBar() {
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/ban-chay"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Bán chạy nhất');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Bán chạy nhất
@@ -63,8 +68,10 @@ function SearchBar() {
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/hoa-bo"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Hoa Bó');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Hoa Bó
@@ -74,8 +81,10 @@ function SearchBar() {
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/hoa-dam-tang"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Hoa Đám Tang');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Hoa Đám Tang
@@ -85,8 +94,10 @@ function SearchBar() {
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/hoa-gio"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Hoa Giỏ');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Hoa Giỏ
@@ -96,8 +107,10 @@ function SearchBar() {
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/hoa-khai-truong"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Hoa Khai Trương');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Hoa Khai Trương
@@ -107,8 +120,10 @@ function SearchBar() {
                     <li>
                         <Link
                             className="dropdown-item d-flex justify-content-between align-items-center"
-                            to="/san-pham/khuyen-mai"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setSelectedCategory('Khuyến mãi');
+                                setIsOpen(false);
+                            }}
                         >
                             <div>
                                 Khuyến mãi

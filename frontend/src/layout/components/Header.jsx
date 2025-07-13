@@ -67,13 +67,13 @@ const Header = ({ isShowCategoryMenu = true }) => {
     const prevScrolledRef = React.useRef(isScrolled);
     const prevShowCategoryMenuRef = React.useRef(showCategoryMenu);
 
-    // Scroll handler tối ưu: chỉ setState khi thực sự thay đổi, thêm dead zone ±2px
+    // Scroll handler tối ưu với logic mới
     const handleScroll = useCallback(
         throttle(() => {
             requestAnimationFrame(() => {
                 const currentScrollY = window.scrollY;
                 const scrollThreshold = 256;
-                const deadZone = 50; // Tăng dead zone
+                const deadZone = 50;
 
                 // Bỏ qua nếu scrollY nằm trong vùng nhạy cảm
                 if (Math.abs(currentScrollY - scrollThreshold) <= deadZone) {
@@ -92,23 +92,29 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     prevScrolledRef.current = newIsScrolled;
                 }
 
-                // Luôn cho phép hover hiện CategoryMenu nếu isShowCategoryMenu=false
+                // Logic mới cho CategoryMenu
                 let newShowCategoryMenu = prevShowCategoryMenuRef.current;
+
                 if (!isShowCategoryMenu) {
+                    // Nếu prop isShowCategoryMenu = false, luôn cho phép hover
                     newShowCategoryMenu = isHovering;
                 } else {
+                    // Nếu prop isShowCategoryMenu = true
                     if (newIsScrolled) {
+                        // Khi scroll > 256px: cho phép hover ẩn/hiện
                         newShowCategoryMenu = isHovering;
                     } else {
+                        // Khi scroll < 256px: KHÔNG áp dụng hover, luôn hiện
                         newShowCategoryMenu = true;
                     }
                 }
+
                 if (prevShowCategoryMenuRef.current !== newShowCategoryMenu) {
                     setShowCategoryMenu(newShowCategoryMenu);
                     prevShowCategoryMenuRef.current = newShowCategoryMenu;
                 }
             });
-        }, 50), // Tăng thời gian throttle
+        }, 50),
         [isHovering, isShowCategoryMenu]
     );
 
@@ -138,21 +144,27 @@ const Header = ({ isShowCategoryMenu = true }) => {
         setExpandedCategory(prev => prev === category ? null : category);
     }, []);
 
-    // Luôn cho phép hover hiện danh mục, không phụ thuộc scroll
+    // Hover handlers với logic mới
     const handleCategoryMouseEnter = useCallback(
         debounce(() => {
             setIsHovering(true);
-            setShowCategoryMenu(true);
+            // Chỉ set showCategoryMenu khi scroll > 256px hoặc isShowCategoryMenu = false
+            if (isScrolled || !isShowCategoryMenu) {
+                setShowCategoryMenu(true);
+            }
         }, 50),
-        []
+        [isScrolled, isShowCategoryMenu]
     );
 
     const handleCategoryMouseLeave = useCallback(
         debounce(() => {
             setIsHovering(false);
-            setShowCategoryMenu(false);
+            // Chỉ ẩn CategoryMenu khi scroll > 256px hoặc isShowCategoryMenu = false
+            if (isScrolled || !isShowCategoryMenu) {
+                setShowCategoryMenu(false);
+            }
         }, 100),
-        []
+        [isScrolled, isShowCategoryMenu]
     );
 
     // Memoize header class để tránh re-calculation
@@ -168,7 +180,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
     return (
         <>
             <header className={headerClass}>
-                <div className="text-white py-2 d-none d-md-block">
+                <div className="text-white py-2 d-none d-xl-block">
                     <div className="container">
                         <div className="row">
                             <div className="col-8">
@@ -196,7 +208,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
 
                 <div className="container">
                     {/* Mobile Header */}
-                    <div className="d-flex d-md-none align-items-center justify-content-between w-100">
+                    <div className="d-flex d-xl-none align-items-center justify-content-between w-100">
                         <button
                             className="btn text-white p-0"
                             type="button"
@@ -236,17 +248,17 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
 
                     {/* Desktop Header */}
-                    <div className="row align-items-center d-none d-md-flex">
-                        <div className="col-lg-3 col-md-3">
+                    <div className="row align-items-center d-none d-xl-flex">
+                        <div className="col-xl-3">
                             <Link to="/" className="d-block">
                                 <img src={logoImg} alt="Logo" className="img-fluid" style={{ maxHeight: '5.5rem' }} />
                             </Link>
                         </div>
-                        <div className="col-lg-9 col-md-6">
+                        <div className="col-xl-9">
                             <div className="d-flex align-items-center justify-content-start">
                                 <SearchBar />
                                 <div className="d-flex align-items-center justify-content-start text-white">
-                                    <div className="d-none d-lg-flex align-items-center px-3 py-2">
+                                    <div className="d-none d-xl-flex align-items-center px-3 py-2">
                                         <i className="bi bi-telephone-fill me-2"></i>
                                         <div className="small">
                                             <div className="text-nowrap">Gọi đặt hàng</div>
@@ -259,7 +271,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </div>
 
-                <nav className="navbar navbar-expand-lg d-none d-lg-block">
+                <nav className="navbar navbar-expand-xl d-none d-xl-block">
                     <div className="container d-flex align-items-center">
                         <div className="d-flex align-items-center">
                             <button className="navbar-toggler border-0 text-white p-0" type="button" onClick={toggleMobileNav}>
@@ -272,7 +284,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 onMouseLeave={handleCategoryMouseLeave}
                             >
                                 <button
-                                    className="btn-category d-lg-inline-flex align-items-center text-white"
+                                    className="btn-category d-xl-inline-flex align-items-center text-white"
                                     type="button">
                                     <i className="bi bi-list me-2"></i>
                                     Danh mục sản phẩm
@@ -487,39 +499,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             <span className="text-uppercase fw-bold">HOA BÓ</span>
                         </a>
                     </div>
-
-                    {/* Navigation Links */}
-                    {/* <div className="border-top mt-3">
-                        <div className="p-3">
-                            <h6 className="text-muted text-uppercase fw-bold mb-3">Menu</h6>
-                            <div className="d-grid gap-2">
-                                <a href="/" className="btn btn-outline-success text-start">
-                                    <i className="bi bi-house me-2"></i>
-                                    Trang chủ
-                                </a>
-                                <a href="/gioi-thieu" className="btn btn-outline-success text-start">
-                                    <i className="bi bi-info-circle me-2"></i>
-                                    Giới thiệu
-                                </a>
-                                <a href="/cua-hang" className="btn btn-outline-success text-start">
-                                    <i className="bi bi-shop me-2"></i>
-                                    Sản phẩm
-                                </a>
-                                <a href="/he-thong-cua-hang" className="btn btn-outline-success text-start">
-                                    <i className="bi bi-geo-alt me-2"></i>
-                                    Hệ thống cửa hàng
-                                </a>
-                                <a href="/tin-tuc" className="btn btn-outline-success text-start">
-                                    <i className="bi bi-newspaper me-2"></i>
-                                    Tin tức
-                                </a>
-                                <a href="/lien-he" className="btn btn-outline-success text-start">
-                                    <i className="bi bi-telephone me-2"></i>
-                                    Liên hệ
-                                </a>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
             {/* Offcanvas Cart */}
