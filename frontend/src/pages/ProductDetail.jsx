@@ -6,14 +6,19 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RelatedNews from "../components/RelatedNews"
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ReviewCard from "../components/ReviewCard";
+import FlowerCard from "../components/FlowerCard";
+import hoaKhaiTruong from "../assets/images/hoa-khai-truong.webp";
+
 const ProductDetail = () => {
     const { productId } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('description');
+    const [relatedProducts, setRelatedProducts] = useState([]); // Add this state
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -36,6 +41,29 @@ const ProductDetail = () => {
         fetchProduct();
     }, [productId]);
 
+    // Add useEffect to fetch related products
+    useEffect(() => {
+        const fetchRelatedProducts = async () => {
+            try {
+                // Only fetch related products once we have the current product's category
+                if (!product?.category) return;
+
+                // Fetch related products based on the same category, excluding current product
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/category/${encodeURIComponent(product.category)}?exclude=${productId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    setRelatedProducts(data.data || []);
+                }
+            } catch (err) {
+                console.error('Error fetching related products:', err);
+                setRelatedProducts([]);
+            }
+        };
+
+        fetchRelatedProducts();
+    }, [productId, product?.category]);
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -56,12 +84,13 @@ const ProductDetail = () => {
             </div>
         );
     }
+
     const primaryDetail = product?.details?.[0];
+
     return (
         <div className="wrapper">
             <div className="container py-5">
                 <div className="row">
-
                     <div className="col-lg-9 col-md-12 border-end border-gray">
                         <div className="row g-4 align-items-start">
                             {/* Product Image */}
@@ -177,7 +206,6 @@ const ProductDetail = () => {
                                                     className="img-fluid mb-2 border"
                                                     style={{ borderRadius: 8 }}
                                                 />
-
                                             </div>
                                         )}
                                         {detail.description && (
@@ -209,12 +237,56 @@ const ProductDetail = () => {
                                 <ReviewCard />
                             </div>
                         )}
+
+                        {/* Sản phẩm tương tự */}
+                        {relatedProducts.length > 0 && (
+                            <div className="mt-5">
+                                <h5 className="text-start mb-4 fw-semibold" style={{ color: '#ff5622' }}>Sản phẩm tương tự</h5>
+                                <div className="row g-2">
+                                    {relatedProducts.slice(0, 6).map((relatedProduct) => (
+                                        <div key={relatedProduct.id} className="col-lg-2 col-md-4 col-sm-6">
+                                            <div className="card border-0 h-100">
+                                                <div className="position-relative">
+                                                    <img
+                                                        src={
+                                                            relatedProduct.image
+                                                                ? relatedProduct.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                                                                : hoaKhaiTruong
+                                                        }
+                                                        alt={relatedProduct.title}
+                                                        className="card-img-top"
+                                                        style={{
+                                                            height: '150px',
+                                                            objectFit: 'cover',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onClick={() => navigate(`/cua-hang/${relatedProduct.id}`)}
+                                                    />
+                                                </div>
+                                                <div className="card-body p-2 text-center">
+                                                    <h6
+                                                        className="card-title text-dark mb-0 fw-normal"
+                                                        style={{
+                                                            fontSize: '0.9rem',
+                                                            cursor: 'pointer',
+                                                            lineHeight: '1.2'
+                                                        }}
+                                                        onClick={() => navigate(`/cua-hang/${relatedProduct.id}`)}
+                                                    >
+                                                        {relatedProduct.title}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="col-lg-3 col-md-12">
                         <RelatedNews />
                     </div>
                 </div>
-
             </div>
         </div>
     );

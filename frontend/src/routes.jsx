@@ -111,6 +111,14 @@ function AppRoutes() {
           </Layout>
         }
       />
+      <Route
+        path="/tim-kiem"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <Products />
+          </Layout>
+        }
+      />
     </Routes>
   );
 }
