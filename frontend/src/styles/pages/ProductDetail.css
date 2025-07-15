@@ -2,21 +2,32 @@
     transition: background 0.2s, border-color 0.2s;
 }
 
-.social-icon:hover {
-    background: #1da1f2 !important;
-    border-color: #1da1f2 !important;
+.social-icon:hover.facebook {
+    background: #3A589D !important;
+    border-color: #3A589D !important;
+}
+
+.social-icon:hover.twitter {
+    background: #3B6994 !important;
+    border-color: #3B6994 !important;
+}
+
+.social-icon:hover.email {
+    background: #000 !important;
+    border-color: #000 !important;
+}
+
+.social-icon:hover.pinterest {
+    background: #e60023 !important;
+    border-color: #e60023 !important;
+}
+
+.social-icon:hover.linkedin {
+    background: #3B6994 !important;
+    border-color: #3B6994 !important;
 }
 
 .social-icon:hover .bi {
-    color: #fff !important;
-}
-
-.twitter-active {
-    background: #1da1f2 !important;
-    border-color: #1da1f2 !important;
-}
-
-.twitter-active .bi {
     color: #fff !important;
 }
 
@@ -37,7 +48,6 @@
     content: '+';
     position: absolute;
     left: 0;
-    color: #ff6600;
     font-weight: bold;
     font-size: 1.1em;
 }

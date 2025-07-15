@@ -330,6 +330,20 @@ header {
   will-change: transform, opacity;
 }
 
+.auth-links a {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.auth-links a:hover {
+  color: #f0e5e5;
+}
+
+.auth-links .separator {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 @media (max-width: 1200px) {
   header {
     padding: 0 2rem;

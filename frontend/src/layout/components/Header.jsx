@@ -202,6 +202,13 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                     </div>
                                 </div>
                             </div>
+                            <div className="col-4 p-0">
+                                <div className="d-flex justify-content-end auth-links">
+                                    <Link to="/register" className="text-decoration-none" style={{ marginRight: '8px' }}>Đăng ký</Link>
+                                    <span className="separator">|</span>
+                                    <Link to="/login" className="text-decoration-none" style={{ marginLeft: '8px' }}>Đăng nhập</Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

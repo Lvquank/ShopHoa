@@ -12,6 +12,8 @@ import NewsDetail from './pages/NewsDetail';
 import ProductDetail from './pages/ProductDetail';
 import Category from './pages/Category';
 import NewsDetail2 from './pages/NewsDetail2';
+import Login from './pages/Login';
+import Register from './pages/Register';
 function AppRoutes() {
   return (
     <Routes>
@@ -116,6 +118,22 @@ function AppRoutes() {
         element={
           <Layout isShowCategoryMenu={false}>
             <Products />
+          </Layout>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <Login />
+          </Layout>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <Register />
           </Layout>
         }
       />

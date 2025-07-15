@@ -31,11 +31,13 @@ function SearchBar() {
     const handleSearch = () => {
         if (!searchTerm && selectedCategory === 'Danh mục sản phẩm') return;
 
+        if (selectedCategory === 'Bán chạy nhất') {
+            navigate(`/tim-kiem?type=top${searchTerm ? `&keyword=${encodeURIComponent(searchTerm)}` : ''}`);
+            return;
+        }
+
         let category = 'all';
         switch (selectedCategory) {
-            case 'Bán chạy nhất':
-                category = 'ban-chay-nhat';
-                break;
             case 'Hoa Bó':
                 category = 'hoa-bo';
                 break;
