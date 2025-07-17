@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useUser } from '../../context/UserContext'
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import SearchBar from '../../components/SearchBar'
-import '../../styles/layout/Header.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { Tooltip } from 'bootstrap'
+import SearchBar from '../../components/SearchBar'
 import logoImg from '../../assets/images/logo.webp'
-import { Tooltip } from 'bootstrap';
+import '../../styles/layout/Header.css';
 
 const Header = ({ isShowCategoryMenu = true }) => {
+    // Lấy `user` và `logout` từ context.
+    const { user, logout } = useUser();
     const [isMobileNavActive, setIsMobileNavActive] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [showCategoryMenu, setShowCategoryMenu] = useState(isShowCategoryMenu);
     const [isHovering, setIsHovering] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState(null);
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
-    // Throttle scroll handler để giảm số lần gọi
     const throttle = useCallback((func, delay) => {
         let timeoutId;
         let lastExecTime = 0;
@@ -34,7 +37,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
         }
     }, []);
 
-    // Debounce để tránh re-render liên tục
     const debounce = useCallback((func, delay) => {
         let timeoutId;
         return function (...args) {
@@ -43,31 +45,21 @@ const Header = ({ isShowCategoryMenu = true }) => {
         };
     }, []);
 
-    // Effect to update showCategoryMenu when prop changes
     useEffect(() => {
         setShowCategoryMenu(isShowCategoryMenu);
     }, [isShowCategoryMenu]);
 
-    // Initialize tooltips
     useEffect(() => {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltips = [];
-
-        tooltipTriggerList.forEach((el) => {
-            tooltips.push(new Tooltip(el));
-        });
-
-        // Cleanup tooltips on unmount
+        const tooltips = Array.from(tooltipTriggerList).map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl));
         return () => {
             tooltips.forEach(tooltip => tooltip.dispose());
         };
     }, []);
 
-    // Ref để lưu trạng thái trước đó, tránh setState liên tục
     const prevScrolledRef = React.useRef(isScrolled);
     const prevShowCategoryMenuRef = React.useRef(showCategoryMenu);
 
-    // Scroll handler tối ưu với logic mới
     const handleScroll = useCallback(
         throttle(() => {
             requestAnimationFrame(() => {
@@ -75,7 +67,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                 const scrollThreshold = 256;
                 const deadZone = 50;
 
-                // Bỏ qua nếu scrollY nằm trong vùng nhạy cảm
                 if (Math.abs(currentScrollY - scrollThreshold) <= deadZone) {
                     return;
                 }
@@ -92,19 +83,14 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     prevScrolledRef.current = newIsScrolled;
                 }
 
-                // Logic mới cho CategoryMenu
                 let newShowCategoryMenu = prevShowCategoryMenuRef.current;
 
                 if (!isShowCategoryMenu) {
-                    // Nếu prop isShowCategoryMenu = false, luôn cho phép hover
                     newShowCategoryMenu = isHovering;
                 } else {
-                    // Nếu prop isShowCategoryMenu = true
                     if (newIsScrolled) {
-                        // Khi scroll > 256px: cho phép hover ẩn/hiện
                         newShowCategoryMenu = isHovering;
                     } else {
-                        // Khi scroll < 256px: KHÔNG áp dụng hover, luôn hiện
                         newShowCategoryMenu = true;
                     }
                 }
@@ -119,12 +105,10 @@ const Header = ({ isShowCategoryMenu = true }) => {
     );
 
     useEffect(() => {
-        // Passive listener cho better performance
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, [handleScroll]);
 
-    // Mobile navigation handlers
     const toggleMobileNav = useCallback(() => {
         setIsMobileNavActive(prev => {
             const newState = !prev;
@@ -139,16 +123,13 @@ const Header = ({ isShowCategoryMenu = true }) => {
         }
     }, [isMobileNavActive, toggleMobileNav]);
 
-    // Category toggle for mobile
     const toggleCategory = useCallback((category) => {
         setExpandedCategory(prev => prev === category ? null : category);
     }, []);
 
-    // Hover handlers với logic mới
     const handleCategoryMouseEnter = useCallback(
         debounce(() => {
             setIsHovering(true);
-            // Chỉ set showCategoryMenu khi scroll > 256px hoặc isShowCategoryMenu = false
             if (isScrolled || !isShowCategoryMenu) {
                 setShowCategoryMenu(true);
             }
@@ -159,7 +140,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
     const handleCategoryMouseLeave = useCallback(
         debounce(() => {
             setIsHovering(false);
-            // Chỉ ẩn CategoryMenu khi scroll > 256px hoặc isShowCategoryMenu = false
             if (isScrolled || !isShowCategoryMenu) {
                 setShowCategoryMenu(false);
             }
@@ -167,15 +147,15 @@ const Header = ({ isShowCategoryMenu = true }) => {
         [isScrolled, isShowCategoryMenu]
     );
 
-    // Memoize header class để tránh re-calculation
-    const headerClass = useMemo(() => {
-        return isScrolled ? 'scrolled' : '';
-    }, [isScrolled]);
+    const headerClass = useMemo(() => isScrolled ? 'scrolled' : '', [isScrolled]);
+    const categoryDropdownClass = useMemo(() => `dropdown-menu category-dropdown ${showCategoryMenu ? 'show' : ''}`, [showCategoryMenu]);
 
-    // Memoize category dropdown class
-    const categoryDropdownClass = useMemo(() => {
-        return `dropdown-menu category-dropdown ${showCategoryMenu ? 'show' : ''}`;
-    }, [showCategoryMenu]);
+    // Hàm xử lý đăng xuất đơn giản
+    const handleLogout = (e) => {
+        e.preventDefault();
+        logout(); // Gọi hàm từ context
+        window.location.href = '/login'; // Chuyển hướng về trang đăng nhập
+    };
 
     return (
         <>
@@ -204,9 +184,43 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </div>
                             <div className="col-4 p-0">
                                 <div className="d-flex justify-content-end auth-links">
-                                    <Link to="/register" className="text-decoration-none" style={{ marginRight: '8px' }}>Đăng ký</Link>
-                                    <span className="separator">|</span>
-                                    <Link to="/login" className="text-decoration-none" style={{ marginLeft: '8px' }}>Đăng nhập</Link>
+                                    {user ? (
+                                        <div
+                                            className="user-menu position-relative"
+                                            onMouseEnter={() => setShowUserMenu(true)}
+                                            onMouseLeave={() => setShowUserMenu(false)}
+                                        >
+                                            <div className="d-flex align-items-center cursor-pointer">
+                                                <img
+                                                    src={user.avatar}
+                                                    alt={user.username}
+                                                    className="rounded-circle"
+                                                    style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                                                />
+                                                <span className="ms-2 text-white">{user.username}</span>
+                                            </div>
+                                            {showUserMenu && (
+                                                <div className="position-absolute bg-white shadow p-2 rounded" style={{ top: '100%', right: 0, zIndex: 1000, minWidth: '200px' }}>
+                                                    <Link to="/profile" className="d-block p-2 text-decoration-none text-dark">Thông tin tài khoản</Link>
+                                                    <Link to="/orders" className="d-block p-2 text-decoration-none text-dark">Đơn hàng của tôi</Link>
+                                                    <hr className="my-1" />
+                                                    <a
+                                                        href="#"
+                                                        className="d-block p-2 text-decoration-none text-danger"
+                                                        onClick={handleLogout}
+                                                    >
+                                                        Đăng xuất
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Link to="/register" className="text-decoration-none" style={{ marginRight: '8px' }}>Đăng ký</Link>
+                                            <span className="separator">|</span>
+                                            <Link to="/login" className="text-decoration-none" style={{ marginLeft: '8px' }}>Đăng nhập</Link>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -214,7 +228,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                 </div>
 
                 <div className="container">
-                    {/* Mobile Header */}
                     <div className="d-flex d-xl-none align-items-center justify-content-between w-100">
                         <button
                             className="btn text-white p-0"
@@ -254,7 +267,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                         </div>
                     </div>
 
-                    {/* Desktop Header */}
                     <div className="row align-items-center d-none d-xl-flex">
                         <div className="col-xl-3">
                             <Link to="/" className="d-block">
@@ -407,7 +419,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                     </li>
                                 </ul>
                             </div>
-                            {/* Cart button */}
                             <button
                                 className="btn btn-outline-light position-relative ms-auto"
                                 data-bs-toggle="offcanvas"
@@ -426,7 +437,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </nav>
             </header>
-            {/* Mobile Navigation Offcanvas */}
             <div className="offcanvas offcanvas-start" tabIndex="-1" id="mobileNavOffcanvas" aria-labelledby="mobileNavOffcanvasLabel">
                 <div className="offcanvas-header bg-light">
                     <h5 className="offcanvas-title text-success fw-bold" id="mobileNavOffcanvasLabel">
@@ -437,13 +447,11 @@ const Header = ({ isShowCategoryMenu = true }) => {
                 </div>
                 <div className="offcanvas-body p-0">
                     <div className="list-group list-group-flush">
-                        {/* Các sản phẩm bán chạy */}
                         <a href="/san-pham" className="list-group-item list-group-item-action d-flex align-items-center py-3">
                             <i className="bi bi-fire me-3 text-warning"></i>
                             <span className="text-uppercase fw-bold">CÁC SẢN PHẨM BÁN CHẠY</span>
                         </a>
 
-                        {/* Hoa Khai Trương */}
                         <div className="list-group-item p-0">
                             <button
                                 className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
@@ -467,7 +475,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </div>
                         </div>
 
-                        {/* Hoa Đám Tang */}
                         <div className="list-group-item p-0">
                             <button
                                 className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
@@ -494,13 +501,11 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </div>
                         </div>
 
-                        {/* Hoa Giỏ */}
                         <a href="/danh-muc/hoa-gio" className="list-group-item list-group-item-action d-flex align-items-center py-3">
                             <i className="bi bi-cart me-3"></i>
                             <span className="text-uppercase fw-bold">HOA GIỎ</span>
                         </a>
 
-                        {/* Hoa Bó */}
                         <a href="/danh-muc/hoa-bo" className="list-group-item list-group-item-action d-flex align-items-center py-3">
                             <i className="bi bi-cart me-3"></i>
                             <span className="text-uppercase fw-bold">HOA BÓ</span>
@@ -508,7 +513,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </div>
             </div>
-            {/* Offcanvas Cart */}
             <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
                 <div className="offcanvas-header justify-content-center">
                     <h5 className="offcanvas-title text-dark">GIỎ HÀNG</h5>

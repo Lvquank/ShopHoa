@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Sanctum\HasApiTokens; // <-- IMPORT THIS TRAIT
 
 class User extends Authenticatable
 {
-    protected $primaryKey = 'id';
-    public $incrementing = false;
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // <-- USE THE TRAIT HERE
 
     /**
      * The attributes that are mass assignable.
@@ -20,10 +19,32 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
+        'phone_number',
+        'avatar',
         'password',
+        'role_id',
+        'google_id',
+        'facebook_id'
     ];
+
+    /**
+     * Get the role that owns the user.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Check if the user has a specific role
+     */
+    public function hasRole(string $roleName): bool
+    {
+        // It's good practice to check if the role relationship is loaded to avoid errors
+        return $this->role && $this->role->name === $roleName;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
