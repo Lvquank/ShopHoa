@@ -14,6 +14,7 @@ import Category from './pages/Category';
 import NewsDetail2 from './pages/NewsDetail2';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
 function AppRoutes() {
   return (
     <Routes>
@@ -134,6 +135,14 @@ function AppRoutes() {
         element={
           <Layout isShowCategoryMenu={false}>
             <Register />
+          </Layout>
+        }
+      />
+      <Route
+        path="/auth/callback"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <AuthCallback />
           </Layout>
         }
       />

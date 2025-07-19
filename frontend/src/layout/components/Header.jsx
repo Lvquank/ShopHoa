@@ -1,17 +1,22 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Link } from 'react-router-dom'
-import { useUser } from '../../context/UserContext'
-import 'bootstrap-icons/font/bootstrap-icons.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-import { Tooltip } from 'bootstrap'
-import SearchBar from '../../components/SearchBar'
-import logoImg from '../../assets/images/logo.webp'
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+// SỬA ĐỔI: Import useCart để lấy số lượng sản phẩm
+import { useCart } from '../../context/CartContext';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { Tooltip } from 'bootstrap';
+import SearchBar from '../../components/SearchBar';
+import Cart from '../../components/Cart';
+import logoImg from '../../assets/images/logo.webp';
 import '../../styles/layout/Header.css';
 
 const Header = ({ isShowCategoryMenu = true }) => {
     // Lấy `user` và `logout` từ context.
     const { user, logout } = useUser();
+    // SỬA ĐỔI: Lấy cartCount từ CartContext
+    const { cartCount } = useCart();
     const [isMobileNavActive, setIsMobileNavActive] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [showCategoryMenu, setShowCategoryMenu] = useState(isShowCategoryMenu);
@@ -257,12 +262,15 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 aria-controls="offcanvasCart"
                             >
                                 <i className="bi bi-cart fs-4"></i>
-                                <span
-                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                    style={{ fontSize: '0.75rem' }}
-                                >
-                                    3
-                                </span>
+                                {/* SỬA ĐỔI: Hiển thị cartCount và chỉ hiện khi > 0 */}
+                                {cartCount > 0 && (
+                                    <span
+                                        className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                        style={{ fontSize: '0.75rem' }}
+                                    >
+                                        {cartCount}
+                                    </span>
+                                )}
                             </button>
                         </div>
                     </div>
@@ -426,12 +434,15 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 aria-controls="offcanvasCart"
                             >
                                 <i className="bi bi-cart"></i>
-                                <span
-                                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                                    style={{ fontSize: '0.75rem' }}
-                                >
-                                    3
-                                </span>
+                                {/* SỬA ĐỔI: Hiển thị cartCount và chỉ hiện khi > 0 */}
+                                {cartCount > 0 && (
+                                    <span
+                                        className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                        style={{ fontSize: '0.75rem' }}
+                                    >
+                                        {cartCount}
+                                    </span>
+                                )}
                             </button>
                         </div>
                     </div>
@@ -513,49 +524,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </div>
             </div>
-            <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
-                <div className="offcanvas-header justify-content-center">
-                    <h5 className="offcanvas-title text-dark">GIỎ HÀNG</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div className="offcanvas-body">
-                    <div className="order-md-last">
-                        <h4 className="d-flex justify-content-between align-items-center mb-3">
-                            <span className="text-gray">Giỏ hàng của bạn</span>
-                            <span className="badge rounded-pill" style={{ backgroundColor: '#ff5622' }}>3</span>
-                        </h4>
-                        <ul className="list-group mb-3">
-                            <li className="list-group-item d-flex justify-content-between lh-sm">
-                                <div>
-                                    <h6 className="my-0">Hoa khai trương</h6>
-                                    <small className="text-body-secondary">Mẫu truyền thống</small>
-                                </div>
-                                <span className="text-body-secondary">500,000₫</span>
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between lh-sm">
-                                <div>
-                                    <h6 className="my-0">Hoa bó</h6>
-                                    <small className="text-body-secondary">Hoa hồng đỏ</small>
-                                </div>
-                                <span className="text-body-secondary">300,000₫</span>
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between lh-sm">
-                                <div>
-                                    <h6 className="my-0">Hoa giỏ</h6>
-                                    <small className="text-body-secondary">Hoa tươi mix</small>
-                                </div>
-                                <span className="text-body-secondary">200,000₫</span>
-                            </li>
-                            <li className="list-group-item d-flex justify-content-between">
-                                <span>Tổng cộng (VNĐ)</span>
-                                <strong>1,000,000₫</strong>
-                            </li>
-                        </ul>
-
-                        <button className="w-100 btn-lg" type="submit" style={{ backgroundColor: '#ff5622' }}>Tiến hành thanh toán</button>
-                    </div>
-                </div>
-            </div>
+            <Cart />
         </>
     );
 }

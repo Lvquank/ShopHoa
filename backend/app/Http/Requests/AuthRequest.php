@@ -33,7 +33,7 @@ class AuthRequest extends FormRequest
         switch ($route) {
             case 'register':
                 $rules = [
-                    'username' => 'required|string|max:255',
+                    'name' => 'required|string|max:255',
                     'email' => 'required|email|unique:users,email',
                     'phone_number' => 'required|numeric|digits:10',
                     'password' => 'required|string|min:6',
@@ -68,8 +68,8 @@ class AuthRequest extends FormRequest
     public function messages()
     {
         return [
-            'username.required' => 'Tên không được bỏ trống.',
-            'username.max' => 'Tên quá dài. Chọn tên ngắn hơn',
+            'name.required' => 'Tên không được bỏ trống.',
+            'name.max' => 'Tên quá dài. Chọn tên ngắn hơn',
             'email.required' => 'Email không được bỏ trống.',
             'email.unique' => 'Email đã được sử dụng.',
             'email.exists' => 'Không có tài khoản sử dụng email này.',

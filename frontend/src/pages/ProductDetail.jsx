@@ -6,14 +6,48 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RelatedNews from "../components/RelatedNews"
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useParams, useNavigate } from "react-router-dom";
+import { Offcanvas } from 'bootstrap';
 import ReviewCard from "../components/ReviewCard";
 import FlowerCard from "../components/FlowerCard";
 import { formatUrlString } from "../utils/textUtils";
 import hoaKhaiTruong from "../assets/images/hoa-khai-truong.webp";
+import { useCart } from '../context/CartContext';
 
 const ProductDetail = () => {
+    const { addToCart } = useCart();
+
+    const handleAddToCart = async () => {
+        try {
+            setLoading(true);
+            await addToCart(product.id, 1);
+
+            // Mở giỏ hàng
+            const offcanvasCart = new Offcanvas(document.getElementById('offcanvasCart'));
+            offcanvasCart.show();
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert(error.response?.data?.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBuyNow = async () => {
+        try {
+            setLoading(true);
+            await addToCart(product.id, 1);
+            // Chuyển đến trang thanh toán
+            navigate('/thanh-toan');
+        } catch (error) {
+            console.error('Error buying now:', error);
+            alert(error.response?.data?.message || 'Có lỗi xảy ra');
+        } finally {
+            setLoading(false);
+        }
+    };
     const { productId } = useParams();
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
@@ -156,10 +190,24 @@ const ProductDetail = () => {
                                 )}
                                 {/* Order Buttons */}
                                 <div className="d-flex gap-3 mb-3">
-                                    <button className="btn-primary-custom px-4 py-2 shadow-sm border-0">
+                                    <button
+                                        className="btn-primary-custom px-4 py-2 shadow-sm border-0"
+                                        onClick={handleAddToCart}
+                                        disabled={loading}
+                                    >
+                                        {loading ? (
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                        ) : (
+                                            <i className="bi bi-cart-plus me-2"></i>
+                                        )}
                                         Thêm vào giỏ hàng
                                     </button>
-                                    <button className="btn-primary-custom px-4 py-2 shadow-sm border-0">
+                                    <button
+                                        className="btn-primary-custom px-4 py-2 shadow-sm border-0"
+                                        onClick={handleBuyNow}
+                                        disabled={loading}
+                                    >
+                                        <i className="bi bi-lightning-charge me-2"></i>
                                         Đặt mua
                                     </button>
                                 </div>

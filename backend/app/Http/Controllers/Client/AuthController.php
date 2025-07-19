@@ -1,194 +1,230 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AuthRequest;
 use App\Mail\ForgotPassword;
 use App\Models\User;
 use App\Models\UserResetToken;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Session;
+use Exception;
 
 class AuthController extends Controller
 {
-    public function register(AuthRequest $request)
+    /**
+     * Xử lý yêu cầu đăng ký của người dùng.
+     */
+    public function register(Request $request)
     {
+        // Validate dữ liệu đầu vào
+        $validated = $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'phone_number' => 'required|numeric|digits:10',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'username.required' => 'Tên không được bỏ trống.',
+            'username.max' => 'Tên quá dài. Chọn tên ngắn hơn.',
+            'email.required' => 'Email không được bỏ trống.',
+            'email.unique' => 'Email đã được sử dụng.',
+            'phone_number.digits' => 'Số điện thoại không đúng định dạng.',
+            'password.required' => 'Mật khẩu không được bỏ trống.',
+            'password.min' => 'Mật khẩu phải từ 6 kí tự trở lên.',
+            'password.confirmed' => 'Mật khẩu xác nhận không trùng khớp.',
+        ]);
+
         try {
-            $validated = $request->validated();
-
-            // Kiểm tra xem email đã tồn tại chưa
-            if (User::where('email', $validated['email'])->exists()) {
-                return response()->json([
-                    'message' => 'Email đã được sử dụng',
-                    'errors' => ['email' => ['Email đã được sử dụng']]
-                ], 422);
-            }
-
+            // Tạo người dùng mới
             $user = User::create([
                 'username' => $validated['username'],
                 'email' => $validated['email'],
                 'phone_number' => $validated['phone_number'],
                 'avatar' => 'https://ui-avatars.com/api/?name=' . urlencode($validated['username']),
                 'password' => Hash::make($validated['password']),
-                'role_id' => 2
+                'role_id' => 2,
             ]);
 
-            Auth::login($user);
+            // Tạo một API token cho người dùng vừa tạo
+            $token = $user->createToken('auth_token_register')->plainTextToken;
 
+            // Trả về response JSON chứa token
             return response()->json([
+                'status' => true,
                 'message' => 'Đăng ký tài khoản thành công!',
-                'user' => [
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'avatar' => $user->avatar,
-                ]
-            ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'data' => $user
+            ], 201); // HTTP 201 Created
+
+        } catch (Exception $e) {
+            // Trả về lỗi nếu có sự cố
             return response()->json([
-                'message' => 'Dữ liệu không hợp lệ',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Có lỗi xảy ra khi tạo đăng ký. Vui lòng thử lại!',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
+                'status' => false,
+                'message' => 'Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!',
+                'error' => $e->getMessage()
+            ], 500); // HTTP 500 Internal Server Error
         }
     }
 
-    public function login(AuthRequest $request)
+    /**
+     * Xử lý yêu cầu đăng nhập.
+     */
+    public function login(Request $request)
     {
-        try {
-            $validated = $request->validated();
+        // Validate dữ liệu đầu vào
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-            $user = User::where('email', $validated['email'])
-                ->where('role_id', 2)
-                ->first();
+        // Tìm người dùng bằng email
+        $user = User::where('email', $request->email)->where('role_id', 2)->first();
 
-            if ($user && Hash::check($validated['password'], $user->password)) {
-                // Tạo token thay vì session
-                $token = $user->createToken('auth-token')->plainTextToken;
-
-                return response()->json([
-                    'message' => 'Đăng nhập thành công!',
-                    'user' => [
-                        'id' => $user->id,
-                        'username' => $user->username,
-                        'email' => $user->email,
-                        'avatar' => $user->avatar,
-                        'role_id' => $user->role_id,
-                    ],
-                    'token' => $token
-                ]);
-            }
-
+        // Kiểm tra người dùng có tồn tại và mật khẩu có đúng không
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            // Nếu sai, trả về lỗi 401 Unauthorized
             return response()->json([
-                'message' => 'Email hoặc mật khẩu không đúng. Vui lòng thử lại!'
+                'status' => false,
+                'message' => 'Email hoặc mật khẩu không chính xác.',
             ], 401);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại!',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
         }
+
+        // Nếu đúng, tạo một API token cho người dùng
+        $token = $user->createToken('auth_token_login')->plainTextToken;
+
+        // Trả về thông tin người dùng và token
+        return response()->json([
+            'status' => true,
+            'message' => 'Đăng nhập thành công!',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'data' => $user,
+        ]);
     }
 
-    public function check(Request $request)
+    /**
+     * Xử lý yêu cầu đăng xuất.
+     */
+    public function logout(Request $request)
     {
-        $user = $request->user();
+        // Thu hồi token đã được sử dụng để xác thực yêu cầu hiện tại
+        $request->user()->currentAccessToken()->delete();
 
-        if (!$user) {
+        return response()->json([
+            'status' => true,
+            'message' => 'Đã đăng xuất thành công!',
+        ]);
+    }
+
+    /**
+     * Gửi email quên mật khẩu.
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Email không được bỏ trống.',
+            'email.exists' => 'Không có tài khoản nào được đăng ký với email này.',
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+        $token = Str::random(60);
+
+        // Xóa token cũ và tạo token mới
+        UserResetToken::where('email', $validated['email'])->delete();
+        $tokenData = UserResetToken::create([
+            'email' => $validated['email'],
+            'token' => $token,
+        ]);
+
+        if ($tokenData) {
+            // Gửi email
+            Mail::to($validated['email'])->send(new ForgotPassword($user, $token));
+
             return response()->json([
-                'authenticated' => false,
-                'message' => 'Not authenticated'
-            ], 401);
+                'status' => true,
+                'message' => 'Link đặt lại mật khẩu đã được gửi vào email của bạn!',
+            ]);
         }
 
         return response()->json([
-            'authenticated' => true,
-            'user' => [
-                'id' => $user->id,
-                'username' => $user->username,
-                'email' => $user->email,
-                'avatar' => $user->avatar,
-                'role_id' => $user->role_id,
+            'status' => false,
+            'message' => 'Hành động thất bại. Vui lòng thử lại!',
+        ], 500);
+    }
+
+    /**
+     * Kiểm tra tính hợp lệ của token reset mật khẩu.
+     */
+    public function validateResetToken($token)
+    {
+        $tokenData = UserResetToken::where('token', $token)->first();
+
+        if (!$tokenData) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Token không hợp lệ hoặc đã hết hạn.',
+            ], 404);
+        }
+
+        // Có thể thêm kiểm tra thời gian hết hạn của token ở đây
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token hợp lệ.',
+            'data' => [
+                'token' => $token
             ]
         ]);
     }
 
-    public function logout(Request $request)
+    /**
+     * Đặt lại mật khẩu mới.
+     */
+    public function resetPassword(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $validated = $request->validate([
+            'token' => 'required|string|exists:user_reset_tokens,token',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'token.exists' => 'Token không hợp lệ hoặc đã hết hạn.',
+            'password.required' => 'Mật khẩu không được bỏ trống.',
+            'password.min' => 'Mật khẩu phải từ 6 kí tự trở lên.',
+            'password.confirmed' => 'Mật khẩu xác nhận không trùng khớp.',
+        ]);
+
+        $tokenData = UserResetToken::where('token', $validated['token'])->first();
+        $user = User::where('email', $tokenData->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Không tìm thấy người dùng với email tương ứng.',
+            ], 404);
+        }
+
+        // Cập nhật mật khẩu mới
+        $user->password = Hash::make($validated['password']);
+        $user->save();
+
+        // Xóa token sau khi đã sử dụng
+        UserResetToken::where('email', $user->email)->delete();
 
         return response()->json([
-            'message' => 'Đã đăng xuất!'
+            'status' => true,
+            'message' => 'Mật khẩu đã được đặt lại thành công!',
         ]);
     }
-
-    public function forgotPassword(AuthRequest $request)
+    public function check(Request $request)
     {
-        $validated = $request->validated();
-
-        try {
-            $user = User::where('email', $validated['email'])->first();
-
-            // Delete existing tokens
-            UserResetToken::where('email', $validated['email'])->delete();
-
-            $token = Str::random(40);
-            $tokenData = [
-                'email' => $validated['email'],
-                'token' => $token
-            ];
-
-            if ($resetToken = UserResetToken::create($tokenData)) {
-                Mail::to($validated['email'])->send(new ForgotPassword($user, $resetToken->token));
-
-                return response()->json([
-                    'message' => 'Kiểm tra email để lấy lại mật khẩu!'
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Hành động không thành công. Vui lòng thử lại!'
-            ], 500);
-        }
-    }
-
-    public function resetPassword(AuthRequest $request, $token)
-    {
-        $validated = $request->validated();
-
-        try {
-            $tokenData = UserResetToken::where('token', $token)
-                ->where('created_at', '>', now()->subHours(24))
-                ->firstOrFail();
-
-            $user = User::where('email', $tokenData->email)->firstOrFail();
-            $user->password = Hash::make($validated['password']);
-            $user->save();
-
-            // Delete all reset tokens for this user
-            UserResetToken::where('email', $user->email)->delete();
-
-            return response()->json([
-                'message' => 'Mật khẩu đã được đặt lại thành công!'
-            ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Token không hợp lệ hoặc đã hết hạn!'
-            ], 400);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Có lỗi xảy ra. Vui lòng thử lại!'
-            ], 500);
-        }
+        // Chỉ cần trả về thông tin người dùng đang được xác thực.
+        return response()->json([
+            'status' => true,
+            'user' => $request->user(),
+        ]);
     }
 }
