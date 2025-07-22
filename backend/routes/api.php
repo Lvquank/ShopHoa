@@ -7,6 +7,11 @@ use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\GoogleController;
 use App\Http\Controllers\Client\CartController;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\Client\LocationController;
+use App\Http\Controllers\Client\ProductReviewController;
+use App\Http\Controllers\Client\PostController;
+use App\Http\Controllers\Client\PostReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,11 +30,13 @@ use Illuminate\Support\Facades\DB;
 
 // --- Product Routes ---
 Route::prefix('products')->group(function () {
+    // Các route tĩnh nên được đặt ở trên
     Route::get('/', [ProductController::class, 'index']);
+    Route::get('top', [ProductController::class, 'getByIsOnTop']);
+    Route::get('new', [ProductController::class, 'getNewProducts']); // Đã di chuyển lên đây
+    Route::get('search', [ProductController::class, 'search']);
     Route::get('category/{category}', [ProductController::class, 'getByCategory']);
     Route::get('category/{category}/{style?}', [ProductController::class, 'getByCategoryAndStyle']);
-    Route::get('top', [ProductController::class, 'getByIsOnTop']);
-    Route::get('search', [ProductController::class, 'search']);
     Route::get('{id}', [ProductController::class, 'show']);
 });
 
@@ -47,8 +54,13 @@ Route::prefix('auth')->group(function () {
 Route::prefix('admin/auth')->group(function () {
     Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
 });
-
-
+// --- Location Routes ---
+Route::get('/get-districts/{provinceId}', [LocationController::class, 'getDistricts']);
+Route::get('/get-wards/{districtId}', [LocationController::class, 'getWards']);
+// --- Product Review Routes ---
+Route::get('products/{product}/reviews', [ProductReviewController::class, 'index']);
+// --- Post Routes ---
+Route::apiResource('posts', PostController::class);
 //======================================================================
 // PROTECTED ROUTES (Cần đăng nhập - auth:sanctum)
 //======================================================================
@@ -79,12 +91,19 @@ Route::middleware('auth:sanctum')->group(function () {
         // POST /api/cart/remove
         Route::post('/remove', [CartController::class, 'remove']);
     });
-
+    // --- Checkout & Order Routes ---
+    Route::get('/checkout', [CheckoutController::class, 'getCheckoutData']);
+    Route::post('/order', [CheckoutController::class, 'placeOrder']);
     // --- Admin Routes (Ví dụ) ---
     Route::prefix('admin')->middleware('role:admin')->group(function () {
         // Đặt các route của admin cần xác thực ở đây
         Route::post('/auth/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout']);
     });
+    // --- Product Review Routes ---
+    Route::post('products/{product}/reviews', [ProductReviewController::class, 'store']);
+    Route::put('reviews/{review}', [ProductReviewController::class, 'update']);
+    Route::delete('reviews/{review}', [ProductReviewController::class, 'destroy']);
+    Route::post('/post-reviews', [PostReviewController::class, 'store']);
 });
 
 

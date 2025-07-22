@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../contexts/UserContext';
 // SỬA ĐỔI: Import useCart để lấy số lượng sản phẩm
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../contexts/CartContext';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';

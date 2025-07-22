@@ -1,7 +1,6 @@
 import "../styles/pages/About.css"
 import "../styles/pages/ProductDetail.css";
 import "../styles/common/colors.css";
-import logoImg from "../assets/images/logo.webp"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RelatedNews from "../components/RelatedNews"
@@ -11,10 +10,9 @@ import axios from 'axios';
 import { useParams, useNavigate } from "react-router-dom";
 import { Offcanvas } from 'bootstrap';
 import ReviewCard from "../components/ReviewCard";
-import FlowerCard from "../components/FlowerCard";
 import { formatUrlString } from "../utils/textUtils";
 import hoaKhaiTruong from "../assets/images/hoa-khai-truong.webp";
-import { useCart } from '../context/CartContext';
+import { useCart } from '../contexts/CartContext';
 
 const ProductDetail = () => {
     const { addToCart } = useCart();
@@ -307,7 +305,7 @@ const ProductDetail = () => {
                         )}
                         {activeTab === 'review' && (
                             <div className="px-4 py-4 bg-white rounded-3 border border-1 border-light-subtle">
-                                <ReviewCard />
+                                <ReviewCard productId={product.id} />
                             </div>
                         )}
 

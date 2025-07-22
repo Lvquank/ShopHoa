@@ -6,8 +6,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 import '../styles/pages/Login.css';
 import googleIcon from '../assets/images/google-icon.svg';
-import facebookIcon from '../assets/images/facebook-icon.svg';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../contexts/UserContext';
 
 // Tách logic API ra
 const api = {

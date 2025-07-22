@@ -115,6 +115,30 @@ class ProductController extends Controller
     }
 
     /**
+     * Lấy danh sách sản phẩm mới
+     */
+    public function getNewProducts(): JsonResponse
+    {
+        $products = Product::with('details')
+            ->where('is_new', true) // Lấy các sản phẩm có is_new = 1
+            ->get();
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy sản phẩm',
+                'data'    => null
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Danh sách sản phẩm mới',
+            'data'    => $products
+        ]);
+    }
+
+    /**
      * Lấy danh sách sản phẩm theo danh mục và phong cách
      */
     public function getByCategoryAndStyle($category, $style = null): JsonResponse

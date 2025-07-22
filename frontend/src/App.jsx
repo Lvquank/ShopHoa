@@ -3,8 +3,8 @@ import AppRoutes from "./routes";
 import "./App.css";
 import ScrollToTop from "./components/ScrollToTop";
 // THÊM: Import các Provider cần thiết
-import { UserProvider } from './context/UserContext';
-import { CartProvider } from './context/CartContext';
+import { UserProvider } from './contexts/UserContext';
+import { CartProvider } from './contexts/CartContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../contexts/UserContext';
 import { toast } from 'react-toastify';
 
 function AuthCallback() {

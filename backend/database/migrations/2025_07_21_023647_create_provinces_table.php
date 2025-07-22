@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->decimal('total_amount', 10, 2)->default(0);
-            $table->integer('items_count')->default(0);
-            $table->string('status')->default('active');
+        Schema::create('provinces', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->decimal('shipping', 10, 0)->default(0)->nullable(false);
+            $table->string('gso_id');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('carts');
+        Schema::dropIfExists('provinces');
     }
 };
