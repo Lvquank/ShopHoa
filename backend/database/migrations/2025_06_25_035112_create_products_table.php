@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('style')->nullable();
             $table->string('tag')->nullable();
             $table->boolean('is_on_top')->default(0);
+            $table->boolean('is_new')->default(0);
             $table->timestamps();
         });
     }

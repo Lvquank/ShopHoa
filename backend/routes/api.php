@@ -7,7 +7,7 @@ use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\GoogleController;
 use App\Http\Controllers\Client\CartController;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\LocationController;
 use App\Http\Controllers\Client\ProductReviewController;
 use App\Http\Controllers\Client\PostController;
@@ -50,10 +50,6 @@ Route::prefix('auth')->group(function () {
     Route::post('/google/callback', [GoogleController::class, 'handleGoogleCallbackApi']);
 });
 
-// --- Admin Authentication Routes ---
-Route::prefix('admin/auth')->group(function () {
-    Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login']);
-});
 // --- Location Routes ---
 Route::get('/get-districts/{provinceId}', [LocationController::class, 'getDistricts']);
 Route::get('/get-wards/{districtId}', [LocationController::class, 'getWards']);
@@ -95,10 +91,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'getCheckoutData']);
     Route::post('/order', [CheckoutController::class, 'placeOrder']);
     // --- Admin Routes (Ví dụ) ---
-    Route::prefix('admin')->middleware('role:admin')->group(function () {
-        // Đặt các route của admin cần xác thực ở đây
-        Route::post('/auth/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout']);
-    });
     // --- Product Review Routes ---
     Route::post('products/{product}/reviews', [ProductReviewController::class, 'store']);
     Route::put('reviews/{review}', [ProductReviewController::class, 'update']);

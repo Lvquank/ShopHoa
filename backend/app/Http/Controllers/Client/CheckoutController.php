@@ -69,7 +69,7 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'email'        => 'nullable|email|max:255',
-            'phone_number' => 'required|string|regex:/^(0[3|5|7|8|9])+([0-9]{8})$/',
+            'phone_number' => 'required|string|regex:/^(0[35789])\d{8}$/',
             'province_id'  => 'required|exists:provinces,id',
             'district_id'  => 'required|exists:districts,id',
             'ward_id'      => 'required|exists:wards,id',

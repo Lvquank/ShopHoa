@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->foreignId('user_id')
                 ->nullable()
-                ->constrained('user')
+                ->constrained('users')
                 ->nullOnDelete(); // Nếu user bị xóa thì user_id = null
             $table->string('name');
             $table->string('phone_number');
@@ -28,8 +28,9 @@ return new class extends Migration
             $table->unsignedBigInteger('ward_id')->nullable();
             $table->string('address_detail')->nullable();
 
+            $table->decimal('total_price', 15, 0);
+            $table->decimal('shipping', 15, 0)->default(0);
             $table->decimal('total_amount', 15, 0);
-
             $table->unsignedBigInteger('status_id');
 
             $table->foreign('status_id')->references('id')->on('status_order')->onDelete('restrict');

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title'); // title varchar
+            $table->string('image')->nullable();
+            $table->Text('content')->nullable();
             $table->longText('description')->nullable(); // description varchar
             $table->string('title_seo')->nullable(); // title_seo varchar
             $table->string('author')->nullable(); // author varchar

@@ -39,10 +39,6 @@ function RelatedNews() {
                     axios.get(`${API_URL}/api/products/new`)
                 ]);
 
-                // --- DEBUG: In ra để kiểm tra dữ liệu API trả về ---
-                console.log("Phản hồi từ API bài viết:", articlesResponse);
-                console.log("Phản hồi từ API sản phẩm:", productsResponse);
-
                 // Cập nhật state cho bài viết liên quan (linh hoạt hơn)
                 // Kịch bản 1: API trả về cấu trúc { success: true, data: [...] }
                 if (articlesResponse.data && articlesResponse.data.success && Array.isArray(articlesResponse.data.data)) {

@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 
 // Tạo một instance của Axios
 const apiClient = axios.create({
-    baseURL: 'http://localhost:8000', // Hoặc import.meta.env.VITE_API_URL
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

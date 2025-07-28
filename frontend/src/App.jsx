@@ -2,19 +2,18 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes";
 import "./App.css";
 import ScrollToTop from "./components/ScrollToTop";
-// THÊM: Import các Provider cần thiết
 import { UserProvider } from './contexts/UserContext';
 import { CartProvider } from './contexts/CartContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
-  // Lấy Client ID từ file môi trường .env
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   return (
-    // THÊM: Bọc toàn bộ ứng dụng trong GoogleOAuthProvider để sử dụng xác thực Google
     <GoogleOAuthProvider clientId={googleClientId}>
-      {/* THÊM: Bọc trong UserProvider để quản lý trạng thái người dùng toàn cục */}
       <UserProvider>
         <CartProvider>
           <BrowserRouter>
@@ -22,6 +21,18 @@ function App() {
             <div className="App">
               <AppRoutes />
             </div>
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
           </BrowserRouter>
         </CartProvider>
       </UserProvider>

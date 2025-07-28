@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../contexts/CartContext'; // Sửa đổi: Dùng CartContext
-import { useUser } from '../contexts/UserContext'; // Sửa đổi: Dùng UserContext để lấy thông tin user
-import apiClient from '../utils/axios'; // Sửa đổi: Dùng apiClient nhất quán
+import { useCart } from '../contexts/CartContext';
+import { useUser } from '../contexts/UserContext';
+import apiClient from '../utils/axios';
+import { toast } from 'react-toastify';
 
 // Hàm tiện ích để định dạng tiền tệ
 const formatVND = (amount) => {
@@ -12,13 +13,9 @@ const formatVND = (amount) => {
 
 const Pay = () => {
     const navigate = useNavigate();
-
-    // SỬA ĐỔI: Lấy dữ liệu giỏ hàng trực tiếp từ CartContext
     const { cartItems, fetchCart } = useCart();
-    // SỬA ĐỔI: Lấy thông tin người dùng từ UserContext
     const { user } = useUser();
 
-    // SỬA ĐỔI: Các state không cần thiết đã bị loại bỏ, chỉ giữ lại những state của trang Pay
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -27,23 +24,19 @@ const Pay = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // State cho form, tự động điền thông tin user nếu có
     const [formData, setFormData] = useState({
         name: '', phone_number: '', email: '',
         province_id: '', district_id: '', ward_id: '',
         address_detail: '', note: ''
     });
 
-    // SỬA ĐỔI: Tính toán lại tổng tiền dựa trên cartItems từ context
     const cartTotalPrice = useMemo(() => {
         return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
     }, [cartItems]);
 
     const totalAmount = useMemo(() => cartTotalPrice + shipping, [cartTotalPrice, shipping]);
 
-    // SỬA ĐỔI: useEffect để fetch dữ liệu riêng của trang Pay (provinces) và điền form
     useEffect(() => {
-        // Tự động điền thông tin người dùng vào form nếu đã đăng nhập
         if (user) {
             setFormData(prev => ({
                 ...prev,
@@ -53,7 +46,6 @@ const Pay = () => {
             }));
         }
 
-        // Fetch dữ liệu checkout (chỉ cần lấy provinces, vì cart đã có từ context)
         apiClient.get('/api/checkout')
             .then(response => {
                 if (response.data && response.data.provinces) {
@@ -63,14 +55,14 @@ const Pay = () => {
             .catch(error => {
                 console.error("Lỗi khi tải danh sách tỉnh thành:", error);
                 if (error.response && error.response.status === 401) {
-                    alert('Vui lòng đăng nhập để tiếp tục.');
+                    toast.error('Vui lòng đăng nhập để tiếp tục.');
                     navigate('/dang-nhap');
                 }
             })
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [user, navigate]); // Chạy lại khi thông tin user thay đổi
+    }, [user, navigate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -87,6 +79,10 @@ const Pay = () => {
         setWards([]);
         setShipping(0);
 
+        if (errors.province_id) {
+            setErrors(prev => ({ ...prev, province_id: null }));
+        }
+
         if (provinceId) {
             const selectedProvince = provinces.find(p => p.id == provinceId);
             if (selectedProvince) {
@@ -96,7 +92,7 @@ const Pay = () => {
                 const response = await apiClient.get(`/api/get-districts/${provinceId}`);
                 setDistricts(response.data.districts || []);
             } catch (error) {
-                alert("Không thể tải danh sách quận/huyện.");
+                toast.error("Không thể tải danh sách quận/huyện.");
             }
         }
     };
@@ -105,13 +101,26 @@ const Pay = () => {
         const districtId = e.target.value;
         setFormData(prev => ({ ...prev, district_id: districtId, ward_id: '' }));
         setWards([]);
+
+        if (errors.district_id) {
+            setErrors(prev => ({ ...prev, district_id: null }));
+        }
+
         if (districtId) {
             try {
                 const response = await apiClient.get(`/api/get-wards/${districtId}`);
                 setWards(response.data || []);
             } catch (error) {
-                alert("Không thể tải danh sách phường/xã.");
+                toast.error("Không thể tải danh sách phường/xã.");
             }
+        }
+    };
+
+    const handleWardChange = (e) => {
+        const wardId = e.target.value;
+        setFormData(prev => ({ ...prev, ward_id: wardId }));
+        if (errors.ward_id) {
+            setErrors(prev => ({ ...prev, ward_id: null }));
         }
     };
 
@@ -122,17 +131,23 @@ const Pay = () => {
 
         try {
             const response = await apiClient.post('/api/order', formData);
-            alert(response.data.message);
-            await fetchCart(); // Cập nhật lại giỏ hàng (trống) sau khi đặt hàng thành công
-            navigate('/dat-hang-thanh-cong', { state: { orderCode: response.data.order_code } });
+
+            toast.success(response.data.message || 'Đặt hàng thành công!');
+
+            setTimeout(async () => {
+                await fetchCart();
+                navigate('/cua-hang', { state: { orderCode: response.data.order_code } });
+            }, 2000);
+
         } catch (error) {
             if (error.response && error.response.status === 422) {
                 setErrors(error.response.data.errors);
+                toast.error('Vui lòng kiểm tra lại các thông tin bắt buộc.');
             } else {
-                alert(error.response?.data?.message || 'Đã có lỗi xảy ra khi đặt hàng.');
+                const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra khi đặt hàng.';
+                toast.error(errorMessage);
             }
             console.error('Lỗi khi đặt hàng:', error);
-        } finally {
             setIsSubmitting(false);
         }
     };
@@ -141,34 +156,47 @@ const Pay = () => {
         return <div className="text-center py-5">Đang tải dữ liệu...</div>;
     }
 
-    // Giao diện khi giỏ hàng trống sẽ được hiển thị tự động vì cartItems lấy từ context
+    // Giao diện khi giỏ hàng trống
     if (!user || cartItems.length === 0) {
         return (
-            <div className="container py-5">
-                <div className="row justify-content-center">
-                    <div className="col-lg-8 text-center">
-                        <p className="text-muted fs-5 mb-4">
-                            {!user ? "Vui lòng đăng nhập để xem trang thanh toán." : "Chưa có sản phẩm nào trong giỏ hàng."}
-                        </p>
-                        <button
-                            className="btn px-4 py-2 fw-bold text-uppercase text-white"
-                            onClick={() => navigate(!user ? '/dang-nhap' : '/cua-hang')}
-                            style={{ backgroundColor: '#ff5622', fontSize: '14px' }}
-                        >
-                            {!user ? 'ĐI ĐẾN TRANG ĐĂNG NHẬP' : 'QUAY TRỞ LẠI CỬA HÀNG'}
-                        </button>
+            <section className="checkout py-5">
+                <div className="container">
+                    {/* BREADCRUMB CHỈ HIỂN THỊ KHI GIỎ HÀNG TRỐNG */}
+                    <nav aria-label="breadcrumb" className="mb-5">
+                        <div className="text-center">
+                            <span className="text-dark" style={{ fontSize: '25px' }}>GIỎ HÀNG</span>
+                            <span className="mx-2 text-muted" style={{ fontSize: '25px' }}>&gt;</span>
+                            <span style={{ fontSize: '25px', color: '#ff5622' }}>THANH TOÁN</span>
+                            <span className="mx-2 text-muted" style={{ fontSize: '25px' }}>&gt;</span>
+                            <span style={{ fontSize: '25px', color: '#ff5622' }}>HOÀN TẤT</span>
+                        </div>
+                    </nav>
+
+                    <div className="row justify-content-center">
+                        <div className="col-lg-8 text-center">
+                            <p className="text-muted fs-5 mb-4">
+                                {!user ? "Vui lòng đăng nhập để xem trang thanh toán." : "Chưa có sản phẩm nào trong giỏ hàng."}
+                            </p>
+                            <button
+                                className="btn px-4 py-2 fw-bold text-uppercase text-white"
+                                onClick={() => navigate(!user ? '/dang-nhap' : '/cua-hang')}
+                                style={{ backgroundColor: '#ff5622', fontSize: '14px' }}
+                            >
+                                {!user ? 'ĐI ĐẾN TRANG ĐĂNG NHẬP' : 'QUAY TRỞ LẠI CỬA HÀNG'}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
         );
     }
 
     return (
         <section className="checkout py-5">
             <div className="container-lg">
+                {/* Dòng <nav> đã được XÓA khỏi đây */}
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="row">
-                        {/* Cột Tóm tắt đơn hàng */}
                         <div className="col-lg-6 mb-5">
                             <h2 className="mb-4">Đơn hàng của bạn</h2>
                             <div className="my-order-summary p-3 border rounded">
@@ -194,8 +222,6 @@ const Pay = () => {
                                 </p>
                             </div>
                         </div>
-
-                        {/* Cột Thông tin giao hàng */}
                         <div className="col-lg-6">
                             <h2 className="mb-4">Thông tin giao hàng</h2>
                             <div className="row g-3">
@@ -226,7 +252,7 @@ const Pay = () => {
                                     {errors.district_id && <div className="invalid-feedback">{errors.district_id[0]}</div>}
                                 </div>
                                 <div className="col-sm-4">
-                                    <select className={`form-select ${errors.ward_id ? 'is-invalid' : ''}`} name="ward_id" value={formData.ward_id} onChange={handleInputChange} disabled={wards.length === 0}>
+                                    <select className={`form-select ${errors.ward_id ? 'is-invalid' : ''}`} name="ward_id" value={formData.ward_id} onChange={handleWardChange} disabled={wards.length === 0}>
                                         <option value="" disabled>-- Phường/Xã --</option>
                                         {wards.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                                     </select>

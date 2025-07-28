@@ -23,5 +23,5 @@ RUN chmod -R 777 storage bootstrap/cache
 # ⚠️ Thêm dòng này để tạo symbolic link storage
 RUN php artisan storage:link
 
-# Run Laravel server and migrate
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT}
+# Run Laravel server
+CMD php artisan serve --host=0.0.0.0 --port=${PORT}

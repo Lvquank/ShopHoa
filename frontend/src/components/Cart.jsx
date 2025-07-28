@@ -1,28 +1,16 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // << THAY ĐỔI: Import useNavigate
 import { useCart } from '../contexts/CartContext';
 
 const Cart = () => {
     const { cartItems, loading, error, fetchCart, updateCartItem, removeFromCart, clearError } = useCart();
+    const navigate = useNavigate(); // << THAY ĐỔI: Sử dụng hook useNavigate
 
-    // Fetch cart items when component mounts or when cart is opened
+    // << THAY ĐỔI: useEffect được đơn giản hóa để lấy dữ liệu khi component được render
+    // Logic fetch giỏ hàng nên được quản lý bởi Context, không nên phụ thuộc vào sự kiện của Bootstrap
     useEffect(() => {
-        const offcanvasCart = document.getElementById('offcanvasCart');
-
-        const handleCartShow = () => {
-            clearError();
-            fetchCart();
-        };
-
-        if (offcanvasCart) {
-            offcanvasCart.addEventListener('show.bs.offcanvas', handleCartShow);
-            return () => {
-                offcanvasCart.removeEventListener('show.bs.offcanvas', handleCartShow);
-            };
-        }
-    }, [clearError, fetchCart]);
-
-    // Removed duplicate fetchCart as we're using the one from useCart
+        fetchCart();
+    }, [fetchCart]);
 
     const handleQuantityChange = async (productId, newQuantity) => {
         if (newQuantity < 1) return;
@@ -30,11 +18,19 @@ const Cart = () => {
     };
 
     const handleRemoveItem = async (productId) => {
-        if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) return;
+        // Có thể thay thế confirm() bằng một modal custom để đẹp hơn
+        if (!window.confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) return;
         await removeFromCart(productId);
     };
 
+    // << THAY ĐỔI: Hàm điều hướng thủ công để giải quyết xung đột
+    const handleNavigate = (path) => {
+        // Bootstrap sẽ tự động đóng offcanvas thông qua data-bs-dismiss
+        navigate(path);
+    };
+
     const formatPrice = (price) => {
+        if (!price) return '0 ₫';
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND'
@@ -78,15 +74,17 @@ const Cart = () => {
                                 <i className="bi bi-cart-x" style={{ fontSize: '3rem', color: '#ff5622' }}></i>
                             </div>
                             <p className="mb-3">Giỏ hàng của bạn đang trống</p>
-                            <Link
-                                to="/cua-hang"
+                            {/* << THAY ĐỔI: Dùng button và onClick */}
+                            <button
+                                type="button"
                                 className="btn"
                                 style={{ backgroundColor: '#ff5622', color: 'white' }}
                                 data-bs-dismiss="offcanvas"
+                                onClick={() => handleNavigate('/cua-hang')}
                             >
                                 <i className="bi bi-shop me-2"></i>
                                 Tiếp tục mua sắm
-                            </Link>
+                            </button>
                         </div>
                     ) : (
                         <>
@@ -95,13 +93,15 @@ const Cart = () => {
                                     <li key={item.id} className="list-group-item">
                                         <div className="d-flex justify-content-between align-items-center mb-2">
                                             <div className="d-flex align-items-center">
-                                                <Link
-                                                    to={`/cua-hang/${item.id}`}
+                                                {/* << THAY ĐỔI: Dùng div và onClick */}
+                                                <div
                                                     className="text-decoration-none"
                                                     data-bs-dismiss="offcanvas"
+                                                    onClick={() => handleNavigate(`/cua-hang/${item.id}`)}
+                                                    style={{ cursor: 'pointer' }}
                                                 >
                                                     <img
-                                                        src={item.image_url || item.image}
+                                                        src={(item.image_url || item.image)?.replace('http://localhost:8000', import.meta.env.VITE_API_URL)}
                                                         alt={item.name}
                                                         className="rounded border"
                                                         style={{ width: '70px', height: '70px', objectFit: 'cover' }}
@@ -110,15 +110,17 @@ const Cart = () => {
                                                             e.target.src = '/placeholder.jpg';
                                                         }}
                                                     />
-                                                </Link>
+                                                </div>
                                                 <div className="ms-3">
-                                                    <Link
-                                                        to={`/cua-hang/${item.id}`}
+                                                    {/* << THAY ĐỔI: Dùng div và onClick */}
+                                                    <div
                                                         className="text-decoration-none"
                                                         data-bs-dismiss="offcanvas"
+                                                        onClick={() => handleNavigate(`/cua-hang/${item.id}`)}
+                                                        style={{ cursor: 'pointer' }}
                                                     >
                                                         <h6 className="my-0 text-dark hover-primary">{item.name}</h6>
-                                                    </Link>
+                                                    </div>
                                                     <small className="text-primary fw-bold">{formatPrice(item.price)}</small>
                                                 </div>
                                             </div>
@@ -177,23 +179,26 @@ const Cart = () => {
                             </ul>
 
                             <div className="d-grid gap-2">
-                                <Link
-                                    to="/thanh-toan"
+                                {/* << THAY ĐỔI: Dùng button và onClick */}
+                                <button
+                                    type="button"
                                     className="btn btn-lg"
                                     style={{ backgroundColor: '#ff5622', color: 'white' }}
                                     data-bs-dismiss="offcanvas"
+                                    onClick={() => handleNavigate('/gio-hang')}
                                 >
                                     <i className="bi bi-wallet2 me-2"></i>
                                     Tiến hành thanh toán
-                                </Link>
-                                <Link
-                                    to="/cua-hang"
+                                </button>
+                                <button
+                                    type="button"
                                     className="btn btn-outline-secondary"
                                     data-bs-dismiss="offcanvas"
+                                    onClick={() => handleNavigate('/cua-hang')}
                                 >
                                     <i className="bi bi-arrow-left me-2"></i>
                                     Tiếp tục mua sắm
-                                </Link>
+                                </button>
                             </div>
                         </>
                     )}

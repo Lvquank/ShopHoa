@@ -6,16 +6,30 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import RelatedNews from "../components/RelatedNews"
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from "react-router-dom";
 import { Offcanvas } from 'bootstrap';
 import ReviewCard from "../components/ReviewCard";
-import { formatUrlString } from "../utils/textUtils";
-import hoaKhaiTruong from "../assets/images/hoa-khai-truong.webp";
 import { useCart } from '../contexts/CartContext';
 
 const ProductDetail = () => {
     const { addToCart } = useCart();
+    const { productId } = useParams();
+    const navigate = useNavigate();
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('description');
+    const [relatedProducts, setRelatedProducts] = useState([]);
+
+    // Hàm trợ giúp để xây dựng URL hình ảnh một cách an toàn
+    const buildImageUrl = (imagePath) => {
+        if (!imagePath) {
+            return "/api/placeholder/400/600"; // Fallback nếu không có đường dẫn
+        }
+        const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, ''); // Xóa dấu / ở cuối
+        const relativePath = imagePath.replace(/^\//, ''); // Xóa dấu / ở đầu
+        return `${baseUrl}/${relativePath}`;
+    };
 
     const handleAddToCart = async () => {
         try {
@@ -46,16 +60,41 @@ const ProductDetail = () => {
             setLoading(false);
         }
     };
-    const { productId } = useParams();
-    const navigate = useNavigate();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('description');
-    const [relatedProducts, setRelatedProducts] = useState([]); // Add this state
+
+    // Hàm render mô tả chi tiết với hình ảnh động
+    const renderDetailContent = (detail) => {
+        if (!detail || !detail.description) return '';
+
+        const images = detail.images || [];
+        const imageMap = new Map(images.map(img => [
+            img.id,
+            buildImageUrl(img.image) // Sử dụng hàm trợ giúp
+        ]));
+
+        const renderedHtml = detail.description.replace(/\[image id="(\d+)"\]/g, (match, imageId) => {
+            const imageUrl = imageMap.get(parseInt(imageId, 10));
+            if (imageUrl) {
+                return `
+                    <div class="d-flex justify-content-center my-3">
+                        <img 
+                            src="${imageUrl}" 
+                            alt="Hình ảnh chi tiết ${imageId}" 
+                            class="img-fluid border" 
+                            style="border-radius: 8px; max-width: 100%; height: auto;" 
+                            loading="lazy"
+                        />
+                    </div>`;
+            }
+            return ''; // Bỏ qua nếu không tìm thấy ảnh
+        });
+
+        return renderedHtml;
+    };
+
 
     useEffect(() => {
         const fetchProduct = async () => {
+            setLoading(true);
             try {
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${productId}`);
                 const data = await response.json();
@@ -75,17 +114,14 @@ const ProductDetail = () => {
         fetchProduct();
     }, [productId]);
 
-    // Add useEffect to fetch related products
+    // Lấy các sản phẩm liên quan
     useEffect(() => {
         const fetchRelatedProducts = async () => {
+            if (!product?.category?.alias) return;
+
             try {
-                // Only fetch related products once we have the current product's category
-                if (!product?.category) return;
-
-                // Fetch related products based on the same category, excluding current product
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/category/${encodeURIComponent(product.category)}?exclude=${productId}`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/category/${encodeURIComponent(product.category.alias)}?exclude=${productId}`);
                 const data = await response.json();
-
                 if (data.success) {
                     setRelatedProducts(data.data || []);
                 }
@@ -96,7 +132,8 @@ const ProductDetail = () => {
         };
 
         fetchRelatedProducts();
-    }, [productId, product?.category]);
+    }, [productId, product?.category?.alias]);
+
 
     if (loading) {
         return (
@@ -119,8 +156,6 @@ const ProductDetail = () => {
         );
     }
 
-    const primaryDetail = product?.details?.[0];
-
     return (
         <div className="wrapper">
             <div className="container py-5">
@@ -130,11 +165,7 @@ const ProductDetail = () => {
                             {/* Product Image */}
                             <div className="col-lg-5 d-flex justify-content-center mb-4 mb-lg-0 align-items-stretch">
                                 <img
-                                    src={
-                                        product?.image
-                                            ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
-                                            : "/api/placeholder/400/600"
-                                    }
+                                    src={buildImageUrl(product?.image)} // Sử dụng hàm trợ giúp
                                     alt={product?.title}
                                     className="img-fluid border h-100"
                                     style={{ objectFit: 'cover', background: '#f8f8f8', borderRadius: 0, minHeight: 480 }}
@@ -154,36 +185,33 @@ const ProductDetail = () => {
                                     <span className="mx-2">/</span>
                                     <span
                                         className="text-primary-custom fw-bold cursor-pointer"
-                                        onClick={() => product?.category && navigate(`/danh-muc/${product.category}`)}
+                                        onClick={() => product?.category?.alias && navigate(`/danh-muc/${product.category.alias}`)}
                                     >
-                                        {product?.category ? formatUrlString(product.category) : 'Danh mục'}
+                                        {product?.category?.name || 'Danh mục'}
                                     </span>
                                     {product?.style && (
                                         <>
                                             <span className="mx-2">/</span>
                                             <span
                                                 className="text-primary-custom fw-bold cursor-pointer"
-                                                onClick={() => navigate(`/phong-cach/${product.style}`)}
+                                                onClick={() => product?.category?.alias && product?.style?.alias && navigate(`/danh-muc/${product.category.alias}/${product.style.alias}`)}
                                             >
-                                                {formatUrlString(product.style)}
+                                                {product.style.name}
                                             </span>
                                         </>
                                     )}
                                 </nav>
                                 {/* Product Title */}
                                 <h4 className="text-dark mb-3">
-                                    {product?.title || 'Đặt Hoa Đám Tang Mỹ Tho 0966183183'}
+                                    {product?.title || 'Chưa có tiêu đề'}
                                 </h4>
-                                {/* Product Features */}
+                                {/* Product Short Description */}
                                 {product?.description && (
                                     <div className="mb-4">
-                                        <ul className="list-unstyled text-dark" style={{ paddingLeft: 0 }}>
-                                            {/* Hiển thị HTML ul/li từ product.description, thêm dấu + đầu mỗi dòng bằng CSS */}
-                                            <div
-                                                className="product-description-list"
-                                                dangerouslySetInnerHTML={{ __html: product.description }}
-                                            />
-                                        </ul>
+                                        <div
+                                            className="product-description-list"
+                                            dangerouslySetInnerHTML={{ __html: product.description }}
+                                        />
                                     </div>
                                 )}
                                 {/* Order Buttons */}
@@ -211,7 +239,7 @@ const ProductDetail = () => {
                                 </div>
                                 {/* Tags & Social */}
                                 <div className="d-flex flex-column gap-3 pt-2">
-                                    <div className="badge bg-light text-secondary fs-6 align-self-start">Thẻ: <span className="text-primary-custom">{product?.tag || 'hoa đám tang'}</span></div>
+                                    <div className="badge bg-light text-secondary fs-6 align-self-start">Thẻ: <span className="text-primary-custom">{product?.tag || 'chưa có thẻ'}</span></div>
                                     <div className="d-flex gap-2">
                                         <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon facebook" style={{ width: 36, height: 36 }}>
                                             <i className="bi bi-facebook fs-5" style={{ color: '#b0b0b0' }}></i>
@@ -222,16 +250,11 @@ const ProductDetail = () => {
                                         <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon email" style={{ width: 36, height: 36 }}>
                                             <i className="bi bi-envelope fs-5" style={{ color: '#b0b0b0' }}></i>
                                         </a>
-                                        <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon pinterest" style={{ width: 36, height: 36 }}>
-                                            <i className="bi bi-pinterest fs-5" style={{ color: '#b0b0b0' }}></i>
-                                        </a>
-                                        <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon linkedin" style={{ width: 36, height: 36 }}>
-                                            <i className="bi bi-linkedin fs-5" style={{ color: '#b0b0b0' }}></i>
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         {/* Tabs */}
                         <ul className="nav nav-tabs mb-4" style={{ borderBottom: '2px solid #eee', position: 'sticky', top: 0, zIndex: 10, background: '#fff' }}>
                             <li className="nav-item">
@@ -253,56 +276,23 @@ const ProductDetail = () => {
                                 </button>
                             </li>
                         </ul>
+
                         {/* Tab Content */}
                         {activeTab === 'description' && (
-                            <div className="mx-auto px-4 py-6">
-                                {/* Hiển thị details nếu có */}
-                                {product?.details && product.details.length > 0 && product.details.map((detail, idx) => (
-                                    <div key={detail.id || idx} className="mb-4">
-                                        {detail.title && (
-                                            <h2 className="fw-bold mb-2" style={{ fontSize: '1.5rem' }}>{detail.title}</h2>
-                                        )}
-                                        {detail.intro && (
-                                            <div className="mb-2" style={{ fontSize: '1rem' }}
-                                                dangerouslySetInnerHTML={{ __html: detail.intro }} />
-                                        )}
-                                        {detail.image && (
-                                            <div className="d-flex justify-content-center">
-                                                <img
-                                                    src={
-                                                        detail.image
-                                                            ? detail.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
-                                                            : "/api/placeholder/400/600"
-                                                    }
-                                                    alt={detail.title || ""}
-                                                    className="img-fluid mb-2 border"
-                                                    style={{ borderRadius: 8 }}
-                                                />
-                                            </div>
-                                        )}
-                                        {detail.description && (
-                                            <div className="mb-2" style={{ fontSize: '1rem' }}
-                                                dangerouslySetInnerHTML={{ __html: detail.description }} />
-                                        )}
-                                    </div>
-                                ))}
-                                <div className="container my-4">
-                                    <h4 className="fw-bold mb-3">Những cam kết hoa đám tang Bà Rịa:</h4>
-                                    <ul className="list-unstyled">
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Cam kết hoa tươi, cắm trong ngày, chất lượng.</li>
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Luôn gửi hình ảnh mẫu hoa trước và sau khi giao</li>
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Giao hoa nhanh chóng, chỉ trong vòng 1 đến 2 giờ kể từ khi chốt đơn hàng,</li>
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Dịch vụ giao hoa bằng ô tô theo yêu cầu quý khách</li>
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Miễn phí thiết kế bảng chữ theo ý quý khách</li>
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Hình thức thanh toán dễ dàng thuận tiện.</li>
-                                        <li className="mb-2"><span className="fw-bold me-2">+</span>Giao hàng miễn phí tại các quận nội thành trong thành phố</li>
-                                    </ul>
-                                    <p className="mt-3">
-                                        Bạn có bất kỳ thắc mắc nào, hãy liên hệ ngay cho chúng tôi qua Hotline 0966183183 để được tư vấn và hỗ trợ nhanh nhất!
-                                    </p>
-                                </div>
+                            <div className="product-long-description px-2">
+                                {product?.details && product.details.length > 0 ? (
+                                    product.details.map((detail) => (
+                                        <div
+                                            key={detail.id}
+                                            dangerouslySetInnerHTML={{ __html: renderDetailContent(detail) }}
+                                        />
+                                    ))
+                                ) : (
+                                    <p>Sản phẩm này chưa có mô tả chi tiết.</p>
+                                )}
                             </div>
                         )}
+
                         {activeTab === 'review' && (
                             <div className="px-4 py-4 bg-white rounded-3 border border-1 border-light-subtle">
                                 <ReviewCard productId={product.id} />
@@ -319,29 +309,17 @@ const ProductDetail = () => {
                                             <div className="card border-0 h-100">
                                                 <div className="position-relative">
                                                     <img
-                                                        src={
-                                                            relatedProduct.image
-                                                                ? relatedProduct.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
-                                                                : hoaKhaiTruong
-                                                        }
+                                                        src={buildImageUrl(relatedProduct.image)} // Sử dụng hàm trợ giúp
                                                         alt={relatedProduct.title}
                                                         className="card-img-top"
-                                                        style={{
-                                                            height: '150px',
-                                                            objectFit: 'cover',
-                                                            cursor: 'pointer'
-                                                        }}
+                                                        style={{ height: '150px', objectFit: 'cover', cursor: 'pointer' }}
                                                         onClick={() => navigate(`/cua-hang/${relatedProduct.id}`)}
                                                     />
                                                 </div>
                                                 <div className="card-body p-2 text-center">
                                                     <h6
                                                         className="card-title text-dark mb-0 fw-normal"
-                                                        style={{
-                                                            fontSize: '0.9rem',
-                                                            cursor: 'pointer',
-                                                            lineHeight: '1.2'
-                                                        }}
+                                                        style={{ fontSize: '0.9rem', cursor: 'pointer', lineHeight: '1.2' }}
                                                         onClick={() => navigate(`/cua-hang/${relatedProduct.id}`)}
                                                     >
                                                         {relatedProduct.title}

@@ -14,7 +14,8 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with('details');
+        // Tải sẵn các mối quan hệ 'category' và 'style' để tối ưu hóa truy vấn
+        $query = Product::with(['category', 'style']);
 
         // Sắp xếp theo tiêu chí
         $sort = $request->get('sort', 'newest');
@@ -46,7 +47,16 @@ class ProductController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $product = Product::with('details')->find($id);
+        // === PHẦN ĐƯỢC CẬP NHẬT ===
+        // Tải sẵn các mối quan hệ lồng nhau:
+        // 'category', 'style'
+        // 'details' (bảng product_details)
+        // 'details.images' (bảng product_detail_images, liên quan đến từng product_details)
+        $product = Product::with([
+            'category',
+            'style',
+            'details.images' // Tải chi tiết và hình ảnh chi tiết của sản phẩm
+        ])->find($id);
 
         if (!$product) {
             return response()->json([
@@ -66,13 +76,19 @@ class ProductController extends Controller
     /**
      * Lấy danh sách sản phẩm theo danh mục
      */
-    public function getByCategory($category, Request $request): JsonResponse
+    public function getByCategory($categorySlug, Request $request): JsonResponse
     {
-        $query = Product::where('category', $category);
+        // Sử dụng whereHas để lọc sản phẩm dựa trên 'name' của category liên quan
+        $query = Product::whereHas('category', function ($q) use ($categorySlug) {
+            $q->where('alias', $categorySlug);
+        });
 
         if ($request->has('exclude')) {
             $query->where('id', '!=', $request->exclude);
         }
+
+        // Tải các mối quan hệ sau khi lọc
+        $query->with(['category', 'style']);
 
         $sort = $request->get('sort', 'newest');
         switch ($sort) {
@@ -103,7 +119,7 @@ class ProductController extends Controller
      */
     public function getByIsOnTop(): JsonResponse
     {
-        $products = Product::with('details')
+        $products = Product::with(['category', 'style'])
             ->where('is_on_top', true)
             ->get();
 
@@ -119,14 +135,14 @@ class ProductController extends Controller
      */
     public function getNewProducts(): JsonResponse
     {
-        $products = Product::with('details')
-            ->where('is_new', true) // Lấy các sản phẩm có is_new = 1
+        $products = Product::with(['category', 'style'])
+            ->where('is_new', true)
             ->get();
 
         if ($products->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Không tìm thấy sản phẩm',
+                'message' => 'Không tìm thấy sản phẩm mới',
                 'data'    => null
             ], 404);
         }
@@ -141,19 +157,25 @@ class ProductController extends Controller
     /**
      * Lấy danh sách sản phẩm theo danh mục và phong cách
      */
-    public function getByCategoryAndStyle($category, $style = null): JsonResponse
+    public function getByCategoryAndStyle($categorySlug, $styleSlug = null): JsonResponse
     {
-        $query = Product::where('category', $category);
+        // Lọc theo category alias
+        $query = Product::whereHas('category', function ($q) use ($categorySlug) {
+            $q->where('alias', $categorySlug);
+        });
 
-        if ($style) {
-            $query->where('style', $style);
+        // Nếu có style, lọc tiếp theo style alias
+        if ($styleSlug) {
+            $query->whereHas('style', function ($q) use ($styleSlug) {
+                $q->where('alias', $styleSlug);
+            });
         }
 
-        $products = $query->get();
+        $products = $query->with(['category', 'style'])->get();
 
         return response()->json([
             'success' => true,
-            'message' => $style ? 'Danh sách sản phẩm theo danh mục và phong cách' : 'Danh sách sản phẩm theo danh mục',
+            'message' => $styleSlug ? 'Danh sách sản phẩm theo danh mục và phong cách' : 'Danh sách sản phẩm theo danh mục',
             'data' => $products
         ]);
     }
@@ -165,14 +187,17 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
-        // Xử lý đặc biệt cho danh mục "bán chạy nhất"
+        // Xử lý đặc biệt cho danh mục "bán chạy nhất" (is_on_top)
         if ($request->category === 'ban-chay-nhat') {
             return $this->getByIsOnTop();
         }
 
-        // Lọc theo danh mục
+        // Lọc theo danh mục nếu có và khác 'all'
         if ($request->has('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
+            $categorySlug = $request->category;
+            $query->whereHas('category', function ($q) use ($categorySlug) {
+                $q->where('alias', $categorySlug);
+            });
         }
 
         // Tìm kiếm theo từ khóa
@@ -184,7 +209,7 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->with('details')->get();
+        $products = $query->with(['category', 'style'])->get();
 
         return response()->json([
             'success' => true,

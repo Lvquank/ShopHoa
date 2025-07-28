@@ -25,8 +25,8 @@ class User extends Authenticatable
         'facebook_id'
     ];
 
-    // public function order()
-    // {
-    //     return $this->hasMany(Order::class, 'user_id', 'id');
-    // }
+    public function order()
+    {
+        return $this->hasMany(Order::class, 'user_id', 'id');
+    }
 }
