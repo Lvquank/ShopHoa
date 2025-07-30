@@ -36,11 +36,11 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::prefix('danh-muc-san-pham')->group(function () {
         Route::get('/', [AdminCategoryController::class, 'index'])->name('admin.category.product');
         Route::post('/change-status', [AdminCategoryController::class, 'changeStatus'])->name('admin.category.product.change-status');
-        Route::get('/them-danh-muc', [AdminCategoryController::class, 'addCategory'])->name('admin.category.product.add');
-        Route::post('/them-danh-muc', [AdminCategoryController::class, 'storeCategory'])->name('admin.category.product.store');
-        Route::get('/sua-danh-muc/{categoryId}', [AdminCategoryController::class, 'editCategory'])->name('admin.category.product.edit');
-        Route::post('/update', [AdminCategoryController::class, 'updateCategory'])->name('admin.category.product.update');
-        Route::post('/xoa-danh-muc/{categoryId}', [AdminCategoryController::class, 'deleteCategory'])->name('admin.category.product.delete');
+        Route::get('/them-danh-muc', [AdminCategoryController::class, 'create'])->name('admin.category.product.add');
+        Route::post('/them-danh-muc', [AdminCategoryController::class, 'store'])->name('admin.category.product.store');
+        Route::get('/sua-danh-muc/{categoryId}', [AdminCategoryController::class, 'edit'])->name('admin.category.product.edit');
+        Route::post('/update', [AdminCategoryController::class, 'update'])->name('admin.category.product.update');
+        Route::post('/xoa-danh-muc/{categoryId}', [AdminCategoryController::class, 'destroy'])->name('admin.category.product.delete');
     });
 
     // === QUẢN LÝ KIỂU DÁNG (Đã tối ưu) ===
@@ -53,11 +53,12 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/them-san-pham', [AdminProductController::class, 'addProduct'])->name('admin.product.add');
         Route::post('/them-san-pham', [AdminProductController::class, 'storeProduct'])->name('admin.product.store');
         Route::get('/sua-san-pham/{productId}', [AdminProductController::class, 'editProduct'])->name('admin.product.edit');
-        Route::post('/sua-san-pham', [AdminProductController::class, 'updateProduct'])->name('admin.product.update');
+        Route::post('/sua-san-pham/{productId}', [AdminProductController::class, 'updateProduct'])->name('admin.product.update');
         Route::post('/change-status', [AdminProductController::class, 'changeStatus'])->name('admin.product.change-status');
-        Route::post('/xoa-san-pham/{productId}', [AdminProductController::class, 'deleteProduct'])->name('admin.product.delete');
+        Route::delete('/xoa-san-pham/{product}', [AdminProductController::class, 'deleteProduct'])->name('admin.product.delete');
         Route::get('/doanh-thu', [AdminProductController::class, 'revenue'])->name('admin.product.revenue');
         Route::get('/json/{productId}', [AdminProductController::class, 'getProductJson'])->name('admin.product.json');
+        Route::get('/get-styles-by-category', [AdminProductController::class, 'getStylesByCategory'])->name('admin.getStylesByCategory');
     });
 
     Route::prefix('binh-luan')->group(function () {
@@ -83,9 +84,9 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::post('/change-status', [AdminPostController::class, 'changeStatusPost'])->name('admin.post.change-status');
         Route::get('/them-bai-viet', [AdminPostController::class, 'addPost'])->name('admin.post.add');
         Route::post('/them-bai-viet', [AdminPostController::class, 'storePost'])->name('admin.post.store');
-        Route::get('/sua-bai-viet/{postId}', [AdminPostController::class, 'editPost'])->name('admin.post.edit');
-        Route::post('/sua-bai-viet/{postId}', [AdminPostController::class, 'updatePost'])->name('admin.post.update');
-        Route::post('/xoa-bai-viet/{postId}', [AdminPostController::class, 'deletePost']);
+        Route::get('/sua-bai-viet/{post}', [AdminPostController::class, 'editPost'])->name('admin.post.edit');
+        Route::put('/sua-bai-viet/{post}', [AdminPostController::class, 'updatePost'])->name('admin.post.update');
+        Route::delete('/xoa-bai-viet/{post}', [AdminPostController::class, 'deletePost'])->name('admin.post.delete');
     });
 
     // === QUẢN LÝ BÌNH LUẬN BÀI VIẾT (THÊM MỚI) ===

@@ -5,16 +5,18 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header d-flex">
-                        <h4 class="card-title">Danh sách danh mục</h4>
-                        {{-- Sửa lại route cho đúng với web.php --}}
-                        <a href="{{ route('admin.category.product.add')}}" class="btn btn-success rounded-0 ms-auto py-1">Thêm danh mục</a>
+                    <div class="card-header d-flex align-items-center">
+                        <h4 class="card-title">Danh Sách Danh Mục</h4>
+                        <a href="{{ route('admin.category.product.add') }}" class="btn btn-primary rounded-0 ms-auto py-2">
+                            <i class="bi bi-plus-lg"></i> Thêm Danh Mục
+                        </a>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="basic-datatables" class="display table table-striped table-hover">
+                            <table class="display table table-striped table-hover">
                                 <thead>
                                     <tr>
+                                        <th>Thứ tự</th>
                                         <th>Tên danh mục</th>
                                         <th>Đường dẫn (Alias)</th>
                                         <th>Số kiểu dáng</th>
@@ -22,22 +24,15 @@
                                         <th>Chức năng</th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Tên danh mục</th>
-                                        <th>Đường dẫn (Alias)</th>
-                                        <th>Số kiểu dáng</th>
-                                        <th>Trạng thái</th>
-                                        <th>Chức năng</th>
-                                    </tr>
-                                </tfoot>
                                 <tbody>
-                                    {{-- Sử dụng biến $categories mới --}}
                                     @foreach ($categories as $category)
                                         <tr>
+                                            <td>{{ $category->order }}</td>
                                             <td>{{ $category->name }}</td>
                                             <td>{{ $category->alias }}</td>
-                                            <td>{{ $category->styles_count }}</td> {{-- Hiển thị số style liên quan --}}
+                                            <td>
+                                                <span class="badge bg-info">{{ $category->styles_count }}</span>
+                                            </td>
                                             <td>
                                                 <input class="form-check-input category-status" type="checkbox"
                                                     id="status-{{ $category->id }}" {{ $category->status ? 'checked' : '' }}
@@ -45,18 +40,16 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    {{-- Sửa lại route cho đúng với web.php --}}
-                                                    <a href="{{ route('admin.category.product.edit', $category->id) }}"
-                                                        class="me-3">
+                                                     <a href="{{ route('admin.category.product.edit', $category->id) }}" data-bs-toggle="tooltip"
+                                                        title="Sửa" class="btn btn-link btn-primary btn-lg">
                                                         <i class="bi bi-pencil-square"></i>
-                                                        Sửa
                                                     </a>
-                                                    {{-- Sửa lại form xóa để sử dụng URL thay vì route không tồn tại --}}
-                                                    <form action="{{ url('/admin/danh-muc-san-pham/xoa-danh-muc/' . $category->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');">
+                                                    <form action="{{ route('admin.category.product.delete', $category->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa không?')">
                                                         @csrf
-                                                        <button type="submit" class="text-danger border-0 bg-transparent">
+                                                        @method('DELETE')
+                                                        <button type="submit" data-bs-toggle="tooltip" title="Xóa"
+                                                            class="btn btn-link btn-danger">
                                                             <i class="bi bi-trash3"></i>
-                                                            Xóa
                                                         </button>
                                                     </form>
                                                 </div>
@@ -76,12 +69,13 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
+            // Script cho nút gạt status của category
             $('.category-status').change(function () {
                 var categoryId = $(this).data('category-id');
                 var status = $(this).is(':checked');
 
                 $.ajax({
-                    url: "{{ route('admin.category.product.change-status')}}", // Sửa lại tên route
+                    url: "{{ route('admin.category.product.change-status') }}",
                     method: 'POST',
                     data: {
                         id: categoryId,
@@ -89,9 +83,7 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function (response) {
-                        if (response.success) {
-                             Toast.fire({ icon: "success", text: 'Cập nhật trạng thái thành công!' });
-                        }
+                        Toast.fire({ icon: "success", text: 'Cập nhật trạng thái thành công!' });
                     },
                     error: function () {
                         Toast.fire({ icon: "error", text: 'Có lỗi xảy ra!' });
@@ -101,22 +93,15 @@
         });
     </script>
 
+    {{-- Hiển thị thông báo session (nếu có) --}}
     @if (session('success'))
         <script>
-            Toast.fire({
-                icon: "success",
-                text: '{{ session('success') }}',
-                timer: 3000,
-            });
+            Toast.fire({ icon: "success", text: '{{ session('success') }}', timer: 3000 });
         </script>
     @endif
     @if (session('error'))
         <script>
-            Toast.fire({
-                icon: "error",
-                text: '{{ session('error') }}',
-                timer: 3000,
-            });
+            Toast.fire({ icon: "error", text: '{{ session('error') }}', timer: 3000 });
         </script>
     @endif
 @endsection

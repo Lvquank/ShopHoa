@@ -14,22 +14,36 @@
             <nav class="navbar navbar-expand-xxl mb-3" style="background: white">
                 <div class="container-fluid">
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                        aria-label="Toggle navigation">
+                            data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                            aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div class="navbar-nav">
                             <div class="nav-link">
                                 <div class="form-group">
+                                    <label class="text-dark fw-bold">Danh mục</label>
+                                    <select class="form-select form-control-sm rounded-0" name="category_id">
+                                        <option value="">Tất cả</option>
+                                        @if (isset($categories))
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}"
+                                                        {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="nav-link">
+                                <div class="form-group">
                                     <label class="text-dark fw-bold">Kiểu dáng</label>
                                     <select class="form-select form-control-sm rounded-0" name="style_id">
                                         <option value="">Tất cả</option>
-                                        {{-- Controller cần truyền biến $styles --}}
                                         @if (isset($styles))
                                             @foreach ($styles as $style)
                                                 <option value="{{ $style->id }}"
-                                                    {{ request('style_id') == $style->id ? 'selected' : '' }}>
+                                                        {{ request('style_id') == $style->id ? 'selected' : '' }}>
                                                     {{ $style->name }}</option>
                                             @endforeach
                                         @endif
@@ -38,9 +52,9 @@
                             </div>
                             <div class="nav-link">
                                 <div class="form-group">
-                                    <label class="text-dark fw-bold">Tên sản phẩm</label>
+                                    <label class="text-dark fw-bold">Từ khóa tìm kiếm</label>
                                     <input type="text" class="form-control form-control-sm rounded-0" name="title"
-                                        value="{{ request('title') }}" />
+                                           value="{{ request('title') }}" />
                                 </div>
                             </div>
                             <div class="nav-link">
@@ -49,7 +63,7 @@
                                     <select class="form-select form-control-sm rounded-0" name="per_page">
                                         @foreach ([10, 25, 50, 100] as $option)
                                             <option value="{{ $option }}"
-                                                {{ request('per_page') == $option ? 'selected' : '' }}>
+                                                    {{ request('per_page', 10) == $option ? 'selected' : '' }}>
                                                 {{ $option }}
                                             </option>
                                         @endforeach
@@ -57,7 +71,7 @@
                                 </div>
                             </div>
                             <div class="nav-link d-flex align-items-center justify-content-end">
-                                <button type="submit" class="btn btn-primary btn-sm">Lọc kết quả</button>
+                                <button type="submit" class="btn btn-primary btn-sm">Tìm kiếm</button>
                             </div>
                         </div>
                     </div>
@@ -133,11 +147,11 @@
                                         <img src="{{ asset('/' . $product->image) }}" width="50px"
                                             alt="{{ $product->title }}">
                                     </td>
-                                    <td class="fw-bold text-truncate" style="max-width: 300px" title="{{ $product->title }}">
+                                    <td title="{{ $product->title }}">
                                         {{ $product->title }}
                                     </td>
                                     <td>{{ number_format($product->price, 0, ',', '.') }}₫</td>
-                                    <td class="fw-bold">{{ $product->purchases }}</td>
+                                    <td>{{ $product->purchases }}</td>
                                     <td class="fw-bold text-success">
                                         {{-- Controller cần tính toán và truyền thuộc tính 'revenue' --}}
                                         {{ number_format($product->revenue, 0, ',', '.') . '₫' }}

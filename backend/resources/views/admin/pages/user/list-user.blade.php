@@ -92,10 +92,10 @@
                                             </td>
                                             <td>{{$user->created_at ? $user->created_at->format('H:i d/m/Y') : '' }} </td>
                                             <td>
-                                                <span class="badge {{ $user->order ? 'badge-success' : 'badge-primary' }}">
-                                                    {{ $user->order ? 'Đã mua hàng' : 'Chưa mua hàng' }}
+                                                <span class="badge {{ count($user->order) > 0 ? 'badge-success' : 'badge-primary' }}">
+                                                    {{ count($user->order) > 0 ? 'Đã mua hàng' : 'Chưa mua hàng' }}
                                                 </span>
-                                            </td>                              
+                                            </td>                           
                                             <td>
                                                 <div class="dropdown">
                                                     <button class="btn btn-icon btn-clean me-0" type="button"

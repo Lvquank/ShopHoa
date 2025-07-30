@@ -37,6 +37,8 @@ const Pay = () => {
     const totalAmount = useMemo(() => cartTotalPrice + shipping, [cartTotalPrice, shipping]);
 
     useEffect(() => {
+        // KIỂM TRA TRƯỚC KHI GỌI API
+        // Nếu có người dùng, điền thông tin vào form và gọi API để lấy dữ liệu
         if (user) {
             setFormData(prev => ({
                 ...prev,
@@ -44,25 +46,27 @@ const Pay = () => {
                 email: user.email || '',
                 phone_number: user.phone_number || ''
             }));
-        }
 
-        apiClient.get('/api/checkout')
-            .then(response => {
-                if (response.data && response.data.provinces) {
-                    setProvinces(response.data.provinces);
-                }
-            })
-            .catch(error => {
-                console.error("Lỗi khi tải danh sách tỉnh thành:", error);
-                if (error.response && error.response.status === 401) {
-                    toast.error('Vui lòng đăng nhập để tiếp tục.');
-                    navigate('/dang-nhap');
-                }
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    }, [user, navigate]);
+            apiClient.get('/api/checkout')
+                .then(response => {
+                    if (response.data && response.data.provinces) {
+                        setProvinces(response.data.provinces);
+                    }
+                })
+                .catch(error => {
+                    // Lỗi 401 đã được xử lý tự động, chỉ cần log các lỗi khác
+                    console.error("Lỗi khi tải dữ liệu trang thanh toán:", error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        } else {
+            // Nếu không có người dùng, KHÔNG gọi API và chỉ cần dừng trạng thái loading.
+            // Điều này sẽ ngăn việc tự động chuyển trang.
+            setIsLoading(false);
+        }
+    }, [user]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -156,33 +160,22 @@ const Pay = () => {
         return <div className="text-center py-5">Đang tải dữ liệu...</div>;
     }
 
-    // Giao diện khi giỏ hàng trống
-    if (!user || cartItems.length === 0) {
+    // 1. Ưu tiên kiểm tra trạng thái đăng nhập
+    if (!user) {
         return (
             <section className="checkout py-5">
                 <div className="container">
-                    {/* BREADCRUMB CHỈ HIỂN THỊ KHI GIỎ HÀNG TRỐNG */}
-                    <nav aria-label="breadcrumb" className="mb-5">
-                        <div className="text-center">
-                            <span className="text-dark" style={{ fontSize: '25px' }}>GIỎ HÀNG</span>
-                            <span className="mx-2 text-muted" style={{ fontSize: '25px' }}>&gt;</span>
-                            <span style={{ fontSize: '25px', color: '#ff5622' }}>THANH TOÁN</span>
-                            <span className="mx-2 text-muted" style={{ fontSize: '25px' }}>&gt;</span>
-                            <span style={{ fontSize: '25px', color: '#ff5622' }}>HOÀN TẤT</span>
-                        </div>
-                    </nav>
-
                     <div className="row justify-content-center">
                         <div className="col-lg-8 text-center">
                             <p className="text-muted fs-5 mb-4">
-                                {!user ? "Vui lòng đăng nhập để xem trang thanh toán." : "Chưa có sản phẩm nào trong giỏ hàng."}
+                                Vui lòng đăng nhập để xem trang thanh toán.
                             </p>
                             <button
                                 className="btn px-4 py-2 fw-bold text-uppercase text-white"
-                                onClick={() => navigate(!user ? '/dang-nhap' : '/cua-hang')}
+                                onClick={() => navigate('/login')}
                                 style={{ backgroundColor: '#ff5622', fontSize: '14px' }}
                             >
-                                {!user ? 'ĐI ĐẾN TRANG ĐĂNG NHẬP' : 'QUAY TRỞ LẠI CỬA HÀNG'}
+                                ĐI ĐẾN TRANG ĐĂNG NHẬP
                             </button>
                         </div>
                     </div>
@@ -191,10 +184,34 @@ const Pay = () => {
         );
     }
 
+    // 2. Nếu đã đăng nhập, kiểm tra giỏ hàng có trống không
+    if (cartItems.length === 0) {
+        return (
+            <section className="checkout py-5">
+                <div className="container">
+                    <div className="row justify-content-center">
+                        <div className="col-lg-8 text-center">
+                            <p className="text-muted fs-5 mb-4">
+                                Chưa có sản phẩm nào trong giỏ hàng.
+                            </p>
+                            <button
+                                className="btn px-4 py-2 fw-bold text-uppercase text-white"
+                                onClick={() => navigate('/cua-hang')}
+                                style={{ backgroundColor: '#ff5622', fontSize: '14px' }}
+                            >
+                                QUAY TRỞ LẠI CỬA HÀNG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    // 3. Nếu mọi thứ đều ổn, hiển thị form thanh toán
     return (
         <section className="checkout py-5">
             <div className="container-lg">
-                {/* Dòng <nav> đã được XÓA khỏi đây */}
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="row">
                         <div className="col-lg-6 mb-5">

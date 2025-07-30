@@ -52,7 +52,7 @@ const ProductDetail = () => {
             setLoading(true);
             await addToCart(product.id, 1);
             // Chuyển đến trang thanh toán
-            navigate('/thanh-toan');
+            navigate('/gio-hang');
         } catch (error) {
             console.error('Error buying now:', error);
             alert(error.response?.data?.message || 'Có lỗi xảy ra');
@@ -75,15 +75,15 @@ const ProductDetail = () => {
             const imageUrl = imageMap.get(parseInt(imageId, 10));
             if (imageUrl) {
                 return `
-                    <div class="d-flex justify-content-center my-3">
-                        <img 
-                            src="${imageUrl}" 
-                            alt="Hình ảnh chi tiết ${imageId}" 
-                            class="img-fluid border" 
-                            style="border-radius: 8px; max-width: 100%; height: auto;" 
-                            loading="lazy"
-                        />
-                    </div>`;
+                        <div class="d-flex justify-content-center my-3">
+                            <img 
+                                src="${imageUrl}" 
+                                alt="Hình ảnh chi tiết ${imageId}" 
+                                class="img-fluid border" 
+                                style="border-radius: 8px; max-width: 100%; height: auto;" 
+                                loading="lazy"
+                            />
+                        </div>`;
             }
             return ''; // Bỏ qua nếu không tìm thấy ảnh
         });
@@ -174,7 +174,7 @@ const ProductDetail = () => {
                             </div>
                             {/* Product Info */}
                             <div className="col-lg-7 d-flex flex-column justify-content-center" style={{ minHeight: 480 }}>
-                                {/* Breadcrumb */}
+                                {/* Breadcrumb ĐÃ SỬA LỖI */}
                                 <nav className="mb-2 text-sm text-secondary">
                                     <span
                                         className="text-primary-custom fw-bold cursor-pointer"
@@ -185,16 +185,18 @@ const ProductDetail = () => {
                                     <span className="mx-2">/</span>
                                     <span
                                         className="text-primary-custom fw-bold cursor-pointer"
-                                        onClick={() => product?.category?.alias && navigate(`/danh-muc/${product.category.alias}`)}
+                                        onClick={() => navigate(`/cua-hang?category=${product?.category?.alias || ''}`)}
                                     >
-                                        {product?.category?.name || 'Danh mục'}
+                                        {product?.category?.name || 'Cửa hàng'}
                                     </span>
+
+                                    {/* Phần hiển thị style không đổi */}
                                     {product?.style && (
                                         <>
                                             <span className="mx-2">/</span>
                                             <span
                                                 className="text-primary-custom fw-bold cursor-pointer"
-                                                onClick={() => product?.category?.alias && product?.style?.alias && navigate(`/danh-muc/${product.category.alias}/${product.style.alias}`)}
+                                                onClick={() => navigate(`/cua-hang?category=${product.category.alias}&style=${product.style.alias}`)}
                                             >
                                                 {product.style.name}
                                             </span>

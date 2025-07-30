@@ -19,90 +19,60 @@ import newsImage from "../assets/images/hoa-gio.webp"
 import newsImage2 from "../assets/images/Hoa-Dam-Tang-Long-Huong.webp"
 import openingFlowerImage from "../assets/images/banner-d2.webp"
 import openingFlowerImage2 from "../assets/images/banner-d4.webp"
+
 function Home() {
     const [topSellingProducts, setTopSellingProducts] = useState([])
-    const [categoryProducts, setCategoryProducts] = useState([])
     const [productsKhaiTruong, setProductsKhaiTruong] = useState([])
     const [productsDamTang, setProductsDamTang] = useState([])
     const [productsGio, setProductsGio] = useState([])
     const [productsBo, setProductsBo] = useState([])
+    const [relatedProducts, setRelatedProducts] = useState([])
 
-    useEffect(() => {
-        // Lấy top sản phẩm bán chạy (is_on_top = true)
-        fetch(`${import.meta.env.VITE_API_URL}/api/products/top`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) setTopSellingProducts(data.data.slice(0, 4))
-            })
-    }, [])
-
-    // Hàm lấy sản phẩm theo category truyền vào
+    // Hàm lấy sản phẩm theo category truyền vào (ĐÃ SỬA)
     const fetchCategoryProducts = (category, setProducts) => {
         fetch(`${import.meta.env.VITE_API_URL}/api/products/category/${category}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    setProducts(data.data)
+                    // Xử lý lại mảng dữ liệu để tạo URL ảnh đầy đủ
+                    const formattedData = data.data.map(product => ({
+                        ...product, // Giữ lại tất cả thông tin cũ của sản phẩm
+                        // Ghi đè lại thuộc tính 'image' với URL đầy đủ
+                        image: product.image
+                            ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/${product.image.replace(/^\//, '')}`
+                            : hoaKhaiTruong // Sử dụng ảnh mặc định nếu không có ảnh
+                    }));
+
+                    setProducts(formattedData); // Cập nhật state với dữ liệu đã được xử lý
                 }
             })
     }
 
-    // Ví dụ sử dụng cho hoa khai trương
     useEffect(() => {
+        // Lấy top sản phẩm bán chạy
+        fetch(`${import.meta.env.VITE_API_URL}/api/products/top`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const formattedTopProducts = data.data.map(product => ({
+                        ...product,
+                        image: product.image
+                            ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/${product.image.replace(/^\//, '')}`
+                            : hoaKhaiTruong
+                    }));
+                    setTopSellingProducts(formattedTopProducts.slice(0, 4))
+                }
+            })
+
+        // Lấy sản phẩm cho các category
         fetchCategoryProducts("hoa-khai-truong", setProductsKhaiTruong)
         fetchCategoryProducts("hoa-dam-tang", setProductsDamTang)
         fetchCategoryProducts("hoa-gio", setProductsGio)
         fetchCategoryProducts("hoa-bo", setProductsBo)
     }, [])
 
-    const categoryDataHoaKhaiTruong =
-    {
-        imageUrl: categoryHoaKhaiTruong,
-        title: "HOA KHAI TRƯƠNG"
-    }
-    const categoryDataHoaDamTang =
-    {
-        imageUrl: categoryHoaDamTang,
-        title: "HOA TANG LỄ"
-    }
-    const categoryDataHoaGio =
-    {
-        imageUrl: categoryHoaGio,
-        title: "HOA GIỎ"
-    }
-    const categoryDataHoaBo =
-    {
-        imageUrl: categoryHoaBo,
-        title: "HOA BÓ"
-    }
-
-    const OpeningFlower = [
-        {
-            imageUrl: hoaKhaiTruong,
-            title: "Hoa khai trương",
-            productCount: 3,
-            link: "/danh-muc/hoa-khai-truong"
-        },
-        {
-            imageUrl: hoaDamTang,
-            title: "Hoa đám tang",
-            productCount: 14,
-            link: "/danh-muc/hoa-dam-tang"
-        },
-    ]
-    const topProducts = [
-        {
-            imageUrl: openingFlowerImage,
-            title: "Hoa khai trương",
-        },
-        {
-            imageUrl: openingFlowerImage2,
-            title: "Hoa đám tang",
-        },
-    ]
-    const [relatedProducts, setRelatedProducts] = useState([])
-
     useEffect(() => {
+        // Lấy sản phẩm cho phần "Có thể bạn quan tâm"
         fetch(`${import.meta.env.VITE_API_URL}/api/products/top`)
             .then(res => res.json())
             .then(data => {
@@ -110,7 +80,7 @@ function Home() {
                     const formattedProducts = data.data.map(product => ({
                         id: product.id,
                         imageUrl: product.image
-                            ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
+                            ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/${product.image.replace(/^\//, '')}`
                             : hoaKhaiTruong,
                         title: product.title
                     }))
@@ -118,22 +88,28 @@ function Home() {
                 }
             })
     }, [])
-    const newsData = [
-        {
-            id: "1",
-            imageUrl: newsImage,
-            title: "Đặt hoa 20/10 món quà ý nghĩa ngày phụ nữ Việt Nam.",
-            date: "03/10/2022",
-            excerpt: "Hoa 20/10 món quà thay cho lời cảm ơn và sự quan ...",
-        },
-        {
-            id: "2",
-            imageUrl: newsImage2,
-            title: "Đặt Hoa Đám Tang – Hoa Tang lễ Giao Tận Nơi",
-            date: "28/09/2022",
-            excerpt: "Đặt hoa đám tang - Hoa tang lễ giao tận nơi ...",
-        },
+
+    // Dữ liệu tĩnh
+    const categoryDataHoaKhaiTruong = { imageUrl: categoryHoaKhaiTruong, title: "HOA KHAI TRƯƠNG" }
+    const categoryDataHoaDamTang = { imageUrl: categoryHoaDamTang, title: "HOA TANG LỄ" }
+    const categoryDataHoaGio = { imageUrl: categoryHoaGio, title: "HOA GIỎ" }
+    const categoryDataHoaBo = { imageUrl: categoryHoaBo, title: "HOA BÓ" }
+
+    const OpeningFlower = [
+        { imageUrl: hoaKhaiTruong, title: "Hoa khai trương", productCount: 3, link: "/danh-muc/hoa-khai-truong" },
+        { imageUrl: hoaDamTang, title: "Hoa đám tang", productCount: 14, link: "/danh-muc/hoa-dam-tang" },
     ]
+
+    const topProducts = [
+        { imageUrl: openingFlowerImage, title: "Hoa khai trương" },
+        { imageUrl: openingFlowerImage2, title: "Hoa đám tang" },
+    ]
+
+    const newsData = [
+        { id: "1", imageUrl: newsImage, title: "Đặt hoa 20/10 món quà ý nghĩa ngày phụ nữ Việt Nam.", date: "03/10/2022", excerpt: "Hoa 20/10 món quà thay cho lời cảm ơn và sự quan ..." },
+        { id: "2", imageUrl: newsImage2, title: "Đặt Hoa Đám Tang – Hoa Tang lễ Giao Tận Nơi", date: "28/09/2022", excerpt: "Đặt hoa đám tang - Hoa tang lễ giao tận nơi ..." },
+    ]
+
     return (
         <div className="min-vh-100 d-flex flex-column">
             <div className="main-content flex-grow-1">
@@ -177,12 +153,8 @@ function Home() {
                     {topSellingProducts.map((product, index) => (
                         <div key={index} className="col-12 col-sm-6 col-md-4 col-lg-3">
                             <FlowerCard
-                                key={index}
-                                imageUrl={
-                                    product.image
-                                        ? product.image.replace("http://localhost:8000", import.meta.env.VITE_API_URL)
-                                        : hoaKhaiTruong
-                                }
+                                key={product.id}
+                                imageUrl={product.image}
                                 title={product.title}
                                 buttonText="Đặt mua"
                                 buttonType="order"
@@ -221,7 +193,7 @@ function Home() {
                 <section className="related-products py-5">
                     <div className="container">
                         <div className="row">
-                            {newsData.slice(0, 2).map((article, index) => (
+                            {newsData.slice(0, 2).map((article) => (
                                 <NewsCard key={article.id} article={article} />
                             ))}
                         </div>
@@ -234,7 +206,6 @@ function Home() {
                         </div>
                     </div>
                 </section>
-
             </div>
             <ServicesSection />
         </div>

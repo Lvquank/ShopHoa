@@ -14,6 +14,8 @@ import Category from './pages/Category';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthCallback from './pages/AuthCallback';
+import ResetPassword from './pages/ResetPassword';
+import ForgotPassword from './pages/ForgotPassword';
 function AppRoutes() {
   return (
     <Routes>
@@ -134,6 +136,22 @@ function AppRoutes() {
         element={
           <Layout isShowCategoryMenu={false}>
             <AuthCallback />
+          </Layout>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <ForgotPassword />
+          </Layout>
+        }
+      />
+      <Route
+        path="/reset-password/:token"
+        element={
+          <Layout isShowCategoryMenu={false}>
+            <ResetPassword />
           </Layout>
         }
       />

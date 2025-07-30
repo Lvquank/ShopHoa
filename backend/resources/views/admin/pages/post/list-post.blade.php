@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="page-inner">
+        {{-- Sửa: Đổi name="name" thành name="title" cho khớp với Controller --}}
         <form action="{{ route('admin.post')}}" method="GET">
             <nav class="navbar navbar-expand-xxl mb-3" style="background: white">
                 <div class="container-fluid">
@@ -26,8 +27,8 @@
                             <div class="nav-link">
                                 <div class="form-group">
                                     <label class="text-dark fw-bold">Từ khóa tìm kiếm</label>
-                                    <input type="text" class="form-control form-control-sm rounded-0" name="name"
-                                           value="{{ request('name')}}" />
+                                    <input type="text" class="form-control form-control-sm rounded-0" name="title"
+                                           value="{{ request('title')}}" />
                                 </div>
                             </div>
                             <div class="nav-link">
@@ -35,7 +36,7 @@
                                     <label class="text-dark fw-bold">Số dòng hiển thị</label>
                                     <select class="form-select form-control-sm rounded-0" name="per_page">
                                         @foreach ([10, 25, 50, 100] as $option)
-                                            <option value="{{ $option }}" {{ request('per_page') == $option ? 'selected' : '' }}>
+                                            <option value="{{ $option }}" {{ request('per_page', 10) == $option ? 'selected' : '' }}>
                                                 {{ $option }}
                                             </option>
                                         @endforeach
@@ -55,7 +56,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex">
-                        <h4 class="card-title">Danh sách bài viết</h4>
+                        <h4 class="card-title">Danh sách bài viết ({{ $posts->total() }})</h4>
                         <a href="{{ route('admin.post.add')}}" class="btn btn-success rounded-0 ms-auto py-1">Thêm bài viết</a>
                     </div>
                     <div class="card-body">
@@ -71,16 +72,6 @@
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Ảnh</th>
-                                        <th>Tiêu đề bài viết</th>
-                                        <th>Ngày đăng</th>
-                                        <th>Lượt xem</th>
-                                        <th>Nổi bật</th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
                                 <tbody>
                                     @foreach ($posts as $post)
                                         <tr>
@@ -90,31 +81,31 @@
                                             <td>
                                                 <strong>{{$post->title}}</strong>
                                                 <p class="small text-muted mb-0">Tác giả: {{ $post->author }}</p>
-                                                @if($post->post_category_id)
-                                                    <p class="small text-muted mb-0">Danh mục: {{ $post->category->name ?? 'N/A' }}</p>
+                                                @if($post->category)
+                                                    <p class="small text-muted mb-0">Danh mục: {{ $post->category->name }}</p>
                                                 @endif
                                             </td>
-                                            <td>{{$post->created_at ? $post->created_at->format('d/m/Y') : '' }} </td>
+                                            <td>{{ $post->created_at ? $post->created_at->format('d/m/Y H:i') : '' }} </td>
                                             <td>
                                                 <span class="fw-bold">{{$post->histotal}}</span>
                                             </td>
                                             <td class="text-center">
-                                                {{-- Checkbox này dùng cột `is_featured` từ database --}}
-                                                <input class="form-check-input status" type="checkbox" {{ $post->is_featured ? 'checked' : '' }} data-post-id="{{ $post->id }}" data-type="is_featured" />
+                                                <input class="form-check-input status" type="checkbox" {{ $post->is_featured ? 'checked' : '' }} data-id="{{ $post->id }}" data-type="is_featured" />
                                             </td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button class="btn btn-icon btn-clean me-0" type="button"
-                                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                                                            data-bs-toggle="dropdown" aria-haspopup="true"
                                                             aria-expanded="false">
                                                         <i class="bi bi-three-dots"></i>
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        <a class="dropdown-item"
-                                                           href="{{ route('admin.post.edit', ['postId' => $post->id])}}">Chỉnh
-                                                            sửa</a>
+                                                        {{-- Sửa: Dùng Route Model Binding, truyền cả đối tượng $post --}}
+                                                        <a class="dropdown-item" href="{{ route('admin.post.edit', $post) }}">Chỉnh sửa</a>
+                                                        
+                                                        {{-- Sửa: Truyền cả URL được tạo từ route vào hàm onclick --}}
                                                         <button class="dropdown-item text-danger"
-                                                                onclick="deletePost({{ $post }})">Xóa</button>
+                                                                onclick="deletePost({{ $post }}, '{{ route('admin.post.delete', $post) }}')">Xóa</button>
                                                     </div>
                                                 </div>
                                             </td>
@@ -130,11 +121,12 @@
         </div>
     </div>
 
-    {{-- modal delete product --}}
-    <div class="modal fade" id="deletePost" tabindex="-1" aria-labelledby="deletePostLabel" aria-hidden="true">
+    {{-- Sửa: Thêm @method('DELETE') vào form và đổi id của modal --}}
+    <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form method="POST" id="formDeletePost">
                 @csrf
+                @method('DELETE')
                 <div class="modal-content">
                     <div class="modal-header bg-danger text-white">
                         <h1 class="modal-title fs-5" id="deletePostLabel">Xác nhận xóa bài viết</h1>
@@ -142,10 +134,10 @@
                     </div>
                     <div class="modal-body">
                         <p id="messageDelete"></p>
-                        <p>Nếu đồng ý, tất cả dữ liệu liên quan sẽ bị xóa. Bạn sẽ không thể phục hồi lại chúng sau này!</p>
+                        <p>Hành động này không thể hoàn tác!</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         <button type="submit" class="btn btn-danger">Xóa</button>
                     </div>
                 </div>
@@ -157,29 +149,21 @@
 @section('scripts')
     @if (session('success'))
         <script>
-            Toast.fire({
-                icon: "success",
-                text: '{{ session('success') }}',
-                timer: 3000,
-            });
+            Toast.fire({ icon: "success", text: '{{ session('success') }}' });
         </script>
     @endif
     @if (session('error'))
         <script>
-            Toast.fire({
-                icon: "error",
-                text: '{{ session('error') }}',
-                timer: 3000,
-            });
+            Toast.fire({ icon: "error", text: '{{ session('error') }}' });
         </script>
     @endif
 
     <script>
         $(document).ready(function () {
             $('.status').change(function () {
-                var postId = $(this).data('post-id');
-                var status = $(this).is(':checked')
-                var type = $(this).data('type')
+                var postId = $(this).data('id');
+                var status = $(this).is(':checked');
+                var type = $(this).data('type');
                 $.ajax({
                     url: "{{ route('admin.post.change-status')}}",
                     method: 'POST',
@@ -190,37 +174,21 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function (response) {
-                        if (!response.success) {
-                            $(this).prop('checked', !status);
-                            Toast.fire({
-                                icon: "error",
-                                text: 'Có lỗi khi thay đổi trạng thái',
-                                timer: 3000,
-                            });
+                        if (response.success) {
+                            Toast.fire({ icon: "success", text: 'Cập nhật trạng thái thành công' });
                         } else {
-                            Toast.fire({
-                                icon: "success",
-                                text: 'Cập nhật trạng thái thành công',
-                                timer: 3000,
-                            });
+                            Toast.fire({ icon: "error", text: 'Có lỗi khi thay đổi trạng thái' });
                         }
-                    },
-                    error: function () {
-                        $(this).prop('checked', !status);
-                        Toast.fire({
-                            icon: "error",
-                            text: 'Có lỗi khi thay đổi trạng thái',
-                            timer: 3000,
-                        });
                     }
-                })
-            })
-        })
+                });
+            });
+        });
 
-        function deletePost(post) {
+        // Sửa: Hàm deletePost nhận thêm tham số deleteUrl
+        function deletePost(post, deleteUrl) {
             document.getElementById('messageDelete').innerHTML = `Bạn có chắc chắn muốn xóa bài viết <b>"${post.title}"</b> không?`;
-            document.getElementById('formDeletePost').action = `/admin/bai-viet/xoa-bai-viet/${post.id}`;
-            $('#deletePost').modal('show');
+            document.getElementById('formDeletePost').action = deleteUrl;
+            $('#deletePostModal').modal('show');
         }
     </script>
 @endsection

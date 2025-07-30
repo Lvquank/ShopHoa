@@ -33,16 +33,23 @@ class Product extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'product_code',
         'title',
-        'image',
         'description',
-        'price',
-        'purchases',
         'tag',
+        'image',
         'is_on_top',
         'is_new',
+        'price',
+        'purchases',
         'category_id',
         'style_id',
+        'order',
+        'stock_status',
+    ];
+    protected $casts = [
+        'is_on_top' => 'boolean',
+        'is_new' => 'boolean',
     ];
 
     /**

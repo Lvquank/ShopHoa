@@ -14,7 +14,7 @@
                             <table id="basic-datatables" class="display table table-striped table-hover basic-datatables">
                                 <thead>
                                     <tr>
-                                        <th>Sắp xếp</th>
+                                        <th>Thứ tự</th>
                                         <th>Tên danh mục</th>
                                         <th class="text-center">Hiển thị</th>
                                         <th></th>

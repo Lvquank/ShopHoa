@@ -15,8 +15,7 @@ class AdminStyleController extends Controller
     public function index()
     {
         // Lấy danh sách các Kiểu Dáng, kèm theo thông tin Danh Mục liên quan.
-        $styles = Style::with('category')->latest()->paginate(15);
-
+        $styles = Style::with('categories')->latest()->paginate(11);
         // Trả về đúng view của Kiểu Dáng.
         return view('admin.pages.styles.list-style', compact('styles'));
     }

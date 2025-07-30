@@ -80,10 +80,7 @@ const Category = () => {
                                         key={product.id || index}
                                         imageUrl={
                                             product.image
-                                                ? product.image.replace(
-                                                    "http://localhost:8000",
-                                                    import.meta.env.VITE_API_URL
-                                                )
+                                                ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/${product.image.replace(/^\//, '')}`
                                                 : hoaKhaiTruong
                                         }
                                         title={product.title}

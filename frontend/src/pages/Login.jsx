@@ -163,10 +163,10 @@ function Login() {
                             </button>
                         </form>
                         <div className="gach"></div>
-                        <Link to="/quen-mat-khau" className="mb-2" style={{ fontSize: '14px' }}>
+                        <Link to="/forgot-password" className="mb-2" style={{ fontSize: '14px' }}>
                             Quên mật khẩu?
                         </Link>
-                        <Link to="/dang-ky" className="mb-4" style={{ fontSize: '14px' }}>
+                        <Link to="/register" className="mb-4" style={{ fontSize: '14px' }}>
                             Bạn chưa có tài khoản? Đăng ký ngay
                         </Link>
 

@@ -3,8 +3,8 @@
 
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Bảng điều kiển - Nội Thất Uy Tín Vinh Hải</title>
-  <link rel="icon" type="image/png" href="{{ asset('favico.png') }}">
+  <title>Bảng điều kiển - SHOP HOA TƯƠI 24/7</title>
+  <link rel="icon" type="image/png" href="{{ asset('images/shophoa.shop-icon.png') }}">
   <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
   {{--
   <link rel="icon" href="assets/img/kaiadmin/favicon.ico" type="image/x-icon" /> --}}

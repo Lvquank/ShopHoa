@@ -101,7 +101,11 @@ const Cart = () => {
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     <img
-                                                        src={(item.image_url || item.image)?.replace('http://localhost:8000', import.meta.env.VITE_API_URL)}
+                                                        src={
+                                                            (item.image_url || item.image)
+                                                                ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/${(item.image_url || item.image).replace(/^\//, '')}`
+                                                                : '/path/to/default-image.png' // Thay thế bằng ảnh mặc định của bạn
+                                                        }
                                                         alt={item.name}
                                                         className="rounded border"
                                                         style={{ width: '70px', height: '70px', objectFit: 'cover' }}

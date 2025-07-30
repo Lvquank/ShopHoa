@@ -201,6 +201,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                                     alt={user.username}
                                                     className="rounded-circle"
                                                     style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                                                    referrerPolicy="no-referrer"
                                                 />
                                                 <span className="ms-2 text-white">{user.username}</span>
                                             </div>

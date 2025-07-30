@@ -17,11 +17,9 @@ class Category extends Model
         'alias',
         'status'
     ];
-    public function styles(): HasMany
+    public function styles()
     {
-        // Một Category có nhiều Styles.
-        // Laravel sẽ tự động tìm kiếm khóa ngoại 'category_id' trong bảng 'styles'.
-        return $this->hasMany(Style::class, 'category_id', 'id');
+        return $this->belongsToMany(Style::class, 'category_style');
     }
 
     /**

@@ -65,7 +65,7 @@ class AdminPostReviewController extends Controller
         $review->save();
 
         // Chuyển hướng về trang danh sách với thông báo thành công
-        return redirect()->route('admin.pages.post-review.list')->with('success', 'Cập nhật bình luận thành công!');
+        return redirect()->route('admin.post-review.list')->with('success', 'Cập nhật bình luận thành công!');
     }
 
     /**
@@ -81,6 +81,6 @@ class AdminPostReviewController extends Controller
         $review->delete();
 
         // Chuyển hướng về trang danh sách với thông báo thành công
-        return redirect()->route('admin.pages.post-review.list')->with('success', 'Đã xóa bình luận thành công!');
+        return redirect()->route('admin.post-review.list')->with('success', 'Đã xóa bình luận thành công!');
     }
 }

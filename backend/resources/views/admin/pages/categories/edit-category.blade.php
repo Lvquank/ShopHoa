@@ -49,30 +49,6 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="text-dark fw-bold" for="title_seo_category">Title SEO <span
-                                                class="text-danger">(*)</span></label>
-                                        <input type="text" class="form-control form-control rounded-0"
-                                            id="title_seo_category" name="title_seo" value="{{ $category->title_seo}}" />
-                                        @error('title_seo')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label class="text-dark fw-bold ms-3" for="file">Hình ảnh minh họa:</label>
-                                    <div class="my-2 ms-3 box-preview" id="imagePreview">
-                                        <img class="img-preview" src="{{ asset('storage/' . $category->image)}}" alt="">
-                                    </div>
-                                    <div class="input-group p-2">
-                                        <input type="file" class="form-control rounded-0" id="file" name="image"
-                                            value="{{old('image')}}" onchange="previewImage()" />
-                                        <button class="btn btn-outline-danger rounded-0" type="button" id="deleteImage" disabled>
-                                            <i class="bi bi-trash3-fill"></i>
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                             <div class="col-sm-4">
                                 <div class="form-group">

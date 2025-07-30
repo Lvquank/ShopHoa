@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ProductSearchBar from '../components/ProductSearchBar';
 import ProductSidebar from '../components/ProductSidebar';
 import FlowerCard from '../components/FlowerCard';
@@ -13,14 +13,13 @@ const Products = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [currentSort, setCurrentSort] = useState(searchParams.get('sort') || 'newest');
-  // Effect để load sản phẩm khi component mount hoặc URL thay đổi
+
   useEffect(() => {
     const category = searchParams.get('category');
     const keyword = searchParams.get('keyword');
     const sort = searchParams.get('sort') || 'newest';
     setCurrentSort(sort);
 
-    // Xây dựng URL với tham số sắp xếp
     let url;
     if (category && category !== 'all') {
       url = `${import.meta.env.VITE_API_URL}/api/products/category/${category}?sort=${sort}`;
@@ -30,7 +29,6 @@ const Products = () => {
       url = `${import.meta.env.VITE_API_URL}/api/products?sort=${sort}`;
     }
 
-    // Gọi API
     fetch(url)
       .then(res => res.json())
       .then(data => {
@@ -39,18 +37,12 @@ const Products = () => {
         }
       })
       .catch(err => console.error('Error fetching products:', err));
-  }, [location.search]); // Effect sẽ chạy lại khi URL thay đổi
+  }, [location.search]);
 
-  // Xử lý khi người dùng thay đổi cách sắp xếp
   const handleSortChange = (sort) => {
-    // Cập nhật URL với tham số sort mới
     const newSearchParams = new URLSearchParams(location.search);
     newSearchParams.set('sort', sort);
     navigate({ search: newSearchParams.toString() });
-  };
-
-  const handleProductClick = (id) => {
-    navigate(`/cua-hang/${id}`);
   };
 
   return (
@@ -78,22 +70,18 @@ const Products = () => {
                   <div
                     key={product.id || index}
                     className="col-lg-3 col-md-6 col-6"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleProductClick(product.id)}
                   >
                     <FlowerCard
-                      key={product.id || index}
                       imageUrl={
                         product.image
                           ? import.meta.env.VITE_API_URL.replace(/\/$/, '') + '/' + product.image.replace(/^\//, '')
                           : hoaKhaiTruong
                       }
-
                       title={product.title}
                       buttonText="Đặt mua"
                       buttonType="order"
                       productId={product.id}
-                      category={product.category}
+                      category="cua-hang" // Đảm bảo category đúng
                     />
                   </div>
                 ))}

@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Log;
 use App\Models\Config;
+use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,24 +50,18 @@ class AppServiceProvider extends ServiceProvider
                     [
                         'name' => 'Danh mục sản phẩm',
                         'icon' => '<i class="bi bi-menu-button-wide"></i>',
-                        // SỬA LỖI: Thêm 'admin.styles.*' vào active của menu cha
-                        // để nó luôn mở khi bạn ở trang danh mục hoặc kiểu dáng.
                         'active' => ['admin.category.product*', 'admin.styles.*'],
                         'submenu' => [
                             [
                                 'name' => 'Danh sách danh mục',
                                 'route' => 'admin.category.product',
-                                // SỬA LỖI: Dùng wildcard '*' để menu con active cả ở trang sửa
-                                'active' => ['admin.category.product*'],
+                                'active' => ['admin.category.product'],
                             ],
                             [
                                 'name' => 'Danh sách kiểu dáng',
                                 'route' => 'admin.styles.index',
                                 'active' => ['admin.styles.*'],
                             ],
-                            // Ghi chú: Mục "Thêm danh mục" có thể được loại bỏ khỏi menu
-                            // vì thường có nút "Thêm mới" ở trang danh sách.
-                            // Tuy nhiên, tôi vẫn giữ lại theo cấu trúc cũ của bạn.
                             [
                                 'name' => 'Thêm danh mục',
                                 'route' => 'admin.category.product.add',
@@ -165,5 +160,17 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             Log::error('Could not set up admin view composer: ' . $e->getMessage());
         }
+        View::composer('*', function ($view) {
+            try {
+                // Lấy configs từ cache, nếu chưa có thì mới truy vấn DB
+                $configs = Cache::rememberForever('site_configs', function () {
+                    return Config::all()->pluck('value', 'key')->toArray();
+                });
+
+                View::share('configs', $configs);
+            } catch (\Exception $e) {
+                View::share('configs', []);
+            }
+        });
     }
 }
