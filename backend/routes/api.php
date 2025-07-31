@@ -12,6 +12,8 @@ use App\Http\Controllers\Client\LocationController;
 use App\Http\Controllers\Client\ProductReviewController;
 use App\Http\Controllers\Client\PostController;
 use App\Http\Controllers\Client\PostReviewController;
+use App\Http\Controllers\Client\CategoryController;
+use App\Http\Controllers\Client\StyleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +52,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/google/callback', [GoogleController::class, 'handleGoogleCallbackApi']);
 });
 
+// --- Category Routes ---
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/styles', [CategoryController::class, 'getStyles']);
+Route::get('/categories/{category_alias}/{style_alias?}', [CategoryController::class, 'show']);
 // --- Location Routes ---
 Route::get('/get-districts/{provinceId}', [LocationController::class, 'getDistricts']);
 Route::get('/get-wards/{districtId}', [LocationController::class, 'getWards']);

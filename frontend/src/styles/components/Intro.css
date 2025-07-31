@@ -7,8 +7,12 @@
   transition: transform 0.5s ease-in-out;
 }
 
-.intro-img-container:hover .intro-img,
-.intro-swiper:hover .intro-img {
+.intro-img-container:hover .intro-img {
+  transform: scale(1.1);
+}
+
+/* Chỉ áp dụng hiệu ứng cho ảnh bên trong slide đang được hover */
+.intro-swiper .swiper-slide:hover .intro-img {
   transform: scale(1.1);
 }
 

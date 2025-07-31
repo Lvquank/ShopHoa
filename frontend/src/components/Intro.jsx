@@ -12,7 +12,7 @@ import intro1_2 from "../assets/images/intro1-2.webp"
 
 function Intro() {
   return (
-    <div className="container-fluid h-100">
+    <div className="container-fluid h-100" style={{ paddingRight: "0" }}>
       <div className="row h-100 g-3">
         <div className="col-md-8 d-flex flex-column">
           <div className="mb-3 flex-grow-1 overflow-hidden intro-swiper">

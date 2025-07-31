@@ -15,11 +15,13 @@ class Category extends Model
     protected $fillable = [
         'name',
         'alias',
-        'status'
+        'status',
+        'order',
+        'description',
     ];
     public function styles()
     {
-        return $this->belongsToMany(Style::class, 'category_style');
+        return $this->belongsToMany(Style::class, 'category_style')->withPivot('description');
     }
 
     /**

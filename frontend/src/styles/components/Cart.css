@@ -1,0 +1,65 @@
+/* Gốc màu sắc - Dễ dàng thay đổi toàn bộ trang web */
+:root {
+    --primary-color: #ff5622;
+    --primary-color-rgb: 255, 86, 34;
+    /* Dùng cho màu RGBA */
+}
+
+/* Tùy chỉnh màu primary của Bootstrap */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #e04a1a;
+    border-color: #d04417;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Style cho cart item */
+.cart-item {
+    transition: background-color 0.2s ease;
+}
+
+.cart-item:hover {
+    background-color: #f8f9fa;
+    /* Màu nền xám nhạt khi hover */
+}
+
+/* Tên sản phẩm trong giỏ hàng */
+.cart-item-name {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.cart-item-name:hover {
+    color: var(--primary-color);
+}
+
+/* Nút xóa tinh tế hơn */
+.btn-remove-item {
+    color: #6c757d;
+    /* Màu xám */
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-remove-item:hover {
+    color: #dc3545;
+    /* Chuyển sang màu đỏ khi hover */
+    transform: scale(1.1);
+}

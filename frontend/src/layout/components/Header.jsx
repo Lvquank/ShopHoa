@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-// SỬA ĐỔI: Import useCart để lấy số lượng sản phẩm
 import { useCart } from '../../contexts/CartContext';
+import apiClient from '../../utils/axios';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -13,16 +13,35 @@ import logoImg from '../../assets/images/logo.webp';
 import '../../styles/layout/Header.css';
 
 const Header = ({ isShowCategoryMenu = true }) => {
-    // Lấy `user` và `logout` từ context.
     const { user, logout } = useUser();
-    // SỬA ĐỔI: Lấy cartCount từ CartContext
     const { cartCount } = useCart();
+    const navigate = useNavigate();
+
+    const [categories, setCategories] = useState([]);
+    const [menuLoading, setMenuLoading] = useState(true);
+
     const [isMobileNavActive, setIsMobileNavActive] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [showCategoryMenu, setShowCategoryMenu] = useState(isShowCategoryMenu);
     const [isHovering, setIsHovering] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
+
+    useEffect(() => {
+        const fetchMenuData = async () => {
+            try {
+                setMenuLoading(true);
+                const categoriesRes = await apiClient.get('/api/categories');
+                setCategories(categoriesRes.data.data || []);
+            } catch (error) {
+                console.error("Lỗi khi tải dữ liệu menu:", error);
+            } finally {
+                setMenuLoading(false);
+            }
+        };
+        fetchMenuData();
+    }, []);
+
 
     const throttle = useCallback((func, delay) => {
         let timeoutId;
@@ -155,16 +174,16 @@ const Header = ({ isShowCategoryMenu = true }) => {
     const headerClass = useMemo(() => isScrolled ? 'scrolled' : '', [isScrolled]);
     const categoryDropdownClass = useMemo(() => `dropdown-menu category-dropdown ${showCategoryMenu ? 'show' : ''}`, [showCategoryMenu]);
 
-    // Hàm xử lý đăng xuất đơn giản
     const handleLogout = (e) => {
         e.preventDefault();
-        logout(); // Gọi hàm từ context
-        window.location.href = '/login'; // Chuyển hướng về trang đăng nhập
+        logout();
+        navigate('/login');
     };
 
     return (
         <>
             <header className={headerClass}>
+                {/* ... phần top bar và logo không đổi ... */}
                 <div className="text-white py-2 d-none d-xl-block">
                     <div className="container">
                         <div className="row">
@@ -263,7 +282,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 aria-controls="offcanvasCart"
                             >
                                 <i className="bi bi-cart fs-4"></i>
-                                {/* SỬA ĐỔI: Hiển thị cartCount và chỉ hiện khi > 0 */}
                                 {cartCount > 0 && (
                                     <span
                                         className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -319,71 +337,58 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 </button>
 
                                 <ul className={categoryDropdownClass}>
-                                    <li>
-                                        <Link className="dropdown-item" to="/danh-muc/ban-chay-nhat">
-                                            <i className="bi bi-fire me-2"></i>
-                                            Các Sản Phẩm Bán Chạy
-                                        </Link>
-                                    </li>
-                                    <li className="dropdown-submenu">
-                                        <Link className="dropdown-item d-flex justify-content-between align-items-center" to="/danh-muc/hoa-khai-truong">
-                                            <div>
-                                                <i className="bi bi-cart me-2"></i>
-                                                Hoa Khai Trương
-                                            </div>
-                                            <i className="bi bi-chevron-right"></i>
-                                        </Link>
-                                        <ul className="dropdown-menu submenu">
+                                    {menuLoading ? (
+                                        <li><span className="dropdown-item">Đang tải...</span></li>
+                                    ) : (
+                                        <>
+                                            {/* SỬA ĐỔI: Thêm mục sản phẩm bán chạy */}
                                             <li>
-                                                <Link className="dropdown-item" to="/danh-muc/hoa-khai-truong/mau-truyen-thong">
-                                                    Mẫu Truyền Thống
+                                                <Link className="dropdown-item" to="/danh-muc/ban-chay-nhat">
+                                                    <i className="bi bi-fire me-2"></i>
+                                                    Các Sản Phẩm Bán Chạy
                                                 </Link>
                                             </li>
-                                            <li>
-                                                <Link className="dropdown-item" to="/danh-muc/hoa-khai-truong/mau-hien-dai">
-                                                    Mẫu Hiện Đại
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li className="dropdown-submenu">
-                                        <Link className="dropdown-item d-flex justify-content-between align-items-center" to="/danh-muc/hoa-dam-tang">
-                                            <div>
-                                                <i className="bi bi-cart me-2"></i>
-                                                Hoa Đám Tang
-                                            </div>
-                                            <i className="bi bi-chevron-right"></i>
-                                        </Link>
-                                        <ul className="dropdown-menu submenu">
-                                            <li>
-                                                <Link className="dropdown-item" to="/danh-muc/hoa-dam-tang/truyen-thong">
-                                                    Mẫu Truyền Thống
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link className="dropdown-item" to="/danh-muc/hoa-dam-tang/mau-hien-dai">
-                                                    Mẫu Hiện Đại
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link className="dropdown-item" to="/danh-muc/hoa-dam-tang/hoa-dam-tang-cong-giao">
-                                                    Hoa Đám Tang Công Giáo
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <Link className="dropdown-item" to="/danh-muc/hoa-gio">
-                                            <i className="bi bi-cart me-2"></i>
-                                            Hoa Giỏ
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link className="dropdown-item" to="/danh-muc/hoa-bo">
-                                            <i className="bi bi-cart me-2"></i>
-                                            Hoa Bó
-                                        </Link>
-                                    </li>
+
+                                            {categories.map(category => {
+                                                const categoryStyles = category.styles || [];
+                                                const hasSubmenu = categoryStyles.length > 0;
+
+                                                if (hasSubmenu) {
+                                                    return (
+                                                        <li key={category.id} className="dropdown-submenu">
+                                                            <Link className="dropdown-item d-flex justify-content-between align-items-center" to={`/danh-muc/${category.alias}`}>
+                                                                <div>
+                                                                    {/* SỬA ĐỔI: Thay icon */}
+                                                                    <i className="bi bi-cart me-2"></i>
+                                                                    {category.name}
+                                                                </div>
+                                                                <i className="bi bi-chevron-right"></i>
+                                                            </Link>
+                                                            <ul className="dropdown-menu submenu">
+                                                                {categoryStyles.map(style => (
+                                                                    <li key={style.id}>
+                                                                        <Link className="dropdown-item" to={`/danh-muc/${category.alias}/${style.alias}`}>
+                                                                            {style.name}
+                                                                        </Link>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </li>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <li key={category.id}>
+                                                        <Link className="dropdown-item" to={`/danh-muc/${category.alias}`}>
+                                                            {/* SỬA ĐỔI: Thay icon */}
+                                                            <i className="bi bi-cart me-2"></i>
+                                                            {category.name}
+                                                        </Link>
+                                                    </li>
+                                                );
+                                            })}
+                                        </>
+                                    )}
                                 </ul>
                             </div>
                         </div>
@@ -391,41 +396,13 @@ const Header = ({ isShowCategoryMenu = true }) => {
                         <div className="d-flex align-items-center justify-content-between flex-grow-1">
                             <div className={`navmenu ${isMobileNavActive ? 'active' : ''}`}>
                                 <ul className="navbar-nav">
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/" onClick={handleNavLinkClick}>
-                                            Trang chủ
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/gioi-thieu/" onClick={handleNavLinkClick}>
-                                            Giới thiệu
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/cua-hang/" onClick={handleNavLinkClick}>
-                                            Sản phẩm
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/he-thong-cua-hang/" onClick={handleNavLinkClick}>
-                                            Hệ thống cửa hàng
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/gio-hang/" onClick={handleNavLinkClick}>
-                                            Thanh toán
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/tin-tuc/" onClick={handleNavLinkClick}>
-                                            Tin tức
-                                        </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/lien-he/" onClick={handleNavLinkClick}>
-                                            Liên hệ
-                                        </Link>
-                                    </li>
+                                    <li className="nav-item"><Link className="nav-link" to="/" onClick={handleNavLinkClick}>Trang chủ</Link></li>
+                                    <li className="nav-item"><Link className="nav-link" to="/gioi-thieu" onClick={handleNavLinkClick}>Giới thiệu</Link></li>
+                                    <li className="nav-item"><Link className="nav-link" to="/cua-hang" onClick={handleNavLinkClick}>Sản phẩm</Link></li>
+                                    <li className="nav-item"><Link className="nav-link" to="/he-thong-cua-hang" onClick={handleNavLinkClick}>Hệ thống cửa hàng</Link></li>
+                                    <li className="nav-item"><Link className="nav-link" to="/gio-hang" onClick={handleNavLinkClick}>Thanh toán</Link></li>
+                                    <li className="nav-item"><Link className="nav-link" to="/tin-tuc" onClick={handleNavLinkClick}>Tin tức</Link></li>
+                                    <li className="nav-item"><Link className="nav-link" to="/lien-he" onClick={handleNavLinkClick}>Liên hệ</Link></li>
                                 </ul>
                             </div>
                             <button
@@ -435,7 +412,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 aria-controls="offcanvasCart"
                             >
                                 <i className="bi bi-cart"></i>
-                                {/* SỬA ĐỔI: Hiển thị cartCount và chỉ hiện khi > 0 */}
                                 {cartCount > 0 && (
                                     <span
                                         className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -449,79 +425,68 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </nav>
             </header>
+
             <div className="offcanvas offcanvas-start" tabIndex="-1" id="mobileNavOffcanvas" aria-labelledby="mobileNavOffcanvasLabel">
                 <div className="offcanvas-header bg-light">
                     <h5 className="offcanvas-title text-success fw-bold" id="mobileNavOffcanvasLabel">
                         <i className="bi bi-list me-2"></i>
-                        DANH MUC
+                        DANH MỤC
                     </h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div className="offcanvas-body p-0">
                     <div className="list-group list-group-flush">
-                        <a href="/san-pham" className="list-group-item list-group-item-action d-flex align-items-center py-3">
-                            <i className="bi bi-fire me-3 text-warning"></i>
-                            <span className="text-uppercase fw-bold">CÁC SẢN PHẨM BÁN CHẠY</span>
-                        </a>
+                        {menuLoading ? (
+                            <div className="list-group-item">Đang tải...</div>
+                        ) : (
+                            <>
+                                {/* SỬA ĐỔI: Thêm mục sản phẩm bán chạy cho mobile */}
+                                <Link to="/danh-muc/ban-chay-nhat" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                                    <i className="bi bi-fire me-3 text-warning"></i>
+                                    <span className="text-uppercase fw-bold">CÁC SẢN PHẨM BÁN CHẠY</span>
+                                </Link>
 
-                        <div className="list-group-item p-0">
-                            <button
-                                className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
-                                onClick={() => toggleCategory('khai-truong')}
-                            >
-                                <div className="d-flex align-items-center">
-                                    <i className="bi bi-cart me-3"></i>
-                                    <span className="text-uppercase fw-bold">HOA KHAI TRƯƠNG</span>
-                                </div>
-                                <i className={`bi bi-chevron-${expandedCategory === 'khai-truong' ? 'up' : 'down'}`}></i>
-                            </button>
-                            <div className={`collapse ${expandedCategory === 'khai-truong' ? 'show' : ''}`}>
-                                <div className="ps-4 pb-2">
-                                    <a href="/danh-muc/hoa-khai-truong/mau-truyen-thong" className="d-block py-2 text-decoration-none text-dark">
-                                        Mẫu Truyền Thống
-                                    </a>
-                                    <a href="/danh-muc/hoa-khai-truong/mau-hien-dai" className="d-block py-2 text-decoration-none text-dark">
-                                        Mẫu Hiện Đại
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                                {categories.map(category => {
+                                    const categoryStyles = category.styles || [];
+                                    const hasSubmenu = categoryStyles.length > 0;
 
-                        <div className="list-group-item p-0">
-                            <button
-                                className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
-                                onClick={() => toggleCategory('dam-tang')}
-                            >
-                                <div className="d-flex align-items-center">
-                                    <i className="bi bi-cart me-3"></i>
-                                    <span className="text-uppercase fw-bold">HOA ĐÁM TANG</span>
-                                </div>
-                                <i className={`bi bi-chevron-${expandedCategory === 'dam-tang' ? 'up' : 'down'}`}></i>
-                            </button>
-                            <div className={`collapse ${expandedCategory === 'dam-tang' ? 'show' : ''}`}>
-                                <div className="ps-4 pb-2">
-                                    <a href="/danh-muc/hoa-dam-tang/mau-truyen-thong" className="d-block py-2 text-decoration-none text-dark">
-                                        Mẫu Truyền Thống
-                                    </a>
-                                    <a href="/danh-muc/hoa-dam-tang/mau-hien-dai" className="d-block py-2 text-decoration-none text-dark">
-                                        Mẫu Hiện Đại
-                                    </a>
-                                    <a href="/danh-muc/hoa-dam-tang/hoa-dam-tang-cong-giao" className="d-block py-2 text-decoration-none text-dark">
-                                        Hoa Đám Tang Công Giáo
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                                    if (hasSubmenu) {
+                                        return (
+                                            <div key={category.id} className="list-group-item p-0">
+                                                <button
+                                                    className="btn w-100 d-flex align-items-center justify-content-between py-3 px-3 border-0 bg-transparent text-start"
+                                                    onClick={() => toggleCategory(category.id)}
+                                                >
+                                                    <div className="d-flex align-items-center">
+                                                        {/* SỬA ĐỔI: Thay icon */}
+                                                        <i className="bi bi-cart me-3"></i>
+                                                        <span className="text-uppercase fw-bold">{category.name}</span>
+                                                    </div>
+                                                    <i className={`bi bi-chevron-${expandedCategory === category.id ? 'up' : 'down'}`}></i>
+                                                </button>
+                                                <div className={`collapse ${expandedCategory === category.id ? 'show' : ''}`}>
+                                                    <div className="ps-4 pb-2">
+                                                        {categoryStyles.map(style => (
+                                                            <Link key={style.id} to={`/danh-muc/${category.alias}/${style.alias}`} className="d-block py-2 text-decoration-none text-dark">
+                                                                {style.name}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
 
-                        <a href="/danh-muc/hoa-gio" className="list-group-item list-group-item-action d-flex align-items-center py-3">
-                            <i className="bi bi-cart me-3"></i>
-                            <span className="text-uppercase fw-bold">HOA GIỎ</span>
-                        </a>
-
-                        <a href="/danh-muc/hoa-bo" className="list-group-item list-group-item-action d-flex align-items-center py-3">
-                            <i className="bi bi-cart me-3"></i>
-                            <span className="text-uppercase fw-bold">HOA BÓ</span>
-                        </a>
+                                    return (
+                                        <Link key={category.id} to={`/danh-muc/${category.alias}`} className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                                            {/* SỬA ĐỔI: Thay icon */}
+                                            <i className="bi bi-cart me-3"></i>
+                                            <span className="text-uppercase fw-bold">{category.name}</span>
+                                        </Link>
+                                    );
+                                })}
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

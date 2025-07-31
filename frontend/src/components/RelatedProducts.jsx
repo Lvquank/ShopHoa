@@ -43,7 +43,7 @@ const RelatedProducts = ({ products = [], title = "CÓ THỂ BẠN QUAN TÂM :" 
                   buttonText={product.buttonText || "Xem chi tiết"}
                   buttonType={product.buttonType || "read"}
                   productId={product.id}
-                  category={product.category || "san-pham"}
+                  category={product.category || "cua-hang"}
                 />
               </div>
             ))}

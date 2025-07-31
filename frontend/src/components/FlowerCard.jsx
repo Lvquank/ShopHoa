@@ -20,7 +20,7 @@ const FlowerCard = ({
       </div>
       <div className="card-body d-flex flex-column p-3">
         <h6 className="card-title flower-title text-dark flex-grow-1">{title}</h6>
-        <span className={`${buttonClass} text-white text-decoration-none text-center`} style={{ cursor: 'pointer' }}>
+        <span className={`${buttonClass} text-white text-decoration-none text-center mt-3`} style={{ cursor: 'pointer' }}>
           {buttonText}
         </span>
       </div>

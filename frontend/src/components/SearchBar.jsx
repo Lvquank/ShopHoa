@@ -78,7 +78,7 @@ function SearchBar() {
                 >
                     {selectedCategory}
                 </button>
-                <ul className={`dropdown-menu ${isOpen ? 'show' : ''}`}>
+                <ul className={`dropdown-menu rounded-0 ${isOpen ? 'show' : ''}`}>
                     <li>
                         <div
                             className="dropdown-item d-flex justify-content-between align-items-center"
