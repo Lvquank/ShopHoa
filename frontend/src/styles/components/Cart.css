@@ -58,6 +58,10 @@
     transition: color 0.2s ease, transform 0.2s ease;
 }
 
+.btn {
+    border-radius: 0;
+}
+
 .btn-remove-item:hover {
     color: #dc3545;
     /* Chuyển sang màu đỏ khi hover */

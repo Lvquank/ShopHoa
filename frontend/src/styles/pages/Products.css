@@ -3,6 +3,10 @@
     background-color: #EFF0F3;
 }
 
+.category-title {
+    text-shadow: none;
+}
+
 @media (max-width: 1200px) {
     .wrapper {
         padding-left: 1rem;

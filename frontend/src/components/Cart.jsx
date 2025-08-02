@@ -1,10 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
-import '../styles/components/Cart.css'; // Giả sử bạn có file CSS cho Cart
+import '../styles/components/Cart.css';
+
 const Cart = () => {
     const { cartItems, loading, error, fetchCart, updateCartItem, removeFromCart, clearError } = useCart();
     const navigate = useNavigate();
+    const offcanvasRef = useRef(null); // Chỉ cần ref để tham chiếu đến element
+
+    // ✅ SỬA ĐỔI: useEffect duy nhất để xử lý việc đóng offcanvas
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            const offcanvasElement = offcanvasRef.current;
+            // Kiểm tra nếu offcanvas đang mở và người dùng click ra ngoài nó
+            if (offcanvasElement && offcanvasElement.classList.contains('show') && !offcanvasElement.contains(event.target)) {
+                // Tìm nút close bên trong offcanvas
+                const closeButton = offcanvasElement.querySelector('[data-bs-dismiss="offcanvas"]');
+                // Nếu tìm thấy, thực hiện một cú click ảo
+                if (closeButton) {
+                    closeButton.click();
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, []); // Chỉ cần chạy 1 lần
 
     useEffect(() => {
         fetchCart();
@@ -19,14 +42,16 @@ const Cart = () => {
         await removeFromCart(productId);
     };
 
+    // Sửa lại handleNavigate để đơn giản hơn
     const handleNavigate = (path) => {
-        // Tìm offcanvas và đóng nó thủ công trước khi điều hướng
-        const offcanvasElement = document.getElementById('offcanvasCart');
-        const offcanvasInstance = window.bootstrap.Offcanvas.getInstance(offcanvasElement);
-        if (offcanvasInstance) {
-            offcanvasInstance.hide();
+        const closeButton = offcanvasRef.current?.querySelector('[data-bs-dismiss="offcanvas"]');
+        if (closeButton) {
+            closeButton.click();
         }
-        navigate(path);
+        // Thêm độ trễ nhỏ để animation kịp chạy
+        setTimeout(() => {
+            navigate(path);
+        }, 150);
     };
 
     const formatPrice = (price) => {
@@ -36,22 +61,22 @@ const Cart = () => {
 
     const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    // << RENDER: Cấu trúc offcanvas với flexbox để đẩy tổng tiền xuống dưới >>
     return (
-        <div className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
+        <div ref={offcanvasRef} className="offcanvas offcanvas-end" data-bs-scroll="true" tabIndex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
             <div className="offcanvas-header border-bottom">
                 <h5 className="offcanvas-title fw-bold" id="offcanvasCartLabel">GIỎ HÀNG</h5>
+                {/* Đây chính là nút Close mà chúng ta đang "nhờ" */}
                 <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div className="offcanvas-body d-flex flex-column">
+                {/* ... Toàn bộ phần JSX render bên trong không thay đổi ... */}
                 {error && (
                     <div className="alert alert-danger d-flex align-items-center" role="alert">
                         {error}
                         <button type="button" className="btn-close ms-auto" onClick={clearError} aria-label="Close"></button>
                     </div>
                 )}
-
                 {loading ? (
                     <div className="d-flex flex-column align-items-center justify-content-center h-100">
                         <div className="spinner-border text-primary" role="status">
@@ -73,13 +98,11 @@ const Cart = () => {
                         </button>
                     </div>
                 ) : (
-                    // << RENDER: Nội dung giỏ hàng >>
                     <div className="flex-grow-1">
                         <ul className="list-group list-group-flush">
                             {cartItems.map((item) => (
                                 <li key={item.id} className="list-group-item px-0 py-3 cart-item">
                                     <div className="d-flex align-items-center">
-                                        {/* << RENDER: Ảnh sản phẩm >> */}
                                         <img
                                             src={
                                                 (item.image_url || item.image)
@@ -89,13 +112,11 @@ const Cart = () => {
                                             alt={item.name}
                                             className="rounded border"
                                             style={{ width: '80px', height: '80px', objectFit: 'cover', cursor: 'pointer' }}
-                                            onClick={() => handleNavigate(`/cua-hang/${item.id}`)}
+                                            onClick={() => handleNavigate(`/cua-hang/${item.product_alias}`)}
                                         />
-
-                                        {/* << RENDER: Tên và giá >> */}
                                         <div className="ms-3 flex-grow-1">
                                             <div className="d-flex justify-content-between align-items-start">
-                                                <a href={`/cua-hang/${item.id}`} onClick={(e) => { e.preventDefault(); handleNavigate(`/cua-hang/${item.id}`) }} className="fw-bold cart-item-name mb-1">
+                                                <a href={`/cua-hang/${item.product_alias}`} onClick={(e) => { e.preventDefault(); handleNavigate(`/cua-hang/${item.product_alias}`) }} className="fw-bold cart-item-name mb-1">
                                                     {item.name}
                                                 </a>
                                                 <button className="btn btn-link p-0 btn-remove-item" onClick={() => handleRemoveItem(item.id)}>
@@ -103,8 +124,6 @@ const Cart = () => {
                                                 </button>
                                             </div>
                                             <p className="text-muted small mb-2">{formatPrice(item.price)}</p>
-
-                                            {/* << RENDER: Bộ đếm số lượng và tổng tiền item >> */}
                                             <div className="d-flex justify-content-between align-items-center">
                                                 <div className="input-group input-group-sm" style={{ width: '100px' }}>
                                                     <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(item.id, item.quantity - 1)}> – </button>
@@ -120,8 +139,6 @@ const Cart = () => {
                         </ul>
                     </div>
                 )}
-
-                {/* << RENDER: Phần tổng tiền và nút thanh toán (chỉ hiện khi có hàng) >> */}
                 {cartItems.length > 0 && (
                     <div className="mt-auto pt-3 border-top">
                         <div className="d-flex justify-content-between align-items-center mb-2">

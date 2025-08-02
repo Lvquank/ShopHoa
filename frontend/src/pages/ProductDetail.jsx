@@ -252,6 +252,12 @@ const ProductDetail = () => {
                                         <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon email" style={{ width: 36, height: 36 }}>
                                             <i className="bi bi-envelope fs-5" style={{ color: '#b0b0b0' }}></i>
                                         </a>
+                                        <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon pinterest" style={{ width: 36, height: 36 }}>
+                                            <i className="bi bi-pinterest fs-5" style={{ color: '#b0b0b0' }}></i>
+                                        </a>
+                                        <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon linkedin" style={{ width: 36, height: 36 }}>
+                                            <i className="bi bi-linkedin fs-5" style={{ color: '#b0b0b0' }}></i>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
