@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useUser } from '../../contexts/UserContext';
 import { useCart } from '../../contexts/CartContext';
 import apiClient from '../../utils/axios';
@@ -12,36 +13,35 @@ import Cart from '../../components/Cart';
 import logoImg from '../../assets/images/logo.webp';
 import '../../styles/layout/Header.css';
 
+// Hàm fetch dữ liệu được đưa ra ngoài component
+const fetchCategories = async () => {
+    const response = await apiClient.get('/api/categories');
+    return response.data.data || []; // Luôn đảm bảo trả về một mảng
+};
+
 const Header = ({ isShowCategoryMenu = true }) => {
     const { user, logout } = useUser();
     const { cartCount } = useCart();
     const navigate = useNavigate();
 
-    const [categories, setCategories] = useState([]);
-    const [menuLoading, setMenuLoading] = useState(true);
+    // Sử dụng useQuery để tải và cache dữ liệu danh mục
+    const {
+        data: categories = [],      // Lấy data, đổi tên thành 'categories', mặc định là mảng rỗng
+        isLoading: menuLoading,     // Lấy isLoading, đổi tên thành 'menuLoading'
+        error                       // Lấy trạng thái lỗi
+    } = useQuery({
+        queryKey: ['categories'],   // Key duy nhất để lưu vào cache
+        queryFn: fetchCategories,   // Hàm được gọi để tải dữ liệu
+        staleTime: 1000 * 60 * 5, // Dữ liệu được coi là mới trong 5 phút
+    });
 
+    // Các state và logic khác của component được giữ nguyên
     const [isMobileNavActive, setIsMobileNavActive] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [showCategoryMenu, setShowCategoryMenu] = useState(isShowCategoryMenu);
     const [isHovering, setIsHovering] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
-
-    useEffect(() => {
-        const fetchMenuData = async () => {
-            try {
-                setMenuLoading(true);
-                const categoriesRes = await apiClient.get('/api/categories');
-                setCategories(categoriesRes.data.data || []);
-            } catch (error) {
-                console.error("Lỗi khi tải dữ liệu menu:", error);
-            } finally {
-                setMenuLoading(false);
-            }
-        };
-        fetchMenuData();
-    }, []);
-
 
     const throttle = useCallback((func, delay) => {
         let timeoutId;
@@ -183,7 +183,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
     return (
         <>
             <header className={headerClass}>
-                {/* ... phần top bar và logo không đổi ... */}
+                {/* Top bar */}
                 <div className="text-white py-2 d-none d-xl-block">
                     <div className="container">
                         <div className="row">
@@ -252,6 +252,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </div>
 
+                {/* Main Header */}
                 <div className="container">
                     <div className="d-flex d-xl-none align-items-center justify-content-between w-100">
                         <button
@@ -317,6 +318,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     </div>
                 </div>
 
+                {/* Navbar */}
                 <nav className="navbar navbar-expand-xl d-none d-xl-block">
                     <div className="container d-flex align-items-center">
                         <div className="d-flex align-items-center">
@@ -339,9 +341,10 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 <ul className={categoryDropdownClass}>
                                     {menuLoading ? (
                                         <li><span className="dropdown-item">Đang tải...</span></li>
+                                    ) : error ? (
+                                        <li><span className="dropdown-item text-danger">Lỗi tải danh mục</span></li>
                                     ) : (
                                         <>
-                                            {/* SỬA ĐỔI: Thêm mục sản phẩm bán chạy */}
                                             <li>
                                                 <Link className="dropdown-item" to="/danh-muc/ban-chay-nhat">
                                                     <i className="bi bi-fire me-2"></i>
@@ -358,7 +361,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                                         <li key={category.id} className="dropdown-submenu">
                                                             <Link className="dropdown-item d-flex justify-content-between align-items-center" to={`/danh-muc/${category.alias}`}>
                                                                 <div>
-                                                                    {/* SỬA ĐỔI: Thay icon */}
                                                                     <i className="bi bi-cart me-2"></i>
                                                                     {category.name}
                                                                 </div>
@@ -380,7 +382,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                                 return (
                                                     <li key={category.id}>
                                                         <Link className="dropdown-item" to={`/danh-muc/${category.alias}`}>
-                                                            {/* SỬA ĐỔI: Thay icon */}
                                                             <i className="bi bi-cart me-2"></i>
                                                             {category.name}
                                                         </Link>
@@ -426,6 +427,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                 </nav>
             </header>
 
+            {/* Mobile Offcanvas */}
             <div className="offcanvas offcanvas-start" tabIndex="-1" id="mobileNavOffcanvas" aria-labelledby="mobileNavOffcanvasLabel">
                 <div className="offcanvas-header bg-light">
                     <h5 className="offcanvas-title text-success fw-bold" id="mobileNavOffcanvasLabel">
@@ -438,9 +440,10 @@ const Header = ({ isShowCategoryMenu = true }) => {
                     <div className="list-group list-group-flush">
                         {menuLoading ? (
                             <div className="list-group-item">Đang tải...</div>
+                        ) : error ? (
+                            <div className="list-group-item text-danger">Lỗi tải danh mục</div>
                         ) : (
                             <>
-                                {/* SỬA ĐỔI: Thêm mục sản phẩm bán chạy cho mobile */}
                                 <Link to="/danh-muc/ban-chay-nhat" className="list-group-item list-group-item-action d-flex align-items-center py-3">
                                     <i className="bi bi-fire me-3 text-warning"></i>
                                     <span className="text-uppercase fw-bold">CÁC SẢN PHẨM BÁN CHẠY</span>
@@ -458,7 +461,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                                     onClick={() => toggleCategory(category.id)}
                                                 >
                                                     <div className="d-flex align-items-center">
-                                                        {/* SỬA ĐỔI: Thay icon */}
                                                         <i className="bi bi-cart me-3"></i>
                                                         <span className="text-uppercase fw-bold">{category.name}</span>
                                                     </div>
@@ -479,7 +481,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
 
                                     return (
                                         <Link key={category.id} to={`/danh-muc/${category.alias}`} className="list-group-item list-group-item-action d-flex align-items-center py-3">
-                                            {/* SỬA ĐỔI: Thay icon */}
                                             <i className="bi bi-cart me-3"></i>
                                             <span className="text-uppercase fw-bold">{category.name}</span>
                                         </Link>

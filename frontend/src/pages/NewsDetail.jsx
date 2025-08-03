@@ -113,7 +113,7 @@ const NewsDetail = () => {
                             <h3 className="fw-semibold mb-2">{post.title}</h3>
                             <p className="text-muted mb-4">
                                 POSTED ON {new Date(post.created_at).toLocaleDateString('vi-VN')} BY
-                                <strong className="text-dark"> {post.user ? post.user.name.toUpperCase() : 'ADMIN'}</strong>
+                                <strong className="text-dark"> {post.author ? post.author.toUpperCase() : 'ADMIN'}</strong>
                             </p>
 
                             {/* SỬA ĐỔI QUAN TRỌNG: Gọi hàm renderPostContent tại đây */}
