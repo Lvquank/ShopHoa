@@ -38,9 +38,9 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::post('/change-status', [AdminCategoryController::class, 'changeStatus'])->name('admin.category.product.change-status');
         Route::get('/them-danh-muc', [AdminCategoryController::class, 'create'])->name('admin.category.product.add');
         Route::post('/them-danh-muc', [AdminCategoryController::class, 'store'])->name('admin.category.product.store');
-        Route::get('/sua-danh-muc/{categoryId}', [AdminCategoryController::class, 'edit'])->name('admin.category.product.edit');
-        Route::post('/update', [AdminCategoryController::class, 'update'])->name('admin.category.product.update');
-        Route::post('/xoa-danh-muc/{categoryId}', [AdminCategoryController::class, 'destroy'])->name('admin.category.product.delete');
+        Route::get('/sua-danh-muc/{category}', [AdminCategoryController::class, 'edit'])->name('admin.category.product.edit');
+        Route::put('/update/{category}', [AdminCategoryController::class, 'update'])->name('admin.category.product.update');
+        Route::delete('/xoa-danh-muc/{categoryId}', [AdminCategoryController::class, 'destroy'])->name('admin.category.product.delete');
     });
 
     // === QUẢN LÝ KIỂU DÁNG (Đã tối ưu) ===
@@ -53,7 +53,7 @@ Route::prefix('admin')->middleware('admin')->group(function () {
         Route::get('/them-san-pham', [AdminProductController::class, 'addProduct'])->name('admin.product.add');
         Route::post('/them-san-pham', [AdminProductController::class, 'storeProduct'])->name('admin.product.store');
         Route::get('/sua-san-pham/{productId}', [AdminProductController::class, 'editProduct'])->name('admin.product.edit');
-        Route::post('/sua-san-pham/{productId}', [AdminProductController::class, 'updateProduct'])->name('admin.product.update');
+        Route::put('/san-pham/sua-san-pham/{productId}', [AdminProductController::class, 'updateProduct'])->name('admin.product.update');
         Route::post('/change-status', [AdminProductController::class, 'changeStatus'])->name('admin.product.change-status');
         Route::delete('/xoa-san-pham/{product}', [AdminProductController::class, 'deleteProduct'])->name('admin.product.delete');
         Route::get('/doanh-thu', [AdminProductController::class, 'revenue'])->name('admin.product.revenue');

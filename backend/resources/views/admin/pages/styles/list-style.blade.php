@@ -9,9 +9,9 @@
                         <div class="d-flex align-items-center">
                             <h4 class="card-title">Danh sách Kiểu Dáng</h4>
                             {{-- Sửa: Đổi tên route thành 'admin.styles.create' --}}
-                            <a href="{{ route('admin.styles.create') }}" class="btn btn-primary btn-round ms-auto">
-                                <i class="fa fa-plus"></i>
-                                Thêm Mới
+                            <a href="{{ route('admin.styles.create') }}" class="btn btn-primary rounded-0 ms-auto py-2">
+                                <i class="bi bi-plus-lg"></i>
+                                Thêm Kiểu Dáng
                             </a>
                         </div>
                     </div>
@@ -46,12 +46,12 @@
                                             <td>
                                                 <div class="form-button-action">
                                                     {{-- Sửa: Trỏ đến route 'admin.styles.edit' --}}
-                                                    <a href="{{ route('admin.category.product.edit', $style->id) }}" data-bs-toggle="tooltip"
+                                                    <a href="{{ route('admin.styles.edit', ['style' => $style->id]) }}" data-bs-toggle="tooltip"
                                                         title="Sửa" class="btn btn-link btn-primary btn-lg">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </a>
                                                     {{-- Sửa: Form xóa trỏ đến 'admin.styles.destroy' --}}
-                                                    <form action="{{ route('admin.category.product.delete', $style->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa không?')">
+                                                    <form action="{{ route('admin.styles.destroy', ['style' => $style->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa không?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" data-bs-toggle="tooltip" title="Xóa"

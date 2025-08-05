@@ -4,8 +4,12 @@
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
-                {{-- Form action vẫn trỏ đến store của Style, logic sẽ được xử lý trong controller --}}
-                <form action="{{ route('admin.styles.store') }}" method="post">
+                {{-- BƯỚC 1: THÊM id VÀ CÁC THUỘC TÍNH data-action-* VÀO FORM --}}
+                <form id="creation-form" 
+                      action="{{ route('admin.styles.store') }}" 
+                      method="post"
+                      data-action-style="{{ route('admin.styles.store') }}"
+                      data-action-category="{{ route('admin.category.product.store') }}">
                     @csrf
                     <div class="card">
                         <div class="card-header">
@@ -17,7 +21,6 @@
                                     <div class="form-group">
                                         <label class="text-dark fw-bold">Tùy chọn</label>
                                         <select class="form-select form-control rounded-0" id="category_select" name="category_id">
-                                            {{-- THÊM MỚI: Option để tạo danh mục mới --}}
                                             <option value="0">-- Tạo Danh Mục Mới --</option>
                                             
                                             @foreach ($categories as $category)
@@ -28,7 +31,6 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
-                                        {{-- Label này sẽ tự động thay đổi --}}
                                         <label class="text-dark fw-bold" id="name_label">Tên Kiểu Dáng <span class="text-danger">(*)</span></label>
                                         <input type="text" class="form-control form-control rounded-0" id="name_input"
                                             name="name" value="{{ old('name') }}" required />
@@ -38,7 +40,7 @@
                                     </div>
                                 </div>
 
-                                {{-- THÊM MỚI: Trường alias cho Danh mục, sẽ được ẩn/hiện tự động --}}
+                                {{-- Trường alias cho Danh mục, sẽ được ẩn/hiện tự động --}}
                                 <div class="col-12" id="category_alias_field">
                                     <div class="form-group">
                                         <label class="text-dark fw-bold" for="category_alias_input">Đường dẫn (alias) Danh Mục <span
@@ -78,42 +80,51 @@
 @endsection
 
 @section('scripts')
+{{-- BƯỚC 2: CẬP NHẬT TOÀN BỘ SCRIPT ĐỂ XỬ LÝ VIỆC THAY ĐỔI ACTION --}}
 <script>
-    // Script để thay đổi giao diện một cách thông minh
-    $(document).ready(function() {
-        function toggleFields() {
-            var selectedValue = $('#category_select').val();
-            if (selectedValue == '0') {
-                // Khi chọn "Tạo Danh Mục Mới"
-                $('#name_label').html('Tên Danh Mục Mới <span class="text-danger">(*)</span>');
-                
-                // Ẩn trường alias của Style
-                $('#style_alias_field').hide();
-                $('#alias_style').prop('required', false);
+$(document).ready(function() {
+    // Lấy các đối tượng cần thiết một lần khi trang tải
+    const creationForm = $('#creation-form');
+    const categorySelect = $('#category_select');
+    
+    // Lấy các URL đã lưu trong thuộc tính data-* của form
+    const actionStyleUrl = creationForm.data('action-style');
+    const actionCategoryUrl = creationForm.data('action-category');
 
-                // Hiện trường alias của Category
-                $('#category_alias_field').show();
-                $('#category_alias_input').prop('required', true);
+    function updateFormBehavior() {
+        var selectedValue = categorySelect.val();
 
-            } else {
-                // Khi chọn một danh mục có sẵn để thêm kiểu dáng
-                $('#name_label').html('Tên Kiểu Dáng <span class="text-danger">(*)</span>');
-                
-                // Hiện lại trường alias của Style
-                $('#style_alias_field').show();
-                $('#alias_style').prop('required', true);
+        if (selectedValue == '0') {
+            // KHI TẠO DANH MỤC MỚI
+            // 1. Hướng form đến CategoryController
+            creationForm.attr('action', actionCategoryUrl);
 
-                // Ẩn trường alias của Category
-                $('#category_alias_field').hide();
-                $('#category_alias_input').prop('required', false);
-            }
+            // 2. Thay đổi giao diện
+            $('#name_label').html('Tên Danh Mục Mới <span class="text-danger">(*)</span>');
+            $('#style_alias_field').hide();
+            $('#alias_style').prop('required', false);
+            $('#category_alias_field').show();
+            $('#category_alias_input').prop('required', true);
+
+        } else {
+            // KHI CHỌN DANH MỤC CÓ SẴN (để tạo kiểu dáng)
+            // 1. Hướng form đến StyleController
+            creationForm.attr('action', actionStyleUrl);
+
+            // 2. Thay đổi giao diện
+            $('#name_label').html('Tên Kiểu Dáng <span class="text-danger">(*)</span>');
+            $('#style_alias_field').show();
+            $('#alias_style').prop('required', true);
+            $('#category_alias_field').hide();
+            $('#category_alias_input').prop('required', false);
         }
+    }
 
-        // Gọi hàm khi trang tải lần đầu
-        toggleFields();
+    // Gọi hàm khi trang tải lần đầu để đảm bảo trạng thái đúng
+    updateFormBehavior();
 
-        // Gọi hàm mỗi khi người dùng thay đổi lựa chọn
-        $('#category_select').change(toggleFields);
-    });
+    // Gọi hàm mỗi khi người dùng thay đổi lựa chọn trong dropdown
+    categorySelect.change(updateFormBehavior);
+});
 </script>
 @endsection

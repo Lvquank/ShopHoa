@@ -151,4 +151,26 @@
             filebrowserUploadMethod: 'form'
         });
     </script>
+    
+    {{-- BẠN CHỈ CẦN THÊM ĐOẠN MÃ DƯỚI ĐÂY VÀO --}}
+    @if (session('success'))
+        <script>
+            Toast.fire({
+                icon: "success",
+                text: '{{ session('success') }}',
+                timer: 3000 // Tự động tắt sau 3 giây
+            });
+        </script>
+    @endif
+    
+    @if (session('error'))
+        <script>
+            Toast.fire({
+                icon: "error",
+                text: '{{ session('error') }}',
+                timer: 3000 // Tự động tắt sau 3 giây
+            });
+        </script>
+    @endif
+
 @endsection

@@ -78,7 +78,7 @@
                                         </div>
 
                                         {{-- ====================================================== --}}
-                                        {{-- THÊM MỚI: Nội dung chi tiết (product_details) --}}
+                                        {{-- Nội dung chi tiết (product_details) --}}
                                         {{-- ====================================================== --}}
                                         <div class="col-12">
                                             <div class="form-group">
@@ -95,14 +95,14 @@
 
                                 {{-- Cột phụ bên phải --}}
                                 <div class="col-md-4" style="border-left: 1px solid rgb(226, 226, 226)">
-                                <div class="form-group">
-                                    <label class="text-dark fw-bold" for="product_code">Mã sản phẩm <span class="text-danger">(*)</span></label>
-                                    <input type="text" class="form-control form-control rounded-0"
-                                        id="product_code" name="product_code" value="{{ old('product_code') }}" placeholder="Ví dụ: SP001" />
-                                    @error('product_code')
-                                        <small class="text-danger">{{ $message }}</small>
-                                    @enderror
-                                </div>
+                                    <div class="form-group">
+                                        <label class="text-dark fw-bold" for="product_code">Mã sản phẩm <span class="text-danger">(*)</span></label>
+                                        <input type="text" class="form-control form-control rounded-0"
+                                            id="product_code" name="product_code" value="{{ old('product_code') }}" placeholder="Ví dụ: SP001" />
+                                        @error('product_code')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
                                     {{-- Danh mục sản phẩm --}}
                                     <div class="form-group">
                                         <label class="text-dark fw-bold">Danh mục sản phẩm <span
@@ -160,7 +160,7 @@
                                     </div>
                                     
                                     {{-- ====================================================== --}}
-                                    {{-- THÊM MỚI: Thư viện ảnh chi tiết (product_detail_images) --}}
+                                    {{-- Thư viện ảnh chi tiết (product_detail_images) --}}
                                     {{-- ====================================================== --}}
                                     <div class="form-group">
                                         <label class="text-dark fw-bold" for="gallery-images">Thư viện ảnh chi tiết</label>
@@ -197,6 +197,16 @@
                                                         Sản phẩm mới
                                                     </label>
                                                 </div>
+                                                {{-- ================================================== --}}
+                                                {{-- THÊM MỚI: Checkbox cho sản phẩm khuyến mãi (is_sale) --}}
+                                                {{-- ================================================== --}}
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="1"
+                                                        id="is_sale" name="is_sale" {{ old('is_sale') ? 'checked' : '' }} />
+                                                    <label class="form-check-label text-dark fw-bold" for="is_sale">
+                                                        Sản phẩm khuyến mãi
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -220,7 +230,7 @@
         // Khởi tạo CKEditor cho mô tả ngắn
         CKEDITOR.replace('description');
 
-        // THÊM MỚI: Khởi tạo CKEditor cho nội dung chi tiết
+        // Khởi tạo CKEditor cho nội dung chi tiết
         CKEDITOR.replace('detail_description_editor');
 
         // Xem trước ảnh đại diện
@@ -237,7 +247,7 @@
             }
         }
         
-        // THÊM MỚI: Script xem trước thư viện ảnh chi tiết
+        // Script xem trước thư viện ảnh chi tiết
         document.getElementById('gallery-images').addEventListener('change', function(event) {
             const previewContainer = document.getElementById('gallery-preview');
             previewContainer.innerHTML = ''; // Xóa ảnh cũ

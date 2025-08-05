@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Style;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminCategoryController extends Controller
 {
@@ -29,39 +30,30 @@ class AdminCategoryController extends Controller
      */
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
+        // Gửi danh sách categories sang cho view để hiển thị trong dropdown
+        $categories = Category::where('status', true)->orderBy('name', 'asc')->get();
+        // Giả sử file view của bạn tên là 'add-style.blade.php'
         return view('admin.pages.categories.add-category', compact('categories'));
     }
 
     /**
-     * Lưu một danh mục mới vào cơ sở dữ liệu.
-     * Sửa: Xử lý logic quan hệ nhiều-nhiều.
+     * Chỉ xử lý việc lưu một Danh Mục mới.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'alias' => 'required|string|unique:categories,alias|max:255',
-            'order' => 'required|integer|min:1',
-            'style_ids' => 'nullable|array', // Dùng để nhận danh sách ID của các kiểu dáng
-            'style_ids.*' => 'exists:styles,id' // Đảm bảo mỗi ID đều tồn tại trong bảng styles
+            'name' => 'required|string|max:255|unique:categories,name',
+            'category_alias' => 'required|string|max:255|unique:categories,alias',
+        ]);
+        $categoryCount = Category::count();
+        Category::create([
+            'name' => $validated['name'],
+            'alias' => $validated['category_alias'],
+            'order' => $categoryCount + 1, // Tự động tăng thứ tự
+            'status' => true,
         ]);
 
-        DB::transaction(function () use ($request, $validated) {
-            $category = Category::create([
-                'name' => $validated['name'],
-                'alias' => $validated['alias'],
-                'order' => $validated['order'],
-                'status' => $request->boolean('status'),
-            ]);
-
-            // Nếu có chọn kiểu dáng, dùng attach() để liên kết chúng
-            if (!empty($validated['style_ids'])) {
-                $category->styles()->attach($validated['style_ids']);
-            }
-        });
-
-        return redirect()->route('admin.categories.index')->with('success', 'Tạo danh mục thành công!');
+        return redirect()->route('admin.category.product')->with('success', 'Tạo danh mục mới thành công!');
     }
 
     /**
@@ -78,46 +70,86 @@ class AdminCategoryController extends Controller
      * Cập nhật một danh mục đã có.
      * Sửa: Đổi tên từ updateCategory -> update và dùng sync() để cập nhật quan hệ.
      */
-    public function update(Request $request, Category $category) // Sử dụng Route Model Binding
+    public function update(Request $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'alias' => 'required|string|max:255|unique:categories,alias,' . $category->id,
-            'order' => 'required|integer|min:1',
-            'style_ids' => 'nullable|array',
-            'style_ids.*' => 'exists:styles,id'
+        // BƯỚC 1: Dùng 'nullable' thay vì 'sometimes'
+        // 'nullable' cho phép trường được gửi lên với giá trị rỗng hoặc null.
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'alias' => 'nullable|string|max:255|unique:categories,alias,' . $category->id,
+            'order' => 'nullable|integer|min:1',
         ]);
 
-        DB::transaction(function () use ($request, $category, $validated) {
-            $category->update([
-                'name' => $validated['name'],
-                'alias' => $validated['alias'],
-                'order' => $validated['order'],
-                'status' => $request->boolean('status'),
-            ]);
+        // BƯỚC 2: Lọc bỏ các giá trị null/rỗng khỏi mảng đã validate
+        // Điều này đảm bảo chúng ta chỉ cập nhật những trường mà người dùng thực sự nhập dữ liệu mới.
+        // Những trường bị xóa trắng sẽ không được cập nhật, giữ lại giá trị cũ.
+        $updateData = collect($validatedData)->filter(function ($value) {
+            return $value !== null;
+        })->all();
 
-            // Dùng sync() để đồng bộ hóa các kiểu dáng.
-            // Nó sẽ tự động thêm/xóa các liên kết trong bảng category_style.
-            $category->styles()->sync($validated['style_ids'] ?? []);
-        });
 
-        return redirect()->route('admin.categories.index')->with('success', 'Cập nhật danh mục thành công!');
+        // BƯỚC 3: Thực hiện cập nhật với dữ liệu đã được lọc
+        if (!empty($updateData)) {
+            $category->update($updateData);
+        }
+
+        // Xử lý riêng cho trường 'status'
+        if ($request->has('status')) {
+            $category->status = $request->boolean('status');
+        } else {
+            // Nếu checkbox không được tick, request sẽ không có trường 'status'
+            // Ta cần gán nó là false một cách tường minh.
+            $category->status = false;
+        }
+
+        $category->save(); // Lưu lại tất cả thay đổi (cả status và các trường khác)
+
+        return redirect()->route('admin.category.product')->with('success', 'Cập nhật danh mục thành công!');
     }
 
     /**
      * Xóa một danh mục.
      * Sửa: Đổi tên từ deleteCategory -> destroy và dùng detach() để xóa liên kết.
      */
-    public function destroy(Category $category) // Sử dụng Route Model Binding
+    public function destroy($categoryId)
     {
-        DB::transaction(function () use ($category) {
-            // Dùng detach() để xóa tất cả các liên kết trong bảng category_style
-            // mà không ảnh hưởng đến các bản ghi trong bảng styles.
-            $category->styles()->detach();
-            $category->delete();
-        });
+        // Tìm category theo ID
+        $category = Category::find($categoryId);
 
-        return redirect()->back()->with('success', 'Đã xóa danh mục thành công!');
+        if (!$category) {
+            return redirect()->back()->with('error', 'Không tìm thấy danh mục!');
+        }
+
+        // Kiểm tra products
+        $productsCount = DB::table('products')->where('category_id', $category->id)->count();
+
+        if ($productsCount > 0) {
+            return redirect()->back()->with('error', "Không thể xóa! Có {$productsCount} sản phẩm đang sử dụng danh mục này.");
+        }
+
+        try {
+            DB::transaction(function () use ($category) {
+                // Xóa styles relationship
+                $category->styles()->detach();
+
+                // Xóa category
+                $deleteResult = $category->delete();
+
+                if (!$deleteResult) {
+                    throw new \Exception('Không thể xóa danh mục từ database');
+                }
+            });
+
+            return redirect()->back()->with('success', 'Đã xóa danh mục thành công!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (str_contains($e->getMessage(), 'foreign key constraint')) {
+                return redirect()->back()->with('error', 'Không thể xóa danh mục vì có dữ liệu liên quan!');
+            }
+
+            return redirect()->back()->with('error', 'Lỗi database: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+        }
     }
 
     /**

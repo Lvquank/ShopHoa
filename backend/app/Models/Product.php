@@ -46,10 +46,12 @@ class Product extends Model
         'style_id',
         'order',
         'stock_status',
+        'is_sale',
     ];
     protected $casts = [
         'is_on_top' => 'boolean',
         'is_new' => 'boolean',
+        'is_sale' => 'boolean',
     ];
 
     /**

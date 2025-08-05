@@ -4,27 +4,16 @@
     <div class="page-inner">
         <div class="row">
             <div class="col-md-12">
-                <form action="{{ route('admin.category.product.update')}}" method="post" enctype="multipart/form-data">
+                <form action="{{ route('admin.category.product.update', ['category' => $category->id]) }}" method="post" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" value="{{ $category->id}}" name="category_id">
+                    @method('PUT')
+                    {{-- <input type="hidden" value="{{ $category->id}}" name="category_id"> --}}
                     <div class="card">
                         <div class="card-header">
                             <div class="card-title">Sửa danh mục sản phẩm</div>
                         </div>
                         <div class="card-body">
-
                             <div class="row">
-                                <div class="col-12 col-md-7">
-                                    <div class="form-group">
-                                        <label class="text-dark fw-bold">Thuộc danh mục sản phẩm</label>
-                                        <select class="form-select form-control" id="formGroupDefaultSelect" name="parent">
-                                            <option value="0">Không thuộc danh mục nào</option>
-                                            @foreach ($categories as $cat)
-                                                <option value="{{ $cat->id }}" {{ $cat->id == $category->parent ? 'selected' : ''}}>{{$cat->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label class="text-dark fw-bold" for="name_category">Tên danh mục sản phẩm <span

@@ -14,84 +14,81 @@ class AdminStyleController extends Controller
 {
     public function index()
     {
-        // Lấy danh sách các Kiểu Dáng, kèm theo thông tin Danh Mục liên quan.
         $styles = Style::with('categories')->latest()->paginate(11);
-        // Trả về đúng view của Kiểu Dáng.
         return view('admin.pages.styles.list-style', compact('styles'));
     }
 
     public function create()
     {
         $categories = Category::where('status', true)->orderBy('name', 'asc')->get();
-        return view('admin.pages.styles.add-style', compact('categories'));
+        return view('admin.pages.categories.add-category', compact('categories'));
     }
 
+    /**
+     * Chỉ xử lý việc lưu một Kiểu Dáng mới và liên kết nó.
+     */
     public function store(Request $request)
     {
-        // Trường hợp 1: Người dùng chọn "Tạo Danh Mục Mới"
-        if ($request->input('category_id') == '0') {
+        $validated = $request->validate([
+            'category_id' => 'required|integer|exists:categories,id',
+            'name' => 'required|string|max:255|unique:styles,name',
+            'alias' => 'required|string|max:255|unique:styles,alias',
+        ]);
 
-            $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:categories,name',
-                'category_alias' => 'required|string|max:255|unique:categories,alias',
+        DB::beginTransaction();
+        try {
+            $style = Style::create([
+                'name' => $validated['name'],
+                'alias' => $validated['alias'],
+                'order' => 1,
             ]);
 
-            $category = new Category();
-            $category->name = $validated['name'];
-            $category->alias = $validated['category_alias'];
-            $category->order = 99;
-            $category->status = true;
-            $category->save();
+            $style->categories()->attach($validated['category_id']);
 
-            return redirect()->route('admin.category.product')->with('success', 'Tạo danh mục mới thành công!');
-        } else {
-            // Trường hợp 2: Người dùng chọn một danh mục có sẵn để tạo Kiểu Dáng
-            $validated = $request->validate([
-                'category_id' => 'required|exists:categories,id',
-                'name' => 'required|string|max:255',
-                // SỬA LỖI: Thay đổi quy tắc unique cho alias
-                'alias' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    // Alias phải là duy nhất trong phạm vi của category_id được chọn
-                    Rule::unique('styles')->where(function ($query) use ($request) {
-                        return $query->where('category_id', $request->category_id);
-                    }),
-                ],
-            ]);
-
-            Style::create($validated);
-
+            DB::commit();
             return redirect()->route('admin.styles.index')->with('success', 'Tạo kiểu dáng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())->withInput();
         }
     }
 
     public function edit(Style $style)
     {
-        $categories = Category::where('status', true)->orderBy('name', 'asc')->get();
-        return view('admin.pages.styles.edit-style', compact('style', 'categories'));
+        // Lấy tất cả danh mục để hiển thị trong ô chọn
+        $categories = Category::orderBy('name', 'asc')->get();
+
+        // Lấy danh sách ID của các danh mục mà kiểu dáng này đang thuộc về
+        $currentCategoryIds = $style->categories->pluck('id')->toArray();
+
+        return view('admin.pages.styles.edit-style', compact('style', 'categories', 'currentCategoryIds'));
     }
 
+    /**
+     * Cập nhật một kiểu dáng đã có trong database.
+     */
     public function update(Request $request, Style $style)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255',
-            // SỬA LỖI: Áp dụng quy tắc unique tương tự cho hàm update
-            'alias' => [
-                'required',
-                'string',
-                'max:255',
-                // Alias phải là duy nhất trong phạm vi của category_id,
-                // nhưng bỏ qua chính style đang được sửa
-                Rule::unique('styles')->where(function ($query) use ($request) {
-                    return $query->where('category_id', $request->category_id);
-                })->ignore($style->id),
-            ],
+        // Validate dữ liệu cơ bản của style và cả mảng ID của category
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'alias' => 'nullable|string|max:255|unique:styles,alias,' . $style->id,
+            'order' => 'nullable|integer|min:1',
+            'category_ids' => 'nullable|array', // category_ids phải là một mảng
+            'category_ids.*' => 'exists:categories,id', // Mỗi ID trong mảng phải tồn tại trong bảng categories
         ]);
 
-        $style->update($validated);
+        DB::transaction(function () use ($style, $request, $validatedData) {
+            // 1. Lọc và cập nhật các trường của style (name, alias, order)
+            $updateData = collect($validatedData)->only(['name', 'alias', 'order'])->filter()->all();
+            if (!empty($updateData)) {
+                $style->update($updateData);
+            }
+
+            // 2. Dùng sync() để đồng bộ hóa quan hệ với các danh mục.
+            // Nó sẽ tự động thêm/xóa các liên kết trong bảng `category_style`.
+            $style->categories()->sync($request->input('category_ids', []));
+        });
 
         return redirect()->route('admin.styles.index')->with('success', 'Cập nhật kiểu dáng thành công!');
     }

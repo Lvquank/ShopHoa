@@ -111,7 +111,7 @@ class AdminController extends Controller
 
         Cache::forget('site_configs');
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Cập nhật cấu hình thành công!');
     }
 
     public function formLogon()
