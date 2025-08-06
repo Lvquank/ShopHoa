@@ -118,19 +118,17 @@
                                     <div class="form-group">
                                         <label class="text-dark fw-bold" for="image">Ảnh đại diện <span
                                                 class="text-danger">(*)</span></label>
-                                        <div class="my-2 box-preview" id="homeImagePreview"></div>
+                                        <div class="my-2" id="homeImagePreview"></div>
                                         <div class="input-group">
                                             <input type="file" class="form-control rounded-0" id="image"
-                                                   name="image" onchange="previewHomeImage()" />
+                                                   name="image" />
                                         </div>
                                         @error('image')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
                                     
-                                    {{-- ====================================================== --}}
-                                    {{-- THÊM LẠI: Phần Thư viện ảnh (images[]) --}}
-                                    {{-- ====================================================== --}}
+                                    {{-- BẮT ĐẦU: Phần Thư viện ảnh (đã thêm) --}}
                                     <div class="form-group">
                                         <label class="text-dark fw-bold" for="gallery-images">Thư viện ảnh</label>
                                         <div class="input-group">
@@ -144,6 +142,7 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
+                                    {{-- KẾT THÚC: Phần Thư viện ảnh (đã thêm) --}}
 
                                 </div>
                             </div>
@@ -154,9 +153,6 @@
                         </div>
                     </div>
                 </form>
-        </ul>
-    </div>
-@endif
             </div>
         </div>
     </div>
@@ -194,32 +190,36 @@
                 }
             });
 
-            // ======================================================
-            // THÊM LẠI: Script xem trước Thư viện ảnh
-            // ======================================================
+            // BẮT ĐẦU: Script xem trước Thư viện ảnh (đã thêm)
             $('#gallery-images').on('change', function(event) {
                 const previewContainer = $('#gallery-preview');
                 previewContainer.empty();
                 const files = event.target.files;
-                for (const file of files) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const imgElement = $('<img>').attr('src', e.target.result).addClass('img-preview-small');
-                        previewContainer.append(imgElement);
-                    }
-                    reader.readAsDataURL(file);
+                if (files) {
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imgElement = $('<img>').attr('src', e.target.result).addClass('img-preview-small');
+                            previewContainer.append(imgElement);
+                        }
+                        reader.readAsDataURL(file);
+                    });
                 }
             });
+            // KẾT THÚC: Script xem trước Thư viện ảnh (đã thêm)
         });
     </script>
     <style>
         .img-preview {
             max-width: 100%; height: auto; max-height: 200px;
             border: 1px solid #ddd; padding: 5px; margin-top: 10px;
+            border-radius: 4px;
         }
+        /* CSS cho ảnh trong thư viện (đã thêm) */
         .img-preview-small {
             width: 100px; height: 100px; object-fit: cover;
             border: 1px solid #ddd; padding: 3px;
+            border-radius: 4px;
         }
     </style>
 @endsection

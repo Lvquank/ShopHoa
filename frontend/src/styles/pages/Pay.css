@@ -1,0 +1,175 @@
+.checkout {
+    background-color: #ffffff;
+    padding: 3rem 0;
+}
+
+/* Form styles */
+.form-control,
+.form-select {
+    padding: 0.75rem 1rem;
+    border-color: #e2e8f0;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #ff5622;
+    box-shadow: 0 0 0 0.2rem rgba(255, 86, 34, 0.25);
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Order summary styles */
+.my-order-summary {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem !important;
+}
+
+.my-order-summary p {
+    margin-bottom: 0.75rem;
+}
+
+.my-order-summary hr {
+    margin: 1rem 0;
+    opacity: 0.1;
+}
+
+/* Submit button */
+.checkout button[type="submit"] {
+    background-color: #ff5622;
+    border: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.checkout button[type="submit"]:hover:not(:disabled) {
+    background-color: #e64a1c;
+    transform: translateY(-1px);
+}
+
+.checkout button[type="submit"]:disabled {
+    background-color: #ffa088;
+    cursor: not-allowed;
+}
+
+/* Desktop large */
+@media (min-width: 1400px) {
+    .checkout .container-lg {
+        max-width: 1200px;
+        padding: 0 2rem;
+    }
+
+    .my-order-summary {
+        padding: 2rem !important;
+    }
+}
+
+/* Desktop */
+@media (max-width: 1199.98px) {
+    .checkout {
+        padding: 2.5rem 0;
+    }
+
+    .checkout .container-lg {
+        padding: 0 1.5rem;
+    }
+}
+
+/* Tablet */
+@media (max-width: 991.98px) {
+    .checkout {
+        padding: 2rem 0;
+    }
+
+    .checkout .container-lg {
+        padding: 0 1rem;
+    }
+
+    .checkout h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.95rem;
+        padding: 0.625rem 0.875rem;
+    }
+}
+
+/* Large Mobile */
+@media (max-width: 767.98px) {
+    .checkout {
+        padding: 1.5rem 0;
+    }
+
+    .checkout .container-lg {
+        padding: 0 0.75rem;
+    }
+
+    .checkout h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem !important;
+    }
+
+    .my-order-summary {
+        padding: 1rem !important;
+        margin-bottom: 1.5rem;
+    }
+
+    .row.g-3 {
+        --bs-gutter-y: 0.75rem;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 575.98px) {
+    .checkout {
+        padding: 1rem 0;
+    }
+
+    .checkout .container-lg {
+        padding: 0 0.5rem;
+    }
+
+    .checkout h2 {
+        font-size: 1.15rem;
+    }
+
+    .my-order-summary {
+        font-size: 0.9rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .col-sm-6 {
+        margin-bottom: 0.5rem;
+    }
+
+    .row.g-3 {
+        row-gap: 0.75rem !important;
+    }
+
+    .checkout button[type="submit"] {
+        padding: 0.625rem !important;
+        font-size: 1rem !important;
+    }
+
+    /* Stack order details on mobile */
+    .my-order-summary p {
+        margin-bottom: 0.5rem;
+    }
+
+    .my-order-summary .fs-5 {
+        font-size: 1rem !important;
+    }
+}

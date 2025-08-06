@@ -4,6 +4,7 @@ import { useCart } from '../contexts/CartContext';
 import { useUser } from '../contexts/UserContext';
 import apiClient from '../utils/axios';
 import { toast } from 'react-toastify';
+import '../styles/pages/Pay.css';
 
 // Hàm tiện ích để định dạng tiền tệ
 const formatVND = (amount) => {

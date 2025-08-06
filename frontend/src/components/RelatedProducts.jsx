@@ -1,10 +1,31 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import FlowerCard from "./FlowerCard"
 import "../styles/components/RelatedProducts.css"
 
 const RelatedProducts = ({ products = [], title = "CÓ THỂ BẠN QUAN TÂM :" }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const itemsPerPage = 4 // Thay đổi từ 4 thành 2
+  const [itemsPerPage, setItemsPerPage] = useState(4)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setItemsPerPage(2)
+      } else if (window.innerWidth <= 820) {
+        setItemsPerPage(3)
+      } else {
+        setItemsPerPage(4)
+      }
+    }
+
+    // Set initial value
+    handleResize()
+
+    // Add event listener
+    window.addEventListener('resize', handleResize)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const nextSlide = () => {
     if (currentIndex + itemsPerPage < products.length) {
@@ -32,7 +53,7 @@ const RelatedProducts = ({ products = [], title = "CÓ THỂ BẠN QUAN TÂM :" 
         <div className="related-grid-wrapper position-relative">
           <div className="row g-3">
             {currentProducts.map((product, index) => (
-              <div key={currentIndex + index} className="col-12 col-sm-6 col-md-4 col-lg-3">
+              <div key={currentIndex + index} className="col-6 col-md-4 col-lg-3 custom-col">
                 <FlowerCard
                   imageUrl={
                     product.imageUrl

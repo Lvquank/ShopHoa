@@ -168,7 +168,7 @@ function Home() {
                         Array.from({ length: 4 }).map((_, index) => <ProductSkeleton key={index} />)
                     ) : (
                         topSellingProducts.map((product) => (
-                            <div key={product.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div key={product.id} className="col-12 col-sm-6 col-md-3">
                                 <FlowerCard
                                     imageUrl={product.image}
                                     title={product.title}
@@ -220,7 +220,7 @@ function Home() {
                         {isLoadingNews ? (
                             <p className="text-center">Đang tải tin tức...</p>
                         ) : (
-                            newsData.slice(0, 2).map((article) => (
+                            newsData.slice(0, 3).map((article) => (
                                 <NewsCard key={article.id} article={article} />
                             ))
                         )}

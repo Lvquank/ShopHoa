@@ -80,7 +80,7 @@ const ProductDetail = () => {
                                 src="${imageUrl}" 
                                 alt="Hình ảnh chi tiết ${imageId}" 
                                 class="img-fluid border" 
-                                style="border-radius: 8px; max-width: 100%; height: auto;" 
+                                style="border-radius: 0; max-width: 100%; height: auto;" 
                                 loading="lazy"
                             />
                         </div>`;
@@ -168,7 +168,7 @@ const ProductDetail = () => {
                                     src={buildImageUrl(product?.image)} // Sử dụng hàm trợ giúp
                                     alt={product?.title}
                                     className="img-fluid border h-100"
-                                    style={{ objectFit: 'cover', background: '#f8f8f8', borderRadius: 0, minHeight: 480 }}
+                                    style={{ objectFit: 'cover', background: '#f8f8f8', borderRadius: 0, minHeight: 480, borderRadius: '0' }}
                                     onError={e => { e.target.src = '/api/placeholder/400/600'; }}
                                 />
                             </div>
@@ -241,7 +241,7 @@ const ProductDetail = () => {
                                 </div>
                                 {/* Tags & Social */}
                                 <div className="d-flex flex-column gap-3 pt-2">
-                                    <div className="badge bg-light text-secondary fs-6 align-self-start">Thẻ: <span className="text-primary-custom">{product?.tag || 'chưa có thẻ'}</span></div>
+                                    <div className="badge text-secondary fs-6 align-self-start">Thẻ: <span className="text-primary-custom">{product?.tag || 'chưa có thẻ'}</span></div>
                                     <div className="d-flex gap-2">
                                         <a href="#" className="d-flex align-items-center justify-content-center border border-2 border-secondary rounded-circle bg-white social-icon facebook" style={{ width: 36, height: 36 }}>
                                             <i className="bi bi-facebook fs-5" style={{ color: '#b0b0b0' }}></i>
@@ -320,7 +320,7 @@ const ProductDetail = () => {
                                                         src={buildImageUrl(relatedProduct.image)} // Sử dụng hàm trợ giúp
                                                         alt={relatedProduct.title}
                                                         className="card-img-top"
-                                                        style={{ height: '150px', objectFit: 'cover', cursor: 'pointer' }}
+                                                        style={{ height: '150px', objectFit: 'cover', cursor: 'pointer', borderRadius: '0' }}
                                                         onClick={() => navigate(`/cua-hang/${relatedProduct.id}`)}
                                                     />
                                                 </div>

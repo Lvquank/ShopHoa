@@ -4,36 +4,82 @@
     font-size: 14px;
 }
 
+/* --- Phần top --- */
 .footer-top-section {
-    min-height: 100px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-image: url('../../assets/images/backgroundFooter.jpg');
     margin: 0;
-    padding: 0 12rem;
+    padding: 1rem 12rem;
 }
 
 .footer-logo {
-    max-height: 180px;
+    max-height: 120px;
     width: auto;
 }
 
+/* --- Phần nội dung chính --- */
 .footer-content {
-    padding: 0 12rem;
+    padding: 2rem 12rem;
 }
 
-@media screen and (max-width: 768px) {
+.footer-content h5 {
+    color: #000;
+    font-weight: 600;
+}
+
+/* Định dạng cho các icon mạng xã hội */
+.social-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.social-icons:hover {
+    transform: scale(1.1);
+    color: white;
+}
+
+
+/* --- RESPONSIVE --- */
+
+/* Màn hình Tablet */
+@media screen and (max-width: 1200px) {
+
+    .footer-top-section,
+    .footer-content {
+        padding: 2rem 6rem;
+    }
+}
+
+@media screen and (max-width: 992px) {
+
+    .footer-top-section,
+    .footer-content {
+        padding: 2rem 3rem;
+    }
+
     .footer-top-section {
-        padding: 0 1rem;
+        text-align: center;
+    }
+}
+
+/* Màn hình Mobile */
+@media screen and (max-width: 768px) {
+
+    .footer-top-section,
+    .footer-content {
+        padding: 1.5rem 1.5rem;
     }
 
     .footer-logo {
-        max-height: 120px;
+        max-height: 100px;
     }
-
-    .footer-content {
-        padding: 0 1rem;
-    }
-
 }

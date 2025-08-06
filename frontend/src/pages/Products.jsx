@@ -43,8 +43,8 @@ const fetchFilteredProducts = async ({ queryKey }) => {
 
 // --- Component Skeleton Loader ---
 const ProductSkeleton = () => (
-  <div className="col-lg-3 col-md-6 col-6">
-    <div className="card border-0" aria-hidden="true">
+  <div className="col-xl-3 col-lg-4 col-sm-6 col-6">
+    <div className="card border-0 product-card" aria-hidden="true">
       <div style={{ height: '250px', backgroundColor: '#f0f0f0' }} className="card-img-top rounded"></div>
       <div className="card-body text-center">
         <h5 className="card-title placeholder-glow">
@@ -101,11 +101,13 @@ const Products = () => {
       />
       <div className="container-fluid wrapper-product">
         <div className="row">
-          <div className="col-lg-3 col-md-12">
-            <ProductSidebar />
+          <div className="col-xl-3 col-lg-3 col-md-12">
+            <div className="product-sidebar">
+              <ProductSidebar />
+            </div>
           </div>
-          <div className="col-lg-9 col-md-12">
-            <div className="row g-4">
+          <div className="col-xl-9 col-lg-9 col-md-12">
+            <div className="row g-3 g-md-4">
               {isLoading ? (
                 // Hiển thị skeleton loader khi đang tải
                 Array.from({ length: 8 }).map((_, index) => <ProductSkeleton key={index} />)
@@ -117,7 +119,7 @@ const Products = () => {
                 products.map((product, index) => (
                   <div
                     key={product.id || index}
-                    className="col-lg-3 col-md-6 col-6"
+                    className="col-xl-3 col-lg-4 col-sm-6 col-6"
                   >
                     <FlowerCard
                       imageUrl={product.image}

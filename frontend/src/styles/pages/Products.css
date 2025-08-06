@@ -7,25 +7,49 @@
     text-shadow: none;
 }
 
+/* Desktop lớn */
+@media (max-width: 1400px) {
+    .wrapper-product {
+        padding: 2rem 8rem 4rem 8rem;
+    }
+}
+
+/* Desktop */
 @media (max-width: 1200px) {
-    .wrapper {
-        padding-left: 1rem;
-        padding-right: 1rem;
+    .wrapper-product {
+        padding: 2rem 4rem 3rem 4rem;
     }
 }
 
+/* Tablet */
 @media (max-width: 992px) {
-    .wrapper {
-        padding-left: 2rem;
-        padding-right: 2rem;
+    .wrapper-product {
+        padding: 2rem 2rem 3rem 2rem;
+    }
+
+    .product-sidebar {
+        margin-bottom: 2rem;
     }
 }
 
+/* Mobile lớn */
 @media (max-width: 768px) {
-    .wrapper {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-        padding-top: 1rem;
-        padding-bottom: 2rem;
+    .wrapper-product {
+        padding: 1.5rem 1rem 2rem 1rem;
+    }
+
+    .product-sidebar {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Mobile nhỏ */
+@media (max-width: 576px) {
+    .wrapper-product {
+        padding: 1rem 0.5rem 1.5rem 0.5rem;
+    }
+
+    .product-card {
+        margin-bottom: 1rem;
     }
 }
