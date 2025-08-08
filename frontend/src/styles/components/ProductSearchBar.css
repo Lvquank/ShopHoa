@@ -1,5 +1,8 @@
 .wrapper-product-searchbar {
     padding: 0 12rem;
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
 .breadcrumb-item,
@@ -22,10 +25,21 @@ a:hover {
     color: black;
 }
 
+.wrapper-product-searchbar select.form-select {
+    min-width: 280px;
+    width: auto;
+    max-width: none;
+}
+
 @media (max-width: 1200px) {
     .wrapper-product-searchbar {
-        padding-left: 2rem;
-        padding-right: 2rem;
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+
+    .wrapper-product-searchbar select.form-select {
+        min-width: 280px;
+        width: auto;
     }
 }
 

@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Sửa lỗi HTTPS (Mixed Content) trên server production
         if ($this->app->environment('production')) {
-            URL::forceScheme('httpss');
+            URL::forceScheme('https');
         }
 
         try {
