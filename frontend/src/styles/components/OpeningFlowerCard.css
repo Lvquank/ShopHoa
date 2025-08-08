@@ -136,62 +136,84 @@
 
 @media (max-width: 576px) {
   .opening-card {
-    height: 120px;
+    height: auto;
+  }
+
+  .opening-card .row {
+    /* Giữ nguyên layout ngang trên mobile */
+    flex-direction: row;
+  }
+
+  .opening-card .col-7 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .opening-card .col-5 {
+    flex: 0 0 50%;
+    max-width: 50%;
   }
 
   .opening-img-wrapper {
     height: 120px;
   }
 
+  .opening-content {
+    height: 120px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .opening-title {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .opening-count {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .opening-img-wrapper {
+    height: 100px;
+  }
+
+  .opening-content {
+    height: 100px;
+    padding: 0.5rem;
+  }
+
   .opening-title {
     font-size: 0.8rem;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.4rem;
   }
 
   .opening-count {
     font-size: 0.7rem;
   }
-
-  .opening-content {
-    padding: 0.6rem;
-  }
-
-  /* Trên mobile có thể chuyển thành layout dọc */
-  .opening-card .row {
-    flex-direction: column;
-  }
-
-  .opening-card .col-7,
-  .opening-card .col-5 {
-    flex: 0 0 50%;
-    max-width: 100%;
-  }
-
-  .opening-img-wrapper {
-    height: 60px;
-  }
-
-  .opening-content {
-    height: 60px;
-    border-left: none;
-    border-top: 1px solid #f0f0f0;
-  }
 }
 
-@media (max-width: 480px) {
-  .opening-card {
-    height: 100px;
+@media (max-width: 375px) {
+  .opening-img-wrapper {
+    height: 90px;
+  }
+
+  .opening-content {
+    height: 90px;
+    padding: 0.4rem;
   }
 
   .opening-title {
     font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
   }
 
   .opening-count {
     font-size: 0.65rem;
-  }
-
-  .opening-content {
-    padding: 0.4rem;
   }
 }

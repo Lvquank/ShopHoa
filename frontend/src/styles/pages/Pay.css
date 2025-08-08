@@ -14,8 +14,18 @@
 
 .form-control:focus,
 .form-select:focus {
-    border-color: #ff5622;
-    box-shadow: 0 0 0 0.2rem rgba(255, 86, 34, 0.25);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.01rem var(--primary-color);
+}
+
+/* Improve autofill appearance */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #000 !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 .invalid-feedback {

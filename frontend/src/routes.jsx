@@ -76,7 +76,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/tin-tuc/:id" // Sử dụng :id để khớp với /tin-tuc/1, /tin-tuc/2, v.v.
+        path="/tin-tuc/:id"
         element={
           <Layout isShowCategoryMenu={false}>
             <NewsDetail />

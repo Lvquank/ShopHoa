@@ -54,20 +54,23 @@ const ProductSearchBar = ({ category, styleType, productQuantity, keyword, onSor
               {/* THAY ĐỔI: Dùng Link */}
               <li className="breadcrumb-item"><Link to="/">Trang chủ</Link></li>
 
+              {/* Hiển thị Category nếu có */}
               {category && category !== 'all' ? (
-                <li className={`breadcrumb-item${!styleType ? ' active' : ''}`}>
-                  {/* THAY ĐỔI: Dùng categoryName và Link */}
-                  {!styleType ? categoryName : <Link to={`/danh-muc/${category}`}>{categoryName}</Link>}
+                <li className="breadcrumb-item">
+                  <Link to={`/danh-muc/${category}`}>{categoryName}</Link>
                 </li>
-              ) : !keyword ? (
+              ) : !styleType && !keyword ? (
                 <li className="breadcrumb-item active">Cửa hàng</li>
               ) : null}
 
+              {/* Hiển thị Style nếu có */}
               {styleType && (
-                // THAY ĐỔI: Dùng styleName
-                <li className="breadcrumb-item active">{styleName}</li>
+                <li className="breadcrumb-item">
+                  {styleName}
+                </li>
               )}
 
+              {/* Hiển thị Keyword nếu có */}
               {keyword && (
                 <li className="breadcrumb-item active">Kết quả tìm kiếm cho "{keyword}"</li>
               )}

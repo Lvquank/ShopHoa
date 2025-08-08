@@ -21,6 +21,7 @@ const Category = () => {
 
     const searchParams = new URLSearchParams(location.search);
     const sort = searchParams.get('sort') || 'newest';
+    const keyword = searchParams.get('keyword') || '';
     // THAY ĐỔI 2: Xóa dòng `styleAlias` không còn dùng đến
     // const styleAlias = searchParams.get('style');
 
@@ -39,7 +40,10 @@ const Category = () => {
                     productsUrl = '/api/products/top';
                     setCategoryDetails({ name: 'Sản phẩm bán chạy nhất', description: 'Tổng hợp các sản phẩm được yêu thích và bán chạy nhất tại cửa hàng.' });
                 } else if (category) {
-                    if (style) { // Dùng `style` từ useParams
+                    if (keyword) {
+                        // Nếu có từ khóa tìm kiếm, sử dụng endpoint search
+                        productsUrl = `/api/products/search?category=${category}&keyword=${keyword}`;
+                    } else if (style) {
                         productsUrl = `/api/products/category/${category}/${style}`;
                     } else {
                         productsUrl = `/api/products/category/${category}`;
@@ -115,6 +119,7 @@ const Category = () => {
                 productQuantity={products.length}
                 onSortChange={handleSortChange}
                 currentSort={sort}
+                keyword={keyword}
             />
             {/* Phần JSX còn lại không thay đổi */}
             <div className="row wrapper-category">

@@ -32,24 +32,25 @@ const OpeningFlowersCard = ({ imageUrl, title, productCount, link }) => {
   const content = (
     <div className="opening-card border-0 shadow-sm h-100">
       <div className="row g-0 h-100">
-        {/* Phần ảnh - chiếm 60% */}
+        {/* Phần ảnh */}
         <div className="col-7">
-          <div className="opening-img-wrapper h-100">
+          <div className="opening-img-wrapper">
             {imageUrl && (
               <img
                 src={imageUrl || "/placeholder.svg"}
                 alt={title || "Flower image"}
                 className="opening-img w-100 h-100"
+                loading="lazy"
               />
             )}
           </div>
         </div>
 
-        {/* Phần text - chiếm 40% */}
+        {/* Phần text */}
         <div className="col-5">
-          <div className="opening-content h-100 d-flex flex-column justify-content-center align-items-center text-center p-3">
-            {title && <h5 className="opening-title fw-bold mb-2 text-dark">{title.toUpperCase()}</h5>}
-            {productCount && <p className="opening-count mb-0 text-muted">{`${productCount} SẢN PHẨM`}</p>}
+          <div className="opening-content h-100 d-flex flex-column justify-content-center align-items-center text-center">
+            {title && <h5 className="opening-title fw-bold mb-2">{title.toUpperCase()}</h5>}
+            {productCount && <p className="opening-count mb-0">{`${productCount} SẢN PHẨM`}</p>}
           </div>
         </div>
       </div>

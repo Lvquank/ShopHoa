@@ -42,6 +42,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
     const [isHovering, setIsHovering] = useState(false);
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [showMobileSearch, setShowMobileSearch] = useState(false);
 
     const throttle = useCallback((func, delay) => {
         let timeoutId;
@@ -142,6 +143,14 @@ const Header = ({ isShowCategoryMenu = true }) => {
     }, []);
 
     const handleNavLinkClick = useCallback(() => {
+        const offcanvasElement = document.getElementById('mobileNavOffcanvas');
+        if (offcanvasElement && offcanvasElement.classList.contains('show')) {
+            // Sử dụng bootstrap instance để đóng offcanvas một cách an toàn
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+            if (bsOffcanvas) {
+                bsOffcanvas.hide();
+            }
+        }
         if (isMobileNavActive) {
             toggleMobileNav();
         }
@@ -268,11 +277,15 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             <img
                                 src={logoImg}
                                 alt="Logo"
-                                style={{ height: '50px', width: 'auto' }}
+                                style={{ height: '65px', width: 'auto' }}
                             />
                         </Link>
                         <div className="d-flex align-items-center">
-                            <button className="btn text-white me-2" type="button">
+                            <button
+                                className="btn text-white me-2"
+                                type="button"
+                                onClick={() => setShowMobileSearch(prev => !prev)}
+                            >
                                 <i className="bi bi-search fs-4"></i>
                             </button>
                             <button
@@ -293,6 +306,11 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 )}
                             </button>
                         </div>
+                    </div>
+
+                    {/* Mobile Search */}
+                    <div className={`container-fluid bg-white my-3 ${showMobileSearch ? 'd-block' : 'd-none'} d-xl-none`}>
+                        <SearchBar />
                     </div>
 
                     <div className="row align-items-center d-none d-xl-flex">
@@ -430,13 +448,14 @@ const Header = ({ isShowCategoryMenu = true }) => {
             {/* Mobile Offcanvas */}
             <div className="offcanvas offcanvas-start" tabIndex="-1" id="mobileNavOffcanvas" aria-labelledby="mobileNavOffcanvasLabel">
                 <div className="offcanvas-header bg-light">
-                    <h5 className="offcanvas-title text-success fw-bold" id="mobileNavOffcanvasLabel">
+                    <h5 className="offcanvas-title fw-bold text-primary-custom" id="mobileNavOffcanvasLabel">
                         <i className="bi bi-list me-2"></i>
                         DANH MỤC
                     </h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div className="offcanvas-body p-0">
+                    {/* Phần danh mục sản phẩm */}
                     <div className="list-group list-group-flush">
                         {menuLoading ? (
                             <div className="list-group-item">Đang tải...</div>
@@ -444,7 +463,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             <div className="list-group-item text-danger">Lỗi tải danh mục</div>
                         ) : (
                             <>
-                                <Link to="/danh-muc/ban-chay-nhat" className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                                <Link to="/danh-muc/ban-chay-nhat" className="list-group-item list-group-item-action d-flex align-items-center py-3" onClick={handleNavLinkClick}>
                                     <i className="bi bi-fire me-3 text-warning"></i>
                                     <span className="text-uppercase fw-bold">CÁC SẢN PHẨM BÁN CHẠY</span>
                                 </Link>
@@ -469,7 +488,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                                 <div className={`collapse ${expandedCategory === category.id ? 'show' : ''}`}>
                                                     <div className="ps-4 pb-2">
                                                         {categoryStyles.map(style => (
-                                                            <Link key={style.id} to={`/danh-muc/${category.alias}/${style.alias}`} className="d-block py-2 text-decoration-none text-dark">
+                                                            <Link key={style.id} to={`/danh-muc/${category.alias}/${style.alias}`} className="d-block py-2 text-decoration-none text-dark" onClick={handleNavLinkClick}>
                                                                 {style.name}
                                                             </Link>
                                                         ))}
@@ -480,7 +499,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                     }
 
                                     return (
-                                        <Link key={category.id} to={`/danh-muc/${category.alias}`} className="list-group-item list-group-item-action d-flex align-items-center py-3">
+                                        <Link key={category.id} to={`/danh-muc/${category.alias}`} className="list-group-item list-group-item-action d-flex align-items-center py-3" onClick={handleNavLinkClick}>
                                             <i className="bi bi-cart me-3"></i>
                                             <span className="text-uppercase fw-bold">{category.name}</span>
                                         </Link>
@@ -489,6 +508,24 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             </>
                         )}
                     </div>
+
+                    {/* === PHẦN ĐƯỢC THÊM VÀO === */}
+                    <hr className="my-2" />
+                    <h5 className="offcanvas-title fw-bold text-primary-custom px-3 pt-2 pb-1">
+                        <i className="bi bi-compass me-2"></i>
+                        ĐIỀU HƯỚNG
+                    </h5>
+                    <div className="list-group list-group-flush">
+                        <Link className="list-group-item list-group-item-action py-3" to="/" onClick={handleNavLinkClick}>Trang chủ</Link>
+                        <Link className="list-group-item list-group-item-action py-3" to="/gioi-thieu" onClick={handleNavLinkClick}>Giới thiệu</Link>
+                        <Link className="list-group-item list-group-item-action py-3" to="/cua-hang" onClick={handleNavLinkClick}>Sản phẩm</Link>
+                        <Link className="list-group-item list-group-item-action py-3" to="/he-thong-cua-hang" onClick={handleNavLinkClick}>Hệ thống cửa hàng</Link>
+                        <Link className="list-group-item list-group-item-action py-3" to="/gio-hang" onClick={handleNavLinkClick}>Thanh toán</Link>
+                        <Link className="list-group-item list-group-item-action py-3" to="/tin-tuc" onClick={handleNavLinkClick}>Tin tức</Link>
+                        <Link className="list-group-item list-group-item-action py-3" to="/lien-he" onClick={handleNavLinkClick}>Liên hệ</Link>
+                    </div>
+                    {/* === KẾT THÚC PHẦN THÊM VÀO === */}
+
                 </div>
             </div>
             <Cart />

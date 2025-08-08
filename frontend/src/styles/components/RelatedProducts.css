@@ -123,66 +123,77 @@
 @media (max-width: 768px) {
   .related-title {
     font-size: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     text-align: center;
   }
 
   .related-nav-btn {
     width: 35px;
     height: 35px;
-    border-width: 1px;
+    border-width: 1.5px;
+    background-color: rgba(255, 255, 255, 0.9);
   }
 
   .related-nav-btn i {
     font-size: 14px;
+    color: var(--primary-color);
   }
 
   .related-nav-prev {
-    left: -15px;
+    left: -10px;
   }
 
   .related-nav-next {
-    right: -15px;
+    right: -10px;
   }
 
-  /* Maintain 2 columns on tablet */
-  .related-grid-wrapper .col-lg-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
+  .related-products-section {
+    padding: 1.5rem 0;
+  }
+
+  .related-grid-wrapper {
+    padding: 0 15px;
   }
 }
 
 @media (max-width: 576px) {
   .related-title {
     font-size: 0.95rem;
-  }
-
-  .related-nav-prev {
-    left: -12px;
-  }
-
-  .related-nav-next {
-    right: -12px;
+    margin-bottom: 1rem;
   }
 
   .related-nav-btn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+    border-width: 1px;
   }
 
   .related-nav-btn i {
     font-size: 12px;
   }
 
-  /* Keep 2 columns even on mobile */
-  .related-grid-wrapper .col-lg-6 {
-    flex: 0 0 50%;
-    max-width: 50%;
-    padding: 0 0.5rem;
+  .related-nav-prev {
+    left: -8px;
+  }
+
+  .related-nav-next {
+    right: -8px;
+  }
+
+  .related-grid-wrapper {
+    padding: 0 12px;
   }
 
   .related-grid-wrapper .row {
     margin: 0 -0.5rem;
+  }
+
+  .related-grid-wrapper .col-6 {
+    padding: 0 0.5rem;
+  }
+
+  .related-products-section {
+    padding: 1.25rem 0;
   }
 }
 

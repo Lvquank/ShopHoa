@@ -8,23 +8,39 @@ const RelatedProducts = ({ products = [], title = "CÓ THỂ BẠN QUAN TÂM :" 
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setItemsPerPage(2)
-      } else if (window.innerWidth <= 820) {
-        setItemsPerPage(3)
+      // Điều chỉnh breakpoint để phù hợp với iPad Mini
+      if (window.innerWidth <= 576) {
+        setItemsPerPage(2) // Mobile: 2 cột
+      } else if (window.innerWidth <= 767) {
+        setItemsPerPage(2) // Tablet nhỏ: 2 cột
+      } else if (window.innerWidth <= 1024) {
+        setItemsPerPage(3) // iPad và Tablet: 3 cột
       } else {
-        setItemsPerPage(4)
+        setItemsPerPage(4) // Desktop: 4 cột
       }
     }
 
     // Set initial value
     handleResize()
 
-    // Add event listener
-    window.addEventListener('resize', handleResize)
+    // Thêm debounce để tránh gọi quá nhiều lần khi resize
+    let timeoutId = null;
+    const debouncedResize = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(handleResize, 250);
+    };
+
+    window.addEventListener('resize', debouncedResize)
 
     // Cleanup
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', debouncedResize)
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }
   }, [])
 
   const nextSlide = () => {
@@ -53,7 +69,7 @@ const RelatedProducts = ({ products = [], title = "CÓ THỂ BẠN QUAN TÂM :" 
         <div className="related-grid-wrapper position-relative">
           <div className="row g-3">
             {currentProducts.map((product, index) => (
-              <div key={currentIndex + index} className="col-6 col-md-4 col-lg-3 custom-col">
+              <div key={currentIndex + index} className="col-6 col-sm-6 col-md-4 col-xl-3">
                 <FlowerCard
                   imageUrl={
                     product.imageUrl

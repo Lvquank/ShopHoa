@@ -168,15 +168,16 @@ function SearchBar() {
             </div>
 
             {(loading || (results.length > 0 && searchTerm)) && (
-                <div className="list-group position-absolute w-100" style={{ zIndex: 1000, top: '100%' }}>
+                <div className="list-group position-absolute w-100" style={{ zIndex: 1000, top: '100%', borderRadius: 0 }}>
                     {loading ? (
-                        <div className="list-group-item">Đang tìm...</div>
+                        <div className="list-group-item" style={{ borderRadius: 0 }}>Đang tìm...</div>
                     ) : results.length > 0 ? (
                         results.map(product => (
                             <Link
                                 key={product.id}
-                                to={`/san-pham/${product.alias}`}
+                                to={`/cua-hang/${product.id}`}
                                 className="list-group-item list-group-item-action d-flex align-items-center"
+                                style={{ borderRadius: 0 }}
                                 onClick={handleResultClick}
                             >
                                 <img
@@ -195,7 +196,7 @@ function SearchBar() {
                             </Link>
                         ))
                     ) : (
-                        <div className="list-group-item">Không tìm thấy kết quả.</div>
+                        <div className="list-group-item" style={{ borderRadius: 0 }}>Không tìm thấy kết quả.</div>
                     )}
                 </div>
             )}
