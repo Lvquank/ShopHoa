@@ -219,7 +219,7 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                 <div className="d-flex justify-content-end auth-links">
                                     {user ? (
                                         <div
-                                            className="user-menu position-relative"
+                                            className="user-menu position-relative d-none d-xl-block"
                                             onMouseEnter={() => setShowUserMenu(true)}
                                             onMouseLeave={() => setShowUserMenu(false)}
                                         >
@@ -235,25 +235,28 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                             </div>
                                             {showUserMenu && (
                                                 <div className="position-absolute bg-white shadow p-2 rounded" style={{ top: '100%', right: 0, zIndex: 1000, minWidth: '200px' }}>
-                                                    <Link to="/profile" className="d-block p-2 text-decoration-none text-dark">Thông tin tài khoản</Link>
-                                                    <Link to="/orders" className="d-block p-2 text-decoration-none text-dark">Đơn hàng của tôi</Link>
+                                                    <Link to="/forgot-password" className="d-block p-2 text-decoration-none text-dark">
+                                                        <i className="bi bi-key me-2"></i>
+                                                        Đổi mật khẩu
+                                                    </Link>
                                                     <hr className="my-1" />
                                                     <a
                                                         href="#"
                                                         className="d-block p-2 text-decoration-none text-danger"
                                                         onClick={handleLogout}
                                                     >
+                                                        <i className="bi bi-box-arrow-right me-2"></i>
                                                         Đăng xuất
                                                     </a>
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
-                                        <>
+                                        <div className="d-none d-xl-flex align-items-center">
                                             <Link to="/register" className="text-decoration-none" style={{ marginRight: '8px' }}>Đăng ký</Link>
                                             <span className="separator">|</span>
                                             <Link to="/login" className="text-decoration-none" style={{ marginLeft: '8px' }}>Đăng nhập</Link>
-                                        </>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -281,6 +284,26 @@ const Header = ({ isShowCategoryMenu = true }) => {
                             />
                         </Link>
                         <div className="d-flex align-items-center">
+                            {user ? (
+                                <button
+                                    className="btn text-white me-2"
+                                    type="button"
+                                    data-bs-toggle="offcanvas"
+                                    data-bs-target="#mobileNavOffcanvas"
+                                >
+                                    <img
+                                        src={user.avatar}
+                                        alt={user.username}
+                                        className="rounded-circle"
+                                        style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                                        referrerPolicy="no-referrer"
+                                    />
+                                </button>
+                            ) : (
+                                <Link to="/login" className="btn text-white me-2">
+                                    <i className="bi bi-person fs-4"></i>
+                                </Link>
+                            )}
                             <button
                                 className="btn text-white me-2"
                                 type="button"
@@ -373,7 +396,6 @@ const Header = ({ isShowCategoryMenu = true }) => {
                                             {categories.map(category => {
                                                 const categoryStyles = category.styles || [];
                                                 const hasSubmenu = categoryStyles.length > 0;
-
                                                 if (hasSubmenu) {
                                                     return (
                                                         <li key={category.id} className="dropdown-submenu">
@@ -524,7 +546,55 @@ const Header = ({ isShowCategoryMenu = true }) => {
                         <Link className="list-group-item list-group-item-action py-3" to="/tin-tuc" onClick={handleNavLinkClick}>Tin tức</Link>
                         <Link className="list-group-item list-group-item-action py-3" to="/lien-he" onClick={handleNavLinkClick}>Liên hệ</Link>
                     </div>
-                    {/* === KẾT THÚC PHẦN THÊM VÀO === */}
+                    {/* === PHẦN ĐĂNG NHẬP/ĐĂNG KÝ === */}
+                    <hr className="my-2" />
+                    <div className="px-3 py-3">
+                        {user ? (
+                            <div className="d-flex flex-column">
+                                <div className="d-flex align-items-center mb-3">
+                                    <img
+                                        src={user.avatar}
+                                        alt={user.username}
+                                        className="rounded-circle"
+                                        style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+                                        referrerPolicy="no-referrer"
+                                    />
+                                    <span className="ms-2 fw-bold">{user.username}</span>
+                                </div>
+                                <Link to="/forgot-password"
+                                    className="btn btn-outline-primary mb-2"
+                                    onClick={handleNavLinkClick}>
+                                    <i className="bi bi-key me-2"></i>
+                                    Đổi mật khẩu
+                                </Link>
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={(e) => {
+                                        handleLogout(e);
+                                        handleNavLinkClick();
+                                    }}>
+                                    <i className="bi bi-box-arrow-right me-2"></i>
+                                    Đăng xuất
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="d-flex flex-column">
+                                <Link to="/login"
+                                    className="btn btn-primary mb-2"
+                                    onClick={handleNavLinkClick}>
+                                    <i className="bi bi-box-arrow-in-right me-2"></i>
+                                    Đăng nhập
+                                </Link>
+                                <Link to="/register"
+                                    className="btn btn-outline-primary"
+                                    onClick={handleNavLinkClick}>
+                                    <i className="bi bi-person-plus me-2"></i>
+                                    Đăng ký
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                    {/* === KẾT THÚC PHẦN ĐĂNG NHẬP/ĐĂNG KÝ === */}
 
                 </div>
             </div>

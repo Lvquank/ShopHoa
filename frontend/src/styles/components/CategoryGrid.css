@@ -38,9 +38,7 @@
 }
 
 .bg-pink {
-  background: rgba(252, 81, 109, 0.9);
-  /* Làm màu nền hơi trong suốt */
-  border-radius: 0.25rem;
+  background-color: #FC516D;
 }
 
 /* Các điều chỉnh responsive */
